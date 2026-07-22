@@ -87,6 +87,22 @@
   .gtable th:first-child,.gtable td:first-child{text-align:left}
   .gtable th{font-size:11px; text-transform:uppercase; color:var(--dim2); font-weight:600; letter-spacing:.03em}
   .gtable td{font-weight:600}
+  /* Planning (kanban) */
+  .pday{margin-bottom:10px; border:1px solid var(--line); border-radius:16px; background:var(--elev); overflow:hidden}
+  .pdayhead{font-size:13px; font-weight:700; padding:11px 14px; background:var(--field)}
+  .pdaylist{min-height:14px; padding:8px 8px 2px}
+  .pdaylist.dragover{background:rgba(120,120,128,.16)}
+  .pcard{display:flex; align-items:center; gap:8px; background:var(--elev); border:1px solid var(--line2); border-radius:12px; padding:9px 10px; margin-bottom:6px}
+  .pcard.custom{border-style:dashed; background:transparent}
+  .pcard.dragging{opacity:.3}
+  .pgrip{color:var(--dim2); font-size:17px; padding:2px 5px; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none}
+  .plabel2{flex:1; font-size:14px; font-weight:600; line-height:1.2}
+  .ptag{font-size:11px; color:var(--dim2); font-weight:500; margin-top:1px}
+  .pinput{flex:1; border:none; background:transparent; color:var(--txt); font-size:14px; font-family:inherit; font-weight:600; min-width:0}
+  .pinput:focus{outline:none}
+  .pdel{color:var(--dim2); font-size:20px; line-height:1; padding:0 4px; cursor:pointer}
+  .paddbtn{width:calc(100% - 16px); margin:2px 8px 8px; padding:8px; border:1px dashed var(--line2); background:transparent; color:var(--dim); border-radius:10px; font-size:13px; font-family:inherit; cursor:pointer}
+  .pdrag-clone{position:fixed; z-index:999; pointer-events:none; opacity:.95; box-shadow:0 10px 28px rgba(0,0,0,.35)}
 
   /* Onglet Profil */
   .card{background:var(--elev); border:1px solid var(--line); border-radius:18px; padding:6px 16px; margin-bottom:16px}
@@ -175,6 +191,17 @@
   </div>
 </section>
 
+<!-- ===== PLANNING ===== -->
+<section class="view" id="view-planning">
+  <div class="ltitle">Planning</div>
+  <div class="lsub">Organise ta semaine : glisse les séances par la poignée ⠿ entre les jours, et ajoute tes activités perso (travail, RDV…).</div>
+  <div class="weeks" id="planWeeks"></div>
+  <div id="planBoard"></div>
+  <div class="tools">
+    <button onclick="resetWeekPlan()">↺ Réinitialiser cette semaine</button>
+  </div>
+</section>
+
 <!-- ===== NUTRITION ===== -->
 <section class="view" id="view-nutri">
   <div class="ltitle">Nutrition</div>
@@ -252,6 +279,10 @@
   <button class="tab active" data-tab="prog" onclick="switchTab('prog')">
     <svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M4 9v6M20 9v6M6.5 12h11"/></svg>
     <span>Programme</span>
+  </button>
+  <button class="tab" data-tab="planning" onclick="switchTab('planning')">
+    <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg>
+    <span>Planning</span>
   </button>
   <button class="tab" data-tab="nutri" onclick="switchTab('nutri')">
     <svg viewBox="0 0 24 24"><path d="M5 3v18M5 8h0M8 3v6a3 3 0 0 1-6 0V3M19 3c-1.5 0-3 2-3 6s1 5 3 5v7"/></svg>
@@ -540,6 +571,7 @@ function switchTab(t){
   window.scrollTo(0,0);
   if(t==='profil') renderProfile();
   if(t==='nutri') renderNutrition();
+  if(t==='planning') renderPlanning();
 }
 
 // ---------- PROGRAMME ----------
@@ -672,6 +704,128 @@ function exportLog(){
 }
 function toggleLegend(){ const b=document.getElementById("legendBox"); b.style.display=b.style.display==="none"?"block":"none"; }
 function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.display=b.style.display==="none"?"block":"none"; }
+
+// ---------- PLANNING (kanban glissable) ----------
+const DAYS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+const PLAN_ITEMS={
+  squat:{label:"Squat",tag:"Force"}, bench:{label:"Développé couché",tag:"Force"},
+  jerkmetcon:{label:"Jerk + Metcon",tag:"Force + Moteur"}, deadlift:{label:"Soulevé de terre",tag:"Force"},
+  ski:{label:"Ski / Rameur",tag:"Moteur"}, rugby:{label:"Rugby-cardio",tag:"Cardio"}, course:{label:"Course longue",tag:"Endurance"},
+};
+const PLAN_TO_SCHED={squat:0,bench:1,rugby:2,jerkmetcon:3,deadlift:4,ski:5,course:6};
+const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby"],Mercredi:["jerkmetcon"],Jeudi:[],Vendredi:["deadlift","ski"],Samedi:["course"],Dimanche:[]};
+const BS="athx_boards_v1";
+let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
+function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
+function freshBoard(){ const b={}; DAYS.forEach(d=>b[d]=(DEFAULT_PLAN_IDS[d]||[]).map(id=>({t:'s',id}))); return b; }
+function boardFor(w){ if(!BOARDS[w]) BOARDS[w]=freshBoard(); return BOARDS[w]; }
+
+function renderPlanWeeks(){
+  const el=document.getElementById("planWeeks"); if(!el) return; el.innerHTML="";
+  for(let w=1;w<=12;w++){
+    const d=document.createElement("div");
+    d.className="wk"+(w===week?" active":""); d.textContent=w;
+    d.onclick=()=>{ week=w; localStorage.setItem("athx_week",w); renderPlanning(); };
+    el.appendChild(d);
+  }
+}
+function makeCard(it){
+  const card=document.createElement('div');
+  card.className='pcard '+(it.t==='s'?'session':'custom'); card.dataset.key=it.id;
+  const grip=document.createElement('span'); grip.className='pgrip'; grip.textContent='⠿';
+  grip.addEventListener('pointerdown', onGripDown);
+  card.appendChild(grip);
+  if(it.t==='s'){
+    const m=PLAN_ITEMS[it.id]||{label:it.id,tag:''};
+    const lab=document.createElement('div'); lab.className='plabel2'; lab.innerHTML=`${m.label}<div class="ptag">${m.tag}</div>`;
+    card.appendChild(lab);
+    card.addEventListener('click',(e)=>{ if(e.target.closest('.pgrip'))return; openInProgramme(it.id); });
+  } else {
+    const inp=document.createElement('input'); inp.className='pinput'; inp.value=it.text||''; inp.placeholder="Activité (ex. Travail, Perso…)";
+    inp.addEventListener('input',()=>{ it.text=inp.value; saveBoards(); });
+    inp.addEventListener('pointerdown',(e)=>e.stopPropagation());
+    card.appendChild(inp);
+    const del=document.createElement('span'); del.className='pdel'; del.textContent='×';
+    del.addEventListener('click',()=>delItem(it.id));
+    card.appendChild(del);
+  }
+  return card;
+}
+function renderPlanning(){
+  renderPlanWeeks();
+  const b=boardFor(week), wrap=document.getElementById("planBoard"); if(!wrap) return; wrap.innerHTML="";
+  DAYS.forEach(day=>{
+    const col=document.createElement("div"); col.className="pday";
+    const head=document.createElement("div"); head.className="pdayhead";
+    head.innerHTML= b[day].length? day : `${day} <span style="color:var(--dim2);font-weight:500">· libre</span>`;
+    const list=document.createElement("div"); list.className="pdaylist"; list.dataset.day=day;
+    b[day].forEach(it=>list.appendChild(makeCard(it)));
+    const add=document.createElement("button"); add.className="paddbtn"; add.textContent="+ activité"; add.onclick=()=>addCustom(day);
+    col.appendChild(head); col.appendChild(list); col.appendChild(add);
+    wrap.appendChild(col);
+  });
+}
+function addCustom(day){
+  const b=boardFor(week), id='c'+Date.now()+'_'+Math.floor(Math.random()*1e4);
+  b[day].push({t:'c',id,text:''}); saveBoards(); renderPlanning();
+  setTimeout(()=>{ const i=document.querySelector(`.pcard[data-key="${id}"] input`); if(i) i.focus(); },30);
+}
+function delItem(id){ const b=boardFor(week); for(const d of DAYS){ const i=b[d].findIndex(x=>x.id===id); if(i>=0){ b[d].splice(i,1); break; } } saveBoards(); renderPlanning(); }
+function resetWeekPlan(){ BOARDS[week]=freshBoard(); saveBoards(); renderPlanning(); }
+function openInProgramme(id){
+  const idx=PLAN_TO_SCHED[id]; if(idx==null) return;
+  switchTab('prog'); openSession[week]=idx; renderProgramme();
+  setTimeout(()=>{ const c=document.querySelectorAll('#progContent .session')[idx]; if(c) c.scrollIntoView({block:'center'}); },60);
+}
+// --- drag tactile (pointer events) ---
+let drag=null;
+function listUnder(x,y){ const el=document.elementFromPoint(x,y); return el?el.closest('.pdaylist'):null; }
+function onGripDown(e){
+  e.preventDefault(); e.stopPropagation();
+  const card=e.currentTarget.closest('.pcard'); if(!card) return;
+  const r=card.getBoundingClientRect();
+  const clone=card.cloneNode(true); clone.classList.add('pdrag-clone');
+  clone.style.width=r.width+'px'; clone.style.left=r.left+'px'; clone.style.top=r.top+'px';
+  document.body.appendChild(clone);
+  drag={key:card.dataset.key, clone, card, offX:e.clientX-r.left, offY:e.clientY-r.top};
+  card.classList.add('dragging');
+  try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', onDragUp, {once:true});
+  window.addEventListener('pointercancel', onDragUp, {once:true});
+}
+function onDragMove(e){
+  if(!drag) return; e.preventDefault();
+  drag.clone.style.left=(e.clientX-drag.offX)+'px';
+  drag.clone.style.top=(e.clientY-drag.offY)+'px';
+  const list=listUnder(e.clientX,e.clientY);
+  document.querySelectorAll('.pdaylist').forEach(l=>l.classList.toggle('dragover', l===list));
+  if(e.clientY<95) window.scrollBy(0,-16);
+  else if(e.clientY>window.innerHeight-95) window.scrollBy(0,16);
+}
+function onDragUp(e){
+  window.removeEventListener('pointermove', onDragMove);
+  const d=drag; drag=null; if(!d) return;
+  if(d.clone) d.clone.remove(); if(d.card) d.card.classList.remove('dragging');
+  document.querySelectorAll('.pdaylist').forEach(l=>l.classList.remove('dragover'));
+  const list=listUnder(e.clientX,e.clientY); if(!list) return;
+  const beforeKey=insertBeforeKeyIn(list, e.clientY, d.key);
+  moveItemByKey(d.key, list.dataset.day, beforeKey);
+}
+function insertBeforeKeyIn(list, y, dragKey){
+  const cards=[...list.querySelectorAll('.pcard')].filter(c=>c.dataset.key!==dragKey);
+  for(const c of cards){ const r=c.getBoundingClientRect(); if(y<r.top+r.height/2) return c.dataset.key; }
+  return null;
+}
+function moveItemByKey(key,toDay,beforeKey){
+  const b=boardFor(week); let item=null;
+  for(const d of DAYS){ const i=b[d].findIndex(x=>x.id===key); if(i>=0){ item=b[d].splice(i,1)[0]; break; } }
+  if(!item) return;
+  const arr=b[toDay];
+  if(beforeKey){ const idx=arr.findIndex(x=>x.id===beforeKey); (idx>=0)?arr.splice(idx,0,item):arr.push(item); }
+  else arr.push(item);
+  saveBoards(); renderPlanning();
+}
 
 // ---------- PROFIL ----------
 const PF=["p_weight","p_bf","p_act"];
