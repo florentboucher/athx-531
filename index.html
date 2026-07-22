@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ATHX">
+<title>ATHX · 5/3/1 + Hypertrophie</title>
+<style>
+  :root{
+    --bg:#ffffff; --elev:#ffffff; --field:#f5f5f7; --line:#e5e5ea; --line2:#d2d2d7;
+    --txt:#1d1d1f; --dim:#6e6e73; --dim2:#86868b;
+    --ink:#1d1d1f; --oninval:#ffffff;
+    --nav:rgba(255,255,255,.82);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#000000; --elev:#1c1c1e; --field:#1c1c1e; --line:#2c2c2e; --line2:#38383a;
+      --txt:#f5f5f7; --dim:#aeaeb2; --dim2:#8e8e93;
+      --ink:#f5f5f7; --oninval:#000000;
+      --nav:rgba(20,20,22,.8);
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; padding:0}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; letter-spacing:-0.01em;
+  }
+  .view{display:none; padding:0 20px calc(84px + env(safe-area-inset-bottom)); max-width:620px; margin:0 auto}
+  .view.active{display:block}
+  .ltitle{font-size:32px; font-weight:700; letter-spacing:-0.03em; padding:calc(env(safe-area-inset-top) + 22px) 0 4px}
+  .lsub{font-size:14px; color:var(--dim); margin-bottom:16px}
+
+  /* Onglet Programme */
+  .weeks{display:flex; gap:8px; overflow-x:auto; padding:6px 0 12px; scrollbar-width:none}
+  .weeks::-webkit-scrollbar{display:none}
+  .wk{flex:0 0 auto; width:44px; height:44px; border-radius:14px; border:1px solid var(--line2);
+    background:var(--elev); color:var(--dim); font-size:15px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; position:relative; transition:.15s}
+  .wk.active{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
+  .wk .dot{position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%; background:var(--dim2)}
+  .wk.active .dot{background:var(--oninval)}
+
+  .session{margin-bottom:12px; border:1px solid var(--line); border-radius:18px; background:var(--elev); overflow:hidden}
+  .shead{display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer; user-select:none}
+  .sbadge{flex:0 0 auto; width:34px; height:34px; border-radius:10px; font-weight:700; font-size:14px;
+    display:flex; align-items:center; justify-content:center; background:var(--field); color:var(--txt)}
+  .stitle{flex:1; font-size:16px; font-weight:600}
+  .ssub{font-size:12.5px; color:var(--dim); font-weight:400; margin-top:1px}
+  .chev{color:var(--dim2); font-size:13px; transition:transform .2s}
+  .session.open .chev{transform:rotate(90deg)}
+  .sbody{display:none; padding:0 16px 6px}
+  .session.open .sbody{display:block}
+  .part{margin:8px 0; border-top:1px solid var(--line); padding-top:12px}
+  .part:first-child{border-top:none}
+  .plabel{font-size:12px; font-weight:700; color:var(--txt); letter-spacing:.02em; text-transform:uppercase}
+  .pmeta{font-size:12px; color:var(--dim); margin:3px 0 10px}
+  .pnote{color:var(--txt); font-style:italic; opacity:.75}
+  .ex{background:var(--field); border-radius:14px; padding:12px; margin-bottom:8px}
+  .exhead{display:flex; align-items:flex-start; gap:10px}
+  .exname{flex:1; font-size:15px; font-weight:600; line-height:1.3}
+  .extarget{font-size:12.5px; color:var(--dim); margin-top:2px; font-weight:400}
+  .vid{flex:0 0 auto; text-decoration:none; font-size:12.5px; font-weight:500; padding:6px 11px;
+    border-radius:980px; background:var(--elev); color:var(--txt); border:1px solid var(--line2); white-space:nowrap}
+  .vid:active{background:var(--line)}
+  .log{width:100%; margin-top:10px; background:var(--elev); border:1px solid var(--line2); color:var(--txt);
+    border-radius:11px; padding:10px 12px; font-size:14px; font-family:inherit; resize:vertical; min-height:38px}
+  .log::placeholder{color:var(--dim2)}
+  .log:focus{outline:none; border-color:var(--ink)}
+  .log.filled{border-color:var(--ink)}
+
+  .tools{display:flex; gap:8px; justify-content:center; margin:14px 0 4px; flex-wrap:wrap}
+  .tools button{background:var(--elev); border:1px solid var(--line2); color:var(--txt);
+    border-radius:980px; padding:9px 16px; font-size:13px; cursor:pointer; font-family:inherit; font-weight:500}
+  .legend{font-size:12.5px; color:var(--dim); background:var(--field); border-radius:14px; padding:14px; line-height:1.6; margin-top:10px}
+  .legend b{color:var(--txt)}
+  .goals{background:var(--field); border-radius:14px; padding:16px; margin-top:10px; font-size:13px; color:var(--txt); line-height:1.55}
+  .goals .ghead{font-size:15px; font-weight:700; margin-bottom:6px}
+  .goals p{margin:8px 0}
+  .goals .gnote{color:var(--dim); font-size:12.5px}
+  .gtable{width:100%; border-collapse:collapse; margin:12px 0}
+  .gtable th,.gtable td{text-align:right; padding:7px 6px; border-bottom:1px solid var(--line)}
+  .gtable th:first-child,.gtable td:first-child{text-align:left}
+  .gtable th{font-size:11px; text-transform:uppercase; color:var(--dim2); font-weight:600; letter-spacing:.03em}
+  .gtable td{font-weight:600}
+
+  /* Onglet Profil */
+  .card{background:var(--elev); border:1px solid var(--line); border-radius:18px; padding:6px 16px; margin-bottom:16px}
+  .row{display:flex; align-items:center; gap:12px; padding:14px 0; border-top:1px solid var(--line)}
+  .row:first-child{border-top:none}
+  .row label{flex:1; font-size:15px; font-weight:500}
+  .row .hint{display:block; font-size:12px; color:var(--dim2); font-weight:400; margin-top:1px}
+  .fieldwrap{flex:0 0 auto; display:flex; align-items:center; gap:6px}
+  .fieldwrap input{width:88px; background:var(--field); border:1px solid transparent; color:var(--txt);
+    border-radius:10px; padding:9px 10px; font-size:15px; font-family:inherit; text-align:right; font-weight:600}
+  .fieldwrap input:focus{outline:none; border-color:var(--ink)}
+  .fieldwrap .unit{font-size:13px; color:var(--dim2); width:26px}
+  select.act{width:100%; background:var(--field); border:1px solid transparent; color:var(--txt);
+    border-radius:10px; padding:11px 12px; font-size:15px; font-family:inherit; font-weight:500; -webkit-appearance:none; appearance:none}
+  select.act:focus{outline:none; border-color:var(--ink)}
+  .seclabel{font-size:12px; font-weight:600; color:var(--dim2); text-transform:uppercase; letter-spacing:.04em; margin:4px 4px 8px}
+
+  .results{background:var(--ink); border-radius:18px; padding:20px; margin-bottom:16px; color:var(--oninval)}
+  .results.empty{background:var(--field); color:var(--dim)}
+  .bigval{display:flex; align-items:baseline; gap:8px; margin-bottom:14px}
+  .bigval .n{font-size:40px; font-weight:700; letter-spacing:-0.03em}
+  .bigval .u{font-size:15px; opacity:.7}
+  .bigval .lbl{font-size:13px; opacity:.7; margin-left:auto; text-align:right; max-width:130px}
+  .rgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .rcell{background:rgba(128,128,128,.18); border-radius:12px; padding:12px}
+  .rcell .rv{font-size:20px; font-weight:700}
+  .rcell .rk{font-size:11.5px; opacity:.75; margin-top:2px}
+  .formula{font-size:12px; color:var(--dim); text-align:center; padding:2px 10px 6px; line-height:1.5}
+
+  /* Nutrition */
+  .mealsel{display:flex; gap:8px}
+  .mealsel button{flex:1; padding:13px 0; border-radius:12px; border:1px solid var(--line2); background:var(--field);
+    color:var(--txt); font-size:16px; font-weight:600; font-family:inherit; cursor:pointer}
+  .mealsel button.on{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
+  .mealhead{font-size:14px; font-weight:600}
+  .mealkcal{font-size:12.5px; color:var(--dim); margin-top:2px}
+
+  /* Barre d'onglets */
+  nav{position:fixed; left:0; right:0; bottom:0; z-index:50; display:flex; justify-content:space-around;
+    background:var(--nav); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--line2); padding:8px 0 calc(6px + env(safe-area-inset-bottom))}
+  .tab{flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--dim2); cursor:pointer; font-family:inherit; padding:2px}
+  .tab svg{width:25px; height:25px; stroke:currentColor; fill:none; stroke-width:1.7}
+  .tab.active{color:var(--txt)}
+  .tab span{font-size:10.5px; font-weight:500; letter-spacing:0}
+</style>
+</head>
+<body>
+
+<!-- ===== PROGRAMME ===== -->
+<section class="view active" id="view-prog">
+  <div class="ltitle">Programme</div>
+  <div class="lsub" id="blockline"></div>
+  <div class="weeks" id="weeks"></div>
+  <div id="progContent"></div>
+  <div class="tools">
+    <button onclick="exportLog()">Exporter mon journal</button>
+    <button onclick="toggleGoals()">🎯 Objectifs</button>
+    <button onclick="toggleLegend()">Légende</button>
+  </div>
+  <div id="legendBox" style="display:none">
+    <div class="legend">
+      <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total. Échauffement 40/50/60% du TM avant.<br>
+      <b>Jerk</b> : pas d'AMRAP — reps prescrites +1-2 max, techniques et explosives.<br>
+      <b>PARTIES 2+ = accessoires hypertrophie</b> (volume/prévention). <b>TEMPO</b> (ex. 30X1) : excentrique / pause basse / concentrique (X=explosif) / pause haute (s). <b>RPE</b> : intensité /10. <b>REST</b> : récup. <b>/side</b> : par côté. « enchaîner » = superset/triset (récup en fin de tour).<br>
+      <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.
+    </div>
+  </div>
+  <div id="goalsBox" style="display:none">
+    <div class="goals">
+      <div class="ghead">🎯 Objectifs — fin des 12 semaines</div>
+      <p><b>12 semaines = 3 cycles de 5/3/1</b> (4 sem./cycle : 3 de travail + 1 décharge). Le Training Max monte de <b>+2,5 kg</b> (haut du corps) / <b>+5 kg</b> (bas) à chaque cycle.</p>
+      <p>En complétant les 3 cycles et en battant tes reps sur les séries « + », voici les cibles réalistes de 1RM :</p>
+      <table class="gtable">
+        <tr><th>Lift</th><th>Départ</th><th>Visé (fin)</th><th>Gain</th></tr>
+        <tr><td>Squat</td><td>210</td><td>220-225</td><td>+10-15</td></tr>
+        <tr><td>Soulevé</td><td>250</td><td>260-265</td><td>+10-15</td></tr>
+        <tr><td>Bench</td><td>170</td><td>176-180</td><td>+6-10</td></tr>
+        <tr><td>Jerk</td><td>160</td><td>165-170</td><td>+5-10</td></tr>
+      </table>
+      <p class="gnote"><b>≈ +35 à +50 kg cumulés</b> sur les 4 mouvements. Ces cibles supposent que tes maxes de départ sont réels — tes AMRAP de la semaine 1 te le confirmeront (bien au-dessus des reps cibles = tu es plus fort ; en-dessous = le TM se recale).</p>
+      <p class="gnote">Le <b>jerk</b> : l'essentiel du gain viendra de la <b>technique</b> (dip-drive) qui débloque ta force déjà là. Côté <b>physique</b>, les accessoires hypertrophie ajoutent du muscle (dos, jambes, épaules) sans casser ton moteur (metcon, ski, course).</p>
+      <p class="gnote">Pile dans tes cibles ATHX : squat 2RM 220-230 · jerk 160-170 · un deadlift qui soutient un 3RM à 225-235.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NUTRITION ===== -->
+<section class="view" id="view-nutri">
+  <div class="ltitle">Nutrition</div>
+  <div class="lsub">Tes macros du jour, réparties par repas.</div>
+
+  <div class="seclabel">Calories cibles</div>
+  <div class="card">
+    <div class="row">
+      <label>Calories / jour<span class="hint">Laisse vide = ta maintenance</span></label>
+      <div class="fieldwrap"><input id="n_kcal" type="number" inputmode="decimal"><span class="unit">kcal</span></div>
+    </div>
+  </div>
+
+  <div class="seclabel">Répartition</div>
+  <div class="card">
+    <div class="row">
+      <label>Protéines<span class="hint">grammes par kg de masse maigre</span></label>
+      <div class="fieldwrap"><input id="n_prot" type="number" inputmode="decimal" placeholder="2"><span class="unit">g/kg</span></div>
+    </div>
+    <div class="row">
+      <label>Lipides<span class="hint">grammes par kg de masse maigre</span></label>
+      <div class="fieldwrap"><input id="n_lip" type="number" inputmode="decimal" placeholder="0,7"><span class="unit">g/kg</span></div>
+    </div>
+    <div class="row">
+      <label>Glucides<span class="hint">le reste des calories ÷ 4</span></label>
+      <div class="fieldwrap" style="color:var(--dim2); font-size:14px; font-weight:600">automatique</div>
+    </div>
+  </div>
+
+  <div class="seclabel">Nombre de repas</div>
+  <div class="card" style="padding:16px">
+    <div class="mealsel" id="mealSel"></div>
+  </div>
+
+  <div class="seclabel">Résultat</div>
+  <div id="nutriResults"></div>
+</section>
+
+<!-- ===== PROFIL ===== -->
+<section class="view" id="view-profil">
+  <div class="ltitle">Profil</div>
+  <div class="lsub">Renseigne tes données pour calculer ton métabolisme.</div>
+
+  <div class="seclabel">Composition</div>
+  <div class="card">
+    <div class="row">
+      <label>Poids<span class="hint">Poids de corps actuel</span></label>
+      <div class="fieldwrap"><input id="p_weight" type="number" inputmode="decimal" placeholder="80"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Masse grasse<span class="hint">Taux estimé</span></label>
+      <div class="fieldwrap"><input id="p_bf" type="number" inputmode="decimal" placeholder="15"><span class="unit">%</span></div>
+    </div>
+  </div>
+
+  <div class="seclabel">Activité</div>
+  <div class="card">
+    <div class="row" style="display:block; padding:16px 0">
+      <select class="act" id="p_act">
+        <option value="1.375">Sportif occasionnel — 1 à 3 séances/sem</option>
+        <option value="1.55">Assez sportif — 3 à 4 séances/sem</option>
+        <option value="1.725">Très sportif — 5 à 6 séances/sem</option>
+        <option value="1.9">Extrêmement sportif — 2×/jour</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="seclabel">Métabolisme</div>
+  <div id="metaBox"></div>
+  <div class="formula">Katch-McArdle · Masse maigre = Poids × (1 − %MG) · BMR = 370 + 21,6 × masse maigre<br>Tes macros se règlent dans l'onglet <b>Nutrition</b>.</div>
+</section>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <button class="tab active" data-tab="prog" onclick="switchTab('prog')">
+    <svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M4 9v6M20 9v6M6.5 12h11"/></svg>
+    <span>Programme</span>
+  </button>
+  <button class="tab" data-tab="nutri" onclick="switchTab('nutri')">
+    <svg viewBox="0 0 24 24"><path d="M5 3v18M5 8h0M8 3v6a3 3 0 0 1-6 0V3M19 3c-1.5 0-3 2-3 6s1 5 3 5v7"/></svg>
+    <span>Nutrition</span>
+  </button>
+  <button class="tab" data-tab="profil" onclick="switchTab('profil')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
+    <span>Profil</span>
+  </button>
+</nav>
+
+<script>
+// ---------- DONNÉES PROGRAMME ----------
+const P1 = ["12 reps @ 55-60% 1RM","10 reps @ 60-65% 1RM","8 reps @ 65-70% 1RM","6 reps @ 70-75% 1RM"];
+function b(idx){ return [
+  {title:"Squat", parts:[
+    {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[idx]]]},
+    {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 3110 · RPE 7-8 · REST 2'", ex:[
+      ["Single Leg Romanian Deadlift","10-12/side"],["Suitcase Front Foot Elevated Split Squat","10-12/side"]]},
+    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+      ["2DB Bench Press","10-12 · TEMPO 2020"],["Tractions pronation lestées","4-6 · TEMPO 21X1"]]},
+    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO contrôlé · RPE 7-8 · REST 2'", ex:[
+      ["Sorenson Hold","1'-2'"],["AB Wheel","10-12"]]},
+  ]},
+  {title:"Deadlift", parts:[
+    {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[idx]]]},
+    {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 31X0 · RPE 7-8 · REST 2'", ex:[["Weighted High Step Ups","6-8/side"]]},
+    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+      ["Strict Press","6 · TEMPO 21X1"],["Barbell Bent Over Row","8-10 · TEMPO 2020"]]},
+    {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO 2020 · RPE 9 · REST 1'30", ex:[
+      ["Inclined DB Biceps Curl","10-12"],["Cable Triceps Extension","12-15"]]},
+    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'", ex:[
+      ["Plate Rotation in a Split Squat","20"],["Tuck Sit Knee Wiper","20"]]},
+  ]},
+  {title:"Bench Press", parts:[
+    {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[idx]]]},
+    {label:"Part 2 – Rowing", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[["Barbell Seal Row","10-12"]]},
+    {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"3 sets · RPE 8-9 · REST 1'30", ex:[
+      ["2DB Bulgarian Split Squat","10-12/side · TEMPO 30X0"],["Copenhagen Plank",'20-30"/side'],["Single Leg Banded Abduction","12-15/side"]]},
+    {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'30", ex:[
+      ["Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral Raises","15 · TEMPO 2121"],["Single Arm Farmer Carry",'20-30"/side']]},
+  ]},
+ ]; }
+
+const BLOCKS = [
+  b(0),
+  [
+   {title:"Squat", parts:[
+     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[1]]]},
+     {label:"Part 2 – Hinge", meta:"4 sets · REST 1'-1'30", ex:[["Staggered KB Swing","20/side"]]},
+     {label:"Part 3 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
+       ["Back Rack Lunges","10-12/side"],["DB Death March","10-12/side"]]},
+     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 2'", ex:[
+       ["Alternating Seated Pike Leg Lift","20"],["Hanging L-Sit","Max Time (ou Half L-Sit)"]]},
+   ]},
+   {title:"Deadlift", parts:[
+     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[1]]]},
+     {label:"Part 2 – Lower Body", meta:"4 sets · REST 1'30", ex:[["Weighted Crossover Step Over","10/side"]]},
+     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
+       ["Arnold Press","10-12"],["Gorilla Row","10-12"]]},
+     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
+       ["DB Curl","12-15"],["Overhead Dumbbell Triceps Extension","12-15/side"]]},
+     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'30", ex:[
+       ["Split Stance PVC Anti Rotation",'20/20"'],["Dragon Flag 4 sec Eccentric","6"]]},
+   ]},
+   {title:"Bench Press", parts:[
+     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[1]]]},
+     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30", ex:[["Pendlay Row","10-12"]]},
+     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
+       ["Single Leg Hip Thrust","10/side · TEMPO 20X2"],["Goblet Cyclist Squat","10 · TEMPO 2020"],["Monster Walk","10m"]]},
+     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+       ["Ring Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral + Frontal Raises","12"],["Single Arm KB Side Bend",'25"/side']]},
+   ]},
+  ],
+  [
+   {title:"Squat", parts:[
+     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[2]]]},
+     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
+       ["Barbell Romanian Deadlift","10-12"],["Suitcase Front Foot Elevated Split Squat","8/side"]]},
+     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+       ["Ring Push Ups","12 · TEMPO 12X1"],["DB Butterfly Chest Supported","12 · TEMPO 20X1"]]},
+     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
+       ["MB Lateral Shot","12/side"],["Heavy Farmer Carry","20m/side"]]},
+   ]},
+   {title:"Deadlift", parts:[
+     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[2]]]},
+     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 30X1 · RPE 8 · REST 1'30-2'", ex:[["Hip Thrust","10"]]},
+     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
+       ["Cable Pull Behind The Neck","10-12"],["Half Kneeling Landmine Press","10/side"]]},
+     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
+       ["Spider Curl","12-15"],["Barbell Body Triceps Extension","12-15"]]},
+     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
+       ["Banded Pallof Walk Out","6/side (A/R)"],["Cable Crunch","12 · TEMPO 2020"]]},
+   ]},
+   {title:"Bench Press", parts:[
+     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[2]]]},
+     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Cable Horizontal Narrow Grip Pull","10-12"]]},
+     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
+       ["Eccentric Nordic Hamstring Curl","5"],["Leg Extension","10/side · TEMPO 20X2"],["Banded Clamshell","10/side"]]},
+     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+       ["Alternating DB See Saw Press","12"],["Low Cable Fly","12 · TEMPO 20X0"],["Lateral Star Plank",'25"/side']]},
+   ]},
+  ],
+  [
+   {title:"Squat", parts:[
+     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[3]]]},
+     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
+       ["Single Leg GHD Hip Extension","10/side"],["RNT Barbell Split Squat","8/side"]]},
+     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+       ["Seated DB Complex Strict Press","12"],["DB Three Point Row","10/side · TEMPO 20X1"]]},
+     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
+       ["Lateral Plank Pulse","25/side"],["Ring Body Saw","15"]]},
+   ]},
+   {title:"Deadlift", parts:[
+     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[3]]]},
+     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 3030 · RPE 7 · REST 1'30-2'", ex:[["Seated Wide Stance Good Morning","10"]]},
+     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 20X0 · RPE 8 · REST 1'30-2'", ex:[
+       ["Upright Row","10-12"],["DB LU Raises","10"]]},
+     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 1'-1'30", ex:[
+       ["Skull Crusher","12 · TEMPO 20X0"],["Barbell Curl 21's","7-7-7"]]},
+     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
+       ["Half Kneeling Chop And Lift","8/8 · TEMPO 20X0"],["L-Sit","Max Time"]]},
+   ]},
+   {title:"Bench Press", parts:[
+     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[3]]]},
+     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Wide Grip Pull Ups or Cable Vertical Row","10-12"]]},
+     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
+       ["Sissy Squat","6"],["Side Band Walk ou Machine Abductor","10/side · TEMPO 20X2"],["Single Leg Wall Sit",'20"/side']]},
+     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
+       ["Cable Pull Over","12 · TEMPO 20X0"],["Inclined DB Bench Press","12 · TEMPO 20X0"],["Cable Rowing Pass Through","12/side"]]},
+   ]},
+  ],
+];
+
+const BLOCK_INFO = [
+  {r:"12 reps @ 55-60% 1RM"},{r:"10 reps @ 60-65% 1RM"},{r:"8 reps @ 65-70% 1RM"},{r:"6 reps @ 70-75% 1RM"},
+];
+
+// ---------- 5/3/1 (Partie 1 de chaque séance de force) — 12 semaines = 3 cycles ----------
+const S531 = {
+  squat: [
+    {sets:"115 ×5 · 132,5 ×5 · 150 ×5+",warm:"70×5 · 90×5 · 107,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"177,5"},
+    {sets:"125 ×3 · 142,5 ×3 · 160 ×3+",warm:"70×5 · 90×5 · 107,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"177,5"},
+    {sets:"132,5 ×5 · 150 ×3 · 167,5 ×1+",warm:"70×5 · 90×5 · 107,5×3",cible:"~8",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"177,5"},
+    {sets:"70 ×5 · 90 ×5 · 107,5 ×5",warm:"70×5 · 90×5 · 107,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"177,5"},
+    {sets:"117,5 ×5 · 137,5 ×5 · 155 ×5+",warm:"72,5×5 · 90×5 · 110×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"182,5"},
+    {sets:"127,5 ×3 · 145 ×3 · 165 ×3+",warm:"72,5×5 · 90×5 · 110×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"182,5"},
+    {sets:"137,5 ×5 · 155 ×3 · 172,5 ×1+",warm:"72,5×5 · 90×5 · 110×3",cible:"~7",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"182,5"},
+    {sets:"72,5 ×5 · 90 ×5 · 110 ×5",warm:"72,5×5 · 90×5 · 110×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"182,5"},
+    {sets:"122,5 ×5 · 140 ×5 · 160 ×5+",warm:"75×5 · 95×5 · 112,5×3",cible:"~9",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"187,5"},
+    {sets:"130 ×3 · 150 ×3 · 170 ×3+",warm:"75×5 · 95×5 · 112,5×3",cible:"~7",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"187,5"},
+    {sets:"140 ×5 · 160 ×3 · 177,5 ×1+",warm:"75×5 · 95×5 · 112,5×3",cible:"~5",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"187,5"},
+    {sets:"75 ×5 · 95 ×5 · 112,5 ×5",warm:"75×5 · 95×5 · 112,5×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"187,5"}
+  ],
+  bench: [
+    {sets:"95 ×5 · 110 ×5 · 122,5 ×5+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"145"},
+    {sets:"102,5 ×3 · 115 ×3 · 130 ×3+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"145"},
+    {sets:"110 ×5 · 122,5 ×3 · 137,5 ×1+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"145"},
+    {sets:"57,5 ×5 · 72,5 ×5 · 87,5 ×5",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"145"},
+    {sets:"95 ×5 · 110 ×5 · 125 ×5+",warm:"60×5 · 75×5 · 87,5×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"147,5"},
+    {sets:"102,5 ×3 · 117,5 ×3 · 132,5 ×3+",warm:"60×5 · 75×5 · 87,5×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"147,5"},
+    {sets:"110 ×5 · 125 ×3 · 140 ×1+",warm:"60×5 · 75×5 · 87,5×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"147,5"},
+    {sets:"60 ×5 · 75 ×5 · 87,5 ×5",warm:"60×5 · 75×5 · 87,5×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"147,5"},
+    {sets:"97,5 ×5 · 112,5 ×5 · 127,5 ×5+",warm:"60×5 · 75×5 · 90×3",cible:"~10",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"150"},
+    {sets:"105 ×3 · 120 ×3 · 135 ×3+",warm:"60×5 · 75×5 · 90×3",cible:"~8",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"150"},
+    {sets:"112,5 ×5 · 127,5 ×3 · 142,5 ×1+",warm:"60×5 · 75×5 · 90×3",cible:"~6",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"150"},
+    {sets:"60 ×5 · 75 ×5 · 90 ×5",warm:"60×5 · 75×5 · 90×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"150"}
+  ],
+  deadlift: [
+    {sets:"137,5 ×5 · 160 ×5 · 180 ×5+",warm:"85×5 · 105×5 · 127,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"212,5"},
+    {sets:"150 ×3 · 170 ×3 · 190 ×3+",warm:"85×5 · 105×5 · 127,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"212,5"},
+    {sets:"160 ×5 · 180 ×3 · 202,5 ×1+",warm:"85×5 · 105×5 · 127,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"212,5"},
+    {sets:"85 ×5 · 105 ×5 · 127,5 ×5",warm:"85×5 · 105×5 · 127,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"212,5"},
+    {sets:"142,5 ×5 · 162,5 ×5 · 185 ×5+",warm:"87,5×5 · 110×5 · 130×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"217,5"},
+    {sets:"152,5 ×3 · 175 ×3 · 195 ×3+",warm:"87,5×5 · 110×5 · 130×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"217,5"},
+    {sets:"162,5 ×5 · 185 ×3 · 207,5 ×1+",warm:"87,5×5 · 110×5 · 130×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"217,5"},
+    {sets:"87,5 ×5 · 110 ×5 · 130 ×5",warm:"87,5×5 · 110×5 · 130×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"217,5"},
+    {sets:"145 ×5 · 167,5 ×5 · 190 ×5+",warm:"90×5 · 110×5 · 132,5×3",cible:"~9",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"222,5"},
+    {sets:"155 ×3 · 177,5 ×3 · 200 ×3+",warm:"90×5 · 110×5 · 132,5×3",cible:"~8",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"222,5"},
+    {sets:"167,5 ×5 · 190 ×3 · 212,5 ×1+",warm:"90×5 · 110×5 · 132,5×3",cible:"~5",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"222,5"},
+    {sets:"90 ×5 · 110 ×5 · 132,5 ×5",warm:"90×5 · 110×5 · 132,5×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"222,5"}
+  ],
+  jerk: [
+    {sets:"87,5 ×5 · 100 ×5 · 115 ×5",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"135"},
+    {sets:"95 ×3 · 107,5 ×3 · 122,5 ×3",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"135"},
+    {sets:"100 ×5 · 115 ×3 · 127,5 ×1",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"135"},
+    {sets:"55 ×5 · 67,5 ×5 · 80 ×5",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"135"},
+    {sets:"90 ×5 · 102,5 ×5 · 117,5 ×5",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"137,5"},
+    {sets:"95 ×3 · 110 ×3 · 125 ×3",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"137,5"},
+    {sets:"102,5 ×5 · 117,5 ×3 · 130 ×1",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"137,5"},
+    {sets:"55 ×5 · 70 ×5 · 82,5 ×5",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"137,5"},
+    {sets:"90 ×5 · 105 ×5 · 120 ×5",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"140"},
+    {sets:"97,5 ×3 · 112,5 ×3 · 125 ×3",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"140"},
+    {sets:"105 ×5 · 120 ×3 · 132,5 ×1",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"140"},
+    {sets:"55 ×5 · 70 ×5 · 85 ×5",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"140"}
+  ]
+};
+
+// Nom affiché + clé vidéo du mouvement principal 5/3/1
+const MAINNAME = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", jerk:"Split Jerk / Épaulé-jeté"};
+const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", jerk:"Split Jerk (épaulé-jeté)"};
+
+// Séances moteur (conditionnement)
+const COND = {
+  ski:    {title:"Ski / Rameur", tag:"Moteur", desc:"Ski-erg ou rameur — cardio porté (assis, sans impact) : idéal après le soulevé, ça ménage jambes et dos vs la course. Format selon ton plan (intervalles P2k+6-12, ou test 2 000 m)."},
+  metcon: {title:"Metcon ATHX", tag:"Moteur", desc:"Chipper (cap ~25 min) : 2×45 cal row · 30 G2OH DB 20 kg · 30 DB bench 2×20 kg · 30 sandbag squats/carry 50 kg · 30 burpees over bench. (ou le metcon M2 de ton programme du jour)"},
+  rugby:  {title:"Rugby-cardio", tag:"Cardio", desc:"Après le bench (haut du corps), le rugby/cardio bosse le bas du corps. 30/30, Bronco, ou l'entraînement de club (rugby mar/mer/ven)."},
+  course: {title:"Course longue", tag:"Endurance", desc:"Footing long FACILE, Zone 2 (~6:45-7:15/km, HR 135-148). Base aérobie — garde-la vraiment easy pour ne pas entamer le squat du lundi."},
+};
+
+// Planning de la semaine (ordre des jours). hyp = index de la séance hypertrophie (0 squat, 1 deadlift, 2 bench) ; null = pas d'accessoires.
+const SCHEDULE = [
+  {day:"Lundi",    kind:"lift", lift:"squat",    hyp:0,    title:"Squat"},
+  {day:"Mardi",    kind:"lift", lift:"bench",    hyp:2,    title:"Développé couché"},
+  {day:"Mardi",    kind:"cond", ck:"rugby"},
+  {day:"Mercredi", kind:"lift", lift:"jerk",     hyp:null, title:"Jerk + Metcon ATHX", metcon:true},
+  {day:"Vendredi", kind:"lift", lift:"deadlift", hyp:1,    title:"Soulevé de terre"},
+  {day:"Vendredi", kind:"cond", ck:"ski"},
+  {day:"Samedi",   kind:"cond", ck:"course"},
+];
+function cycleInfo(w){ return {cyc:Math.floor((w-1)/4), wk:(w-1)%4}; }
+
+const VIDEOS = {
+  "Back Squat":"https://youtu.be/q07Kvt54D4M","Single Leg Romanian Deadlift":"https://youtu.be/TUQVJR2q-hc",
+  "Suitcase Front Foot Elevated Split Squat":"https://youtu.be/CEz7kK-tX5w","2DB Bench Press":"https://youtu.be/trA_8Di43JA",
+  "Tractions pronation lestées":"https://youtu.be/-7DBf_IcXLo","Sorenson Hold":"https://youtu.be/gLOurD_cuRk",
+  "AB Wheel":"https://youtu.be/JCVjgFkXVZU","Deadlift":"https://youtu.be/F5TdTMctFRU","Weighted High Step Ups":"https://youtu.be/HCrJNO5yPz4",
+  "Strict Press":"https://youtu.be/eLbP-0hhxDs","Barbell Bent Over Row":"https://youtu.be/4INYT-ARPn8",
+  "Inclined DB Biceps Curl":"https://youtu.be/3devQJME7PM","Cable Triceps Extension":"https://youtu.be/bFsEuH8g5pY",
+  "Plate Rotation in a Split Squat":"https://youtu.be/zXKI0nvsJH8","Tuck Sit Knee Wiper":"https://youtu.be/LxmNNHo-PWE",
+  "Bench Press":"https://youtu.be/fsYTB35A7SM","Barbell Seal Row":"https://youtu.be/LcCX9gpkjv4",
+  "2DB Bulgarian Split Squat":"https://youtu.be/9QztbkS-am4","Copenhagen Plank":"https://youtu.be/-sFYO9yUWsY",
+  "Single Leg Banded Abduction":"https://youtu.be/TItA7Vh8RVo","Dips lestés":"https://youtu.be/C7Un30CxUfY",
+  "DB Lateral Raises":"https://youtu.be/AkYCCFtTS_I","Single Arm Farmer Carry":"https://youtu.be/WBkB6VS-ahk",
+  "Staggered KB Swing":"https://youtu.be/b6vL1tykAog","Back Rack Lunges":"https://youtu.be/OKOZWHfsyqk",
+  "DB Death March":"https://youtu.be/5AHbBqr3I94","Alternating Seated Pike Leg Lift":"https://youtu.be/EUx9jJaTjvE",
+  "Hanging L-Sit":"https://youtu.be/NmSQyt4pyM8","Weighted Crossover Step Over":"https://youtu.be/BdOXLbsxgN4",
+  "Arnold Press":"https://youtu.be/WN9XU25V130","Gorilla Row":"https://youtu.be/5MM_KBrIi60","DB Curl":"https://youtu.be/Z4StVcYTcFk",
+  "Overhead Dumbbell Triceps Extension":"https://youtu.be/mKahIBfyvEE","Split Stance PVC Anti Rotation":"https://youtu.be/3UiDaBORkRQ",
+  "Dragon Flag 4 sec Eccentric":"https://youtu.be/XfkJvuhqz-Y","Pendlay Row":"https://youtu.be/fIGYIOc3pOM",
+  "Single Leg Hip Thrust":"https://youtu.be/HZpkQ74DAFY","Goblet Cyclist Squat":"https://youtu.be/zr-yAmB2tJY",
+  "Monster Walk":"https://youtu.be/r7IuxHlTh3Y","Ring Dips lestés":"https://youtube.com/shorts/FdX_b3Pe2bU",
+  "DB Lateral + Frontal Raises":"https://youtu.be/eg_mqiERzF4","Single Arm KB Side Bend":"https://youtu.be/N4FMRGl1O44",
+  "Barbell Romanian Deadlift":"https://youtu.be/Pbb9tHEORoM","Ring Push Ups":"https://youtu.be/adK2WvGlx7w",
+  "DB Butterfly Chest Supported":"https://youtu.be/dO80zCsvZNk","MB Lateral Shot":"https://youtu.be/Dt9phLPGLqk",
+  "Heavy Farmer Carry":"https://youtu.be/XWle-Cb0ysc","Hip Thrust":"https://youtu.be/QDek9MudEBc",
+  "Cable Pull Behind The Neck":"https://youtu.be/qn-3lWmtz8o","Half Kneeling Landmine Press":"https://youtu.be/SFn7Aneuo50",
+  "Spider Curl":"https://youtu.be/jobHts7dqfI","Barbell Body Triceps Extension":"https://youtu.be/3Q6v-SwXxHU",
+  "Banded Pallof Walk Out":"https://youtu.be/OzmKd-D74d0","Cable Crunch":"https://youtu.be/QXZJBLDpX-E",
+  "Cable Horizontal Narrow Grip Pull":"https://youtu.be/7mh06UQVNRU","Eccentric Nordic Hamstring Curl":"https://youtu.be/nk7VdkQuhLo",
+  "Leg Extension":"https://www.youtube.com/shorts/iQ92TuvBqRo","Banded Clamshell":"https://youtu.be/3HEdtn-Fj98",
+  "Alternating DB See Saw Press":"https://youtu.be/3ipX32aXaFg","Low Cable Fly":"https://youtu.be/kMmdTn1_lWk",
+  "Lateral Star Plank":"https://youtu.be/xeDeY8PGB2E","Single Leg GHD Hip Extension":"https://youtu.be/v0Ycq9m1ILc",
+  "RNT Barbell Split Squat":"https://youtu.be/Z9MXfpkP6aI","Seated DB Complex Strict Press":"https://youtu.be/nPbjDsLqRwM",
+  "DB Three Point Row":"https://youtu.be/U3wcDSRMX5c","Lateral Plank Pulse":"https://youtu.be/JYAzdbBWxfI",
+  "Ring Body Saw":"https://youtu.be/z7XJ22GYzrY","Seated Wide Stance Good Morning":"https://youtu.be/s163h4Be1Jc",
+  "Upright Row":"https://youtu.be/xUayk3yYtiI","DB LU Raises":"https://youtu.be/LBlmcWzJqx0","Skull Crusher":"https://youtu.be/x-Ng39p2DrU",
+  "Barbell Curl 21's":"https://youtu.be/ne375uDM-Hg","Half Kneeling Chop And Lift":"https://youtu.be/qwl7rjNtXlg",
+  "L-Sit":"https://youtu.be/Lfuwf2yCQzw","Wide Grip Pull Ups or Cable Vertical Row":"https://youtu.be/r1KOddEVRmY",
+  "Sissy Squat":"https://youtu.be/sIimPA15aW0","Side Band Walk ou Machine Abductor":"https://youtube.com/shorts/B5r-BeqUzaw",
+  "Single Leg Wall Sit":"https://youtu.be/Znvr7AJjupo","Cable Pull Over":"https://youtu.be/wb6-ihu05kw",
+  "Inclined DB Bench Press":"https://youtu.be/MxG_BN2AWss","Cable Rowing Pass Through":"https://youtu.be/K01wxFoTQ_E",
+};
+
+// ---------- CONSTANTES MÉTABOLISME (modifiables) ----------
+const BMR_BASE = 370;     // constante Katch-McArdle (standard = 370)
+const BMR_COEF = 21.6;    // coefficient de masse maigre
+
+// ---------- STOCKAGE ----------
+const LS="athx_log_v1", PS="athx_profile_v1", NS="athx_nutri_v1";
+let LOG = JSON.parse(localStorage.getItem(LS) || "{}");
+let PROFILE = JSON.parse(localStorage.getItem(PS) || "{}");
+let NUTRI = JSON.parse(localStorage.getItem(NS) || "{}");
+let week = parseInt(localStorage.getItem("athx_week") || "1");
+let openSession = {};
+function saveLog(){ localStorage.setItem(LS, JSON.stringify(LOG)); }
+function saveProfile(){ localStorage.setItem(PS, JSON.stringify(PROFILE)); }
+function saveNutri(){ localStorage.setItem(NS, JSON.stringify(NUTRI)); }
+function blockOf(w){ return Math.floor((w-1)/3); }
+
+// ---------- ONGLETS ----------
+function switchTab(t){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+t).classList.add("active");
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active", b.dataset.tab===t));
+  window.scrollTo(0,0);
+  if(t==='profil') renderProfile();
+  if(t==='nutri') renderNutrition();
+}
+
+// ---------- PROGRAMME ----------
+function renderWeeks(){
+  const el=document.getElementById("weeks"); el.innerHTML="";
+  for(let w=1; w<=12; w++){
+    const d=document.createElement("div");
+    d.className="wk"+(w===week?" active":""); d.textContent=w;
+    if(Object.keys(LOG).some(k=>k.startsWith("w"+w+"-") && LOG[k].trim())){
+      const dot=document.createElement("span"); dot.className="dot"; d.appendChild(dot);
+    }
+    d.onclick=()=>{ week=w; localStorage.setItem("athx_week",w); renderProgramme(); };
+    el.appendChild(d);
+  }
+}
+function renderProgramme(){
+  renderWeeks();
+  const bi=blockOf(week), ci=cycleInfo(week);
+  const wkN=["Sem. 1","Sem. 2","Sem. 3","Deload"];
+  document.getElementById("blockline").innerHTML =
+    "Semaine "+week+" / 12 &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
+  const app=document.getElementById("progContent"); app.innerHTML="";
+
+  SCHEDULE.forEach((sc,si)=>{
+    const isOpen=openSession[week]===si;
+    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"");
+    const badge=sc.day.slice(0,3);
+    let html="";
+
+    if(sc.kind==="lift"){
+      const d=S531[sc.lift][week-1];
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · 5/3/1${sc.hyp!=null?" + accessoires":(sc.metcon?" (technique) + Metcon":" (technique)")}</div></div>
+        <div class="chev">›</div></div><div class="sbody">`;
+      // Partie 1 — 5/3/1
+      html+=`<div class="part"><div class="plabel">Partie 1 — ${sc.title} · 5/3/1</div>`;
+      html+=`<div class="pmeta">${d.label} · échauffement ${d.warm}${d.deload?` · <span class="pnote">décharge : reps prescrites, pas de max</span>`:``}</div>`;
+      const mn=MAINNAME[sc.lift], vn=MAINVID[sc.lift];
+      const yt=VIDEOS[vn]||("https://www.youtube.com/results?search_query="+encodeURIComponent(vn+" technique"));
+      const key=`w${week}-${sc.lift}-main`, val=(LOG[key]||"");
+      html+=`<div class="ex"><div class="exhead">
+        <div class="exname">${d.sets}<div class="extarget">${mn}${d.cible?` · dernier set : cible ${d.cible}`:``}</div></div>
+        <a class="vid" href="${yt}" target="_blank" rel="noopener">Vidéo ›</a></div>
+        <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
+          placeholder="Charges × reps réalisées (surtout le dernier set +)…">${val.replace(/</g,"&lt;")}</textarea></div>`;
+      // Accessoires hypertrophie (Parties 2+)
+      if(sc.hyp!=null){
+        BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>{
+          html+=`<div class="part"><div class="plabel">${p.label}</div>`;
+          html+=`<div class="pmeta">${p.meta}${p.note?` · <span class="pnote">${p.note}</span>`:""}</div>`;
+          p.ex.forEach((e,ei)=>{
+            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-a${pi}-e${ei}`, v2=(LOG[k2]||"");
+            const yt2=VIDEOS[name]||("https://www.youtube.com/results?search_query="+encodeURIComponent(name+" exercise technique"));
+            html+=`<div class="ex"><div class="exhead">
+              <div class="exname">${name}<div class="extarget">${target}</div></div>
+              <a class="vid" href="${yt2}" target="_blank" rel="noopener">Vidéo ›</a></div>
+              <textarea class="log ${v2.trim()?"filled":""}" data-key="${k2}"
+                placeholder="Ce que j'ai fait (charges, reps, sensations…)">${v2.replace(/</g,"&lt;")}</textarea></div>`;
+          });
+          html+=`</div>`;
+        });
+      } else if(sc.metcon){
+        const c=COND.metcon, mk=`w${week}-cond-metcon`, mv=(LOG[mk]||"");
+        html+=`<div class="part"><div class="plabel">Partie 2 — ${c.title} <span style="font-weight:600;color:var(--dim)">(après le jerk)</span></div>
+          <div class="pmeta">${c.desc}</div>
+          <textarea class="log ${mv.trim()?"filled":""}" data-key="${mk}"
+            placeholder="Ce que j'ai fait (temps, format, sensations…)">${mv.replace(/</g,"&lt;")}</textarea></div>`;
+      } else {
+        html+=`<div class="part"><div class="pmeta"><span class="pnote">Suite après le 5/3/1 : à définir (tu y réfléchis). Note tes essais dans le champ ci-dessus.</span></div></div>`;
+      }
+      html+=`</div>`;
+    } else {
+      const c=COND[sc.ck];
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+        <div class="stitle">${c.title}<div class="ssub">${sc.day} · ${c.tag}</div></div>
+        <div class="chev">›</div></div><div class="sbody">`;
+      const key=`w${week}-cond-${sc.ck}`, val=(LOG[key]||"");
+      html+=`<div class="part"><div class="pmeta">${c.desc}</div>
+        <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
+          placeholder="Ce que j'ai fait (temps, distance, format, sensations…)">${val.replace(/</g,"&lt;")}</textarea></div></div>`;
+    }
+    card.innerHTML=html; app.appendChild(card);
+  });
+
+  app.querySelectorAll(".shead").forEach(h=>h.onclick=()=>{
+    const si=+h.dataset.s; openSession[week]=(openSession[week]===si)?null:si; renderProgramme(); });
+  app.querySelectorAll(".log").forEach(t=>t.addEventListener("input",()=>{
+    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); }));
+}
+
+function exportLog(){
+  let out="ATHX — 5/3/1 + Hypertrophie — Mon journal\n\n";
+  for(let w=1; w<=12; w++){
+    const bi=blockOf(w); let wk="";
+    SCHEDULE.forEach(sc=>{
+      if(sc.kind==="lift"){
+        let ses="";
+        const mk=`w${w}-${sc.lift}-main`;
+        if(LOG[mk]&&LOG[mk].trim()) ses+=`  • ${sc.title} (5/3/1) : ${LOG[mk].trim()}\n`;
+        if(sc.hyp!=null){
+          BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>p.ex.forEach((e,ei)=>{
+            const v=LOG[`w${w}-${sc.lift}-a${pi}-e${ei}`];
+            if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; }));
+        }
+        if(sc.metcon){ const v=LOG[`w${w}-cond-metcon`]; if(v&&v.trim()) ses+=`  • Metcon ATHX : ${v.trim()}\n`; }
+        if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
+      } else {
+        const v=LOG[`w${w}-cond-${sc.ck}`];
+        if(v&&v.trim()) wk+=` ${sc.day} — ${COND[sc.ck].title}\n  • ${v.trim()}\n`;
+      }
+    });
+    if(wk) out+=`=== SEMAINE ${w} ===\n${wk}\n`;
+  }
+  if(out.trim().endsWith("journal")) out+="(aucune entrée pour l'instant)\n";
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([out],{type:"text/plain"})); a.download="journal-athx.txt"; a.click();
+}
+function toggleLegend(){ const b=document.getElementById("legendBox"); b.style.display=b.style.display==="none"?"block":"none"; }
+function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.display=b.style.display==="none"?"block":"none"; }
+
+// ---------- PROFIL ----------
+const PF=["p_weight","p_bf","p_act"];
+function numEl(id){ const el=document.getElementById(id); if(!el) return null; const v=parseFloat((el.value||"").toString().replace(",",".")); return isFinite(v)?v:null; }
+function computeMeta(){
+  const w=numEl("p_weight"), bf=numEl("p_bf"), act=numEl("p_act")||1.375;
+  if(w==null||bf==null) return {weight:w, ffm:null, bmr:null, tdee:null};
+  const ffm=w*(1-bf/100), bmr=BMR_BASE+BMR_COEF*ffm, tdee=bmr*act;
+  return {weight:w, ffm, bmr, tdee};
+}
+function loadProfile(){
+  PF.forEach(id=>{ const el=document.getElementById(id); if(PROFILE[id]!=null && PROFILE[id]!=="") el.value=PROFILE[id]; });
+  if(!PROFILE.p_act){ PROFILE.p_act="1.375"; } document.getElementById("p_act").value=PROFILE.p_act;
+}
+function renderProfile(){
+  const m=computeMeta(), meta=document.getElementById("metaBox");
+  if(m.tdee==null){
+    meta.innerHTML=`<div class="results empty"><div style="font-size:15px">Renseigne ton poids et ton taux de masse grasse pour voir ton métabolisme.</div></div>`;
+  } else {
+    meta.innerHTML=`<div class="results">
+      <div class="bigval"><span class="n">${Math.round(m.tdee)}</span><span class="u">kcal/j</span>
+        <span class="lbl">Maintenance (dépense totale)</span></div>
+      <div class="rgrid">
+        <div class="rcell"><div class="rv">${m.ffm.toFixed(1)} kg</div><div class="rk">Masse maigre (FFM)</div></div>
+        <div class="rcell"><div class="rv">${Math.round(m.bmr)} kcal</div><div class="rk">Métabolisme de base (BMR)</div></div>
+      </div></div>`;
+  }
+}
+function bindProfile(){
+  PF.forEach(id=>{
+    const el=document.getElementById(id);
+    const h=()=>{ PROFILE[id]=el.value; saveProfile(); renderProfile(); };
+    el.addEventListener("input",h); el.addEventListener("change",h);
+  });
+}
+
+// ---------- NUTRITION ----------
+function loadNutri(){
+  if(NUTRI.kcal!=null) document.getElementById("n_kcal").value=NUTRI.kcal;
+  if(NUTRI.prot!=null) document.getElementById("n_prot").value=NUTRI.prot;
+  if(NUTRI.lip!=null) document.getElementById("n_lip").value=NUTRI.lip;
+  if(!NUTRI.meals) NUTRI.meals=3;
+}
+function bindNutri(){
+  [["n_kcal","kcal"],["n_prot","prot"],["n_lip","lip"]].forEach(function(p){
+    document.getElementById(p[0]).addEventListener("input",function(){ NUTRI[p[1]]=this.value; saveNutri(); renderNutrition(); });
+  });
+}
+function renderMealSel(){
+  const el=document.getElementById("mealSel"); if(!el) return; let h="";
+  for(let i=1;i<=6;i++) h+=`<button class="${NUTRI.meals===i?'on':''}" data-m="${i}">${i}</button>`;
+  el.innerHTML=h;
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{ NUTRI.meals=+b.dataset.m; saveNutri(); renderNutrition(); });
+}
+function renderNutrition(){
+  const m=computeMeta();
+  const kcalEl=document.getElementById("n_kcal");
+  if(kcalEl) kcalEl.placeholder = m.tdee? Math.round(m.tdee).toString() : "maintenance";
+  renderMealSel();
+  const res=document.getElementById("nutriResults");
+  if(m.weight==null || m.tdee==null){
+    res.innerHTML=`<div class="results empty"><div style="font-size:15px">Renseigne d'abord ton <b>Profil</b> (poids, masse grasse, activité) — tes macros se calculent à partir de ta maintenance.</div></div>`;
+    return;
+  }
+  const ffm=m.ffm;
+  const setKcal=numEl("n_kcal");
+  const target=setKcal!=null?setKcal:m.tdee;
+  const prR=numEl("n_prot")!=null?numEl("n_prot"):2;
+  const liR=numEl("n_lip")!=null?numEl("n_lip"):0.7;
+  const protG=prR*ffm, protK=protG*4;
+  const lipG=liR*ffm, lipK=lipG*9;
+  let carbK=target-protK-lipK; const neg=carbK<0; if(neg) carbK=0;
+  const carbG=carbK/4;
+  const meals=NUTRI.meals||3;
+  const total=protK+lipK+carbK, kcalMeal=total/meals;
+  res.innerHTML=`
+   <div class="results">
+    <div class="bigval"><span class="n">${Math.round(total)}</span><span class="u">kcal/j</span>
+      <span class="lbl">${setKcal!=null?'Objectif saisi':'Ta maintenance'}</span></div>
+    <div class="rgrid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="rcell"><div class="rv">${Math.round(protG)} g</div><div class="rk">Protéines<br>${Math.round(protK)} kcal</div></div>
+      <div class="rcell"><div class="rv">${Math.round(lipG)} g</div><div class="rk">Lipides<br>${Math.round(lipK)} kcal</div></div>
+      <div class="rcell"><div class="rv">${Math.round(carbG)} g</div><div class="rk">Glucides<br>${Math.round(carbK)} kcal</div></div>
+    </div>
+   </div>
+   ${neg?`<div class="legend" style="margin-top:0">⚠︎ Protéines + lipides dépassent l'objectif calorique : glucides mis à 0. Baisse un ratio ou monte les calories.</div>`:''}
+   <div class="card" style="padding:16px; margin-top:4px">
+     <div class="mealhead">Par repas · ${meals} repas</div>
+     <div class="mealkcal">≈ ${Math.round(kcalMeal)} kcal par repas</div>
+     <div class="rgrid" style="grid-template-columns:1fr 1fr 1fr; margin-top:12px">
+       <div class="rcell"><div class="rv">${Math.round(protG/meals)} g</div><div class="rk">Protéines</div></div>
+       <div class="rcell"><div class="rv">${Math.round(lipG/meals)} g</div><div class="rk">Lipides</div></div>
+       <div class="rcell"><div class="rv">${Math.round(carbG/meals)} g</div><div class="rk">Glucides</div></div>
+     </div>
+   </div>`;
+}
+
+// ---------- INIT ----------
+renderProgramme();
+loadProfile(); bindProfile(); renderProfile();
+loadNutri(); bindNutri(); renderNutrition();
+</script>
+</body>
+</html>
