@@ -603,10 +603,23 @@ function renderProgramme(){
         });
       } else if(sc.metcon){
         const c=COND.metcon, mk=`w${week}-cond-metcon`, mv=(LOG[mk]||"");
-        html+=`<div class="part"><div class="plabel">Partie 2 — ${c.title} <span style="font-weight:600;color:var(--dim)">(après le jerk)</span></div>
-          <div class="pmeta">${c.desc}</div>
+        const benches=[1,4,8,12], isBench=benches.includes(week), prev=benches.filter(w=>w<week).pop();
+        let mlabel, mdesc, mph;
+        if(isBench){
+          mlabel=`Partie 2 — ${c.title} · 🏁 BENCHMARK`;
+          mdesc = (week===1)
+            ? `<b>Semaine test — BASELINE.</b> Fais le chipper de référence <b>chronométré</b> et note ton temps : c'est ton point de départ à battre.<br>${c.desc}`
+            : `<b>Semaine test.</b> Refais le <b>même</b> chipper de référence, chronométré. Compare à la <b>sem. ${prev}</b> pour mesurer tes progrès.<br>${c.desc}`;
+          mph="Ton TEMPS sur le chipper (+ sensations)…";
+        } else {
+          mlabel=`Partie 2 — ${c.title} · varié`;
+          mdesc=`<b>Metcon libre / varié</b> (après le jerk). Choisis un <b>autre format</b> que le benchmark — varie la durée (court &lt;10′ / moyen / long) et la modalité (ergo, gym, haltéro), selon ton ressenti ou ton plan ATHX. Le chipper de référence se refait sem. <b>1 · 4 · 8 · 12</b> pour mesurer les progrès.`;
+          mph="Le metcon fait aujourd'hui (format, temps, sensations…)";
+        }
+        html+=`<div class="part"><div class="plabel">${mlabel}</div>
+          <div class="pmeta">${mdesc}</div>
           <textarea class="log ${mv.trim()?"filled":""}" data-key="${mk}"
-            placeholder="Ce que j'ai fait (temps, format, sensations…)">${mv.replace(/</g,"&lt;")}</textarea></div>`;
+            placeholder="${mph}">${mv.replace(/</g,"&lt;")}</textarea></div>`;
       } else {
         html+=`<div class="part"><div class="pmeta"><span class="pnote">Suite après le 5/3/1 : à définir (tu y réfléchis). Note tes essais dans le champ ci-dessus.</span></div></div>`;
       }
