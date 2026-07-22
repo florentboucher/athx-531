@@ -103,6 +103,10 @@
   .pdel{color:var(--dim2); font-size:20px; line-height:1; padding:0 4px; cursor:pointer}
   .paddbtn{width:calc(100% - 16px); margin:2px 8px 8px; padding:8px; border:1px dashed var(--line2); background:transparent; color:var(--dim); border-radius:10px; font-size:13px; font-family:inherit; cursor:pointer}
   .pdrag-clone{position:fixed; z-index:999; pointer-events:none; opacity:.95; box-shadow:0 10px 28px rgba(0,0,0,.35)}
+  .pcheck{flex:0 0 auto; width:22px; height:22px; border:1.5px solid var(--line2); border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:transparent; font-size:13px; font-weight:700}
+  .pcard.done .pcheck{background:var(--ink); border-color:var(--ink); color:var(--oninval)}
+  .pcard.done{opacity:.6}
+  .pcard.done .plabel2,.pcard.done .pinput{text-decoration:line-through}
 
   /* Onglet Profil */
   .card{background:var(--elev); border:1px solid var(--line); border-radius:18px; padding:6px 16px; margin-bottom:16px}
@@ -731,7 +735,11 @@ function renderPlanWeeks(){
 }
 function makeCard(it){
   const card=document.createElement('div');
-  card.className='pcard '+(it.t==='s'?'session':'custom'); card.dataset.key=it.id;
+  card.className='pcard '+(it.t==='s'?'session':'custom')+(it.done?' done':''); card.dataset.key=it.id;
+  const chk=document.createElement('span'); chk.className='pcheck'; chk.textContent='✓';
+  chk.addEventListener('pointerdown',(e)=>e.stopPropagation());
+  chk.addEventListener('click',(e)=>{ e.stopPropagation(); it.done=!it.done; card.classList.toggle('done', it.done); saveBoards(); });
+  card.appendChild(chk);
   const grip=document.createElement('span'); grip.className='pgrip'; grip.textContent='⠿';
   grip.addEventListener('pointerdown', onGripDown);
   card.appendChild(grip);
