@@ -690,6 +690,37 @@ function renderProgramme(){
         html+=`<div class="part"><div class="pmeta"><span class="pnote">Suite après le 5/3/1 : à définir (tu y réfléchis). Note tes essais dans le champ ci-dessus.</span></div></div>`;
       }
       html+=`</div>`;
+    } else if(sc.ck==='ski'){
+      const benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+        <div class="stitle">Ski / Rameur${isB?" · 🏁 Test ski":""}<div class="ssub">${sc.day} · Technique + cardio spécifique ATHX</div></div>
+        <div class="chev">›</div></div><div class="sbody">`;
+      html+=`<div class="part"><div class="plabel">Échauffement · ~8 min</div>
+        <div class="pmeta">3 min facile en alternant rameur / SkiErg, puis 2×30'' un peu plus vif sur chaque — reste relâché et technique.</div></div>`;
+      html+=`<div class="part"><div class="plabel">Technique — SkiErg</div>
+        <div class="pmeta"><b>Position haute</b> : debout, bras tendus en haut (mains ~largeur d'épaules), léger hinge de hanche, gainage serré.<br>
+        <b>Le tirage</b> : initie avec les <b>lats + abdos</b> (comme un crunch/hinge), pas juste les bras. Tire les poignées vers le bas le long du corps, coudes près des flancs, et <b>fléchis un peu jambes/hanches</b> pour mettre le poids du corps dedans. Termine mains derrière les hanches, corps gréé.<br>
+        <b>La reprise</b> : remonte les bras + ré-étends les hanches à vitesse contrôlée (ratio ~1:2). <b>Damper 5-6</b>, cadence ~32-38 c/min.<br>
+        <b>À éviter</b> : tirer qu'avec les bras · dos rond · oublier le hinge de hanche.</div>
+        <a class="vid" href="https://www.youtube.com/results?search_query=Concept2+SkiErg+technique" target="_blank" rel="noopener">Vidéo ›</a></div>`;
+      html+=`<div class="part"><div class="plabel">Technique — Rameur</div>
+        <div class="pmeta"><b>Le drive</b> : ordre <b>JAMBES → HANCHES (dos) → BRAS</b>. Pousse fort les jambes d'abord, PUIS ouvre le buste (~11h), PUIS tire les bras vers le bas des côtes.<br>
+        <b>La reprise</b> : l'inverse — <b>BRAS → HANCHES → JAMBES</b>. Tends les bras, bascule le buste vers l'avant depuis la hanche, PUIS plie les genoux. Retour lent (ratio ~1:2).<br>
+        <b>Force</b> : ~60% jambes · 30% dos · 10% bras. <b>Damper 6</b> (drag ~120-130), cadence 24-28 c/min sur les efforts.<br>
+        <b>À éviter</b> : tirer les bras trop tôt · plier les genoux avant d'avoir tendu les bras · s'arracher le dos.</div>
+        <a class="vid" href="https://www.youtube.com/results?search_query=Concept2+rowing+technique+drive+sequence" target="_blank" rel="noopener">Vidéo ›</a></div>`;
+      const rk=`w${week}-ski-rameur`, rv=(LOG[rk]||"");
+      html+=`<div class="part"><div class="plabel">Cardio 1 — Rameur · spécifique « 45 cal » (chipper ATHX)</div>
+        <div class="pmeta"><b>5 × 45 cal</b> à allure cible compétition (~<b>1:50-1:55/500 m</b>, damper 6), récup <b>2:30-3'</b>. But : rendre le 45 cal <b>rapide ET répétable</b> (comme les 2×45 cal du chipper). Note le temps de chaque. <b>Progression</b> : baisse ton temps moyen ou réduis la récup semaine après semaine.</div>
+        <textarea class="log ${rv.trim()?"filled":""}" data-key="${rk}" placeholder="Tes 5 temps sur 45 cal (ex. 1:16 / 1:17 …)">${rv.replace(/</g,"&lt;")}</textarea></div>`;
+      const sk=`w${week}-ski-endurance`, sv=(LOG[sk]||"");
+      const skiDesc = isB
+        ? `<b>🏁 TEST — SkiErg 15 min max distance</b> (spécifique score endurance ATHX). Pars à une allure tenable, régularité, finis fort. <b>Note tes mètres</b>${prev?` et compare à la sem. ${prev}`:` — c'est ta baseline`}.`
+        : `<b>3 × 4 min</b> à allure « seuil » soutenable sur 15 min (~<b>P2k +6-10</b>, soit ~2:12-2:18/500), récup 2 min. But : construire l'allure que tu tiendras sur le score max-distance. Régulier et relâché.`;
+      html+=`<div class="part"><div class="plabel">Cardio 2 — SkiErg · endurance max-distance${isB?" · 🏁 TEST":""}</div>
+        <div class="pmeta">${skiDesc}<br><span class="pnote">Test 15 min toutes les 4 sem (1 · 4 · 8 · 12) pour suivre tes progrès.</span></div>
+        <textarea class="log ${sv.trim()?"filled":""}" data-key="${sk}" placeholder="${isB?'Distance sur 15 min (m) + ressenti':'Tes 3×4 min (allure /500m, ressenti)'}">${sv.replace(/</g,"&lt;")}</textarea></div>`;
+      html+=`</div>`;
     } else {
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
       if(sc.ck==='metcon'){
@@ -738,6 +769,11 @@ function exportLog(){
         }
         if(sc.bench){ const v=LOG[`w${w}-bench-force`]; if(v&&v.trim()) ses+=`  • Bench (force) : ${v.trim()}\n`; }
         if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
+      } else if(sc.ck==='ski'){
+        const r=LOG[`w${w}-ski-rameur`], s=LOG[`w${w}-ski-endurance`]; let ss="";
+        if(r&&r.trim()) ss+=`  • Rameur 45 cal : ${r.trim()}\n`;
+        if(s&&s.trim()) ss+=`  • SkiErg : ${s.trim()}\n`;
+        if(ss) wk+=` ${sc.day} — Ski / Rameur\n${ss}`;
       } else {
         const v=LOG[`w${w}-cond-${sc.ck}`];
         if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? rugbyContent(sc.ck,w).title : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
