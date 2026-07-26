@@ -14,7 +14,7 @@
     --txt:#1d1d1f; --dim:#6e6e73; --dim2:#86868b;
     --ink:#1d1d1f; --oninval:#ffffff;
     --nav:rgba(255,255,255,.82);
-    --warm:#8e8e93; --tech:#0a84ff; --cardio:#ff9500; --force:#ff3b30;
+    --warm:#8e8e93; --tech:#0a84ff; --cardio:#ff9500; --force:#ff3b30; --hyp:#bf5af2;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -181,7 +181,8 @@
       <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total. Échauffement 40/50/60% du TM avant.<br>
       <b>Jerk</b> : pas d'AMRAP — reps prescrites +1-2 max, techniques et explosives. <b>Bench</b> (mer, après le jerk) : force sous-maximale 3×5-6, 2-3 reps en réserve, jamais l'échec.<br>
       <b>PARTIES 2+ = accessoires hypertrophie</b> (volume/prévention). <b>TEMPO</b> (ex. 30X1) : excentrique / pause basse / concentrique (X=explosif) / pause haute (s). <b>RPE</b> : intensité /10. <b>REST</b> : récup. <b>/side</b> : par côté. « enchaîner » = superset/triset (récup en fin de tour).<br>
-      <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.
+      <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
+      <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement</span>.
     </div>
   </div>
   <div id="goalsBox" style="display:none">
@@ -663,7 +664,7 @@ function renderProgramme(){
       // Accessoires hypertrophie (Parties 2+)
       if(sc.hyp!=null){
         BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>{
-          html+=`<div class="part"><div class="plabel">${p.label}</div>`;
+          html+=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${p.label}</div>`;
           html+=`<div class="pmeta">${p.meta}${p.note?` · <span class="pnote">${p.note}</span>`:""}</div>`;
           p.ex.forEach((e,ei)=>{
             const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-a${pi}-e${ei}`, v2=(LOG[k2]||"");
