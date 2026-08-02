@@ -179,7 +179,7 @@
   <div id="legendBox" style="display:none">
     <div class="legend">
       <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total. Échauffement 40/50/60% du TM avant.<br>
-      <b>Jerk</b> : pas d'AMRAP — reps prescrites +1-2 max, techniques et explosives. <b>Bench</b> (mer, après le jerk) : force sous-maximale 3×5-6, 2-3 reps en réserve, jamais l'échec.<br>
+      <b>Jerk</b> (mer, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
       <b>PARTIES 2+ = accessoires hypertrophie</b> (volume/prévention). <b>TEMPO</b> (ex. 30X1) : excentrique / pause basse / concentrique (X=explosif) / pause haute (s). <b>RPE</b> : intensité /10. <b>REST</b> : récup. <b>/side</b> : par côté. « enchaîner » = superset/triset (récup en fin de tour).<br>
       <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
       <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement</span>.
@@ -194,8 +194,9 @@
         <tr><th>Lift</th><th>Départ</th><th>Visé (fin)</th><th>Gain</th></tr>
         <tr><td>Squat</td><td>210</td><td>220-225</td><td>+10-15</td></tr>
         <tr><td>Soulevé</td><td>260</td><td>270-275</td><td>+10-15</td></tr>
-        <tr><td>Bench (force)</td><td>170</td><td>177-182</td><td>+7-12</td></tr>
-        <tr><td>Jerk</td><td>160</td><td>165-170</td><td>+5-10</td></tr>
+        <tr><td>Bench</td><td>170</td><td>177-182</td><td>+7-12</td></tr>
+        <tr><td>Push press</td><td>140</td><td>147-152</td><td>+7-12</td></tr>
+        <tr><td>Jerk (technique)</td><td>140</td><td>155-165</td><td>+15-25</td></tr>
       </table>
       <p class="gnote"><b>≈ +35 à +50 kg cumulés</b> sur les 4 mouvements. Ces cibles supposent que tes maxes de départ sont réels — tes AMRAP de la semaine 1 te le confirmeront (bien au-dessus des reps cibles = tu es plus fort ; en-dessous = le TM se recale).</p>
       <p class="gnote">Le <b>jerk</b> : l'essentiel du gain viendra de la <b>technique</b> (dip-drive) qui débloque ta force déjà là. Côté <b>physique</b>, les accessoires hypertrophie ajoutent du muscle (dos, jambes, épaules) sans casser ton moteur (metcon, ski, course).</p>
@@ -478,31 +479,30 @@ const S531 = {
     {sets:"172,5 ×5 · 195 ×3 · 217,5 ×1+",warm:"92,5×5 · 115×5 · 137,5×3",cible:"~6",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"230"},
     {sets:"92,5 ×5 · 115 ×5 · 137,5 ×5",warm:"92,5×5 · 115×5 · 137,5×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"230"}
   ],
-  jerk: [
-    {sets:"87,5 ×5 · 100 ×5 · 115 ×5",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"135"},
-    {sets:"95 ×3 · 107,5 ×3 · 122,5 ×3",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"135"},
-    {sets:"100 ×5 · 115 ×3 · 127,5 ×1",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"135"},
-    {sets:"55 ×5 · 67,5 ×5 · 80 ×5",warm:"55×5 · 67,5×5 · 80×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"135"},
-    {sets:"90 ×5 · 102,5 ×5 · 117,5 ×5",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"137,5"},
-    {sets:"95 ×3 · 110 ×3 · 125 ×3",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"137,5"},
-    {sets:"102,5 ×5 · 117,5 ×3 · 130 ×1",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"137,5"},
-    {sets:"55 ×5 · 70 ×5 · 82,5 ×5",warm:"55×5 · 70×5 · 82,5×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"137,5"},
-    {sets:"90 ×5 · 105 ×5 · 120 ×5",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"140"},
-    {sets:"97,5 ×3 · 112,5 ×3 · 125 ×3",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"140"},
-    {sets:"105 ×5 · 120 ×3 · 132,5 ×1",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"140"},
-    {sets:"55 ×5 · 70 ×5 · 85 ×5",warm:"55×5 · 70×5 · 85×3",cible:"+1-2 (technique, pas d'AMRAP)",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"140"}
+  pushpress: [
+    {sets:"77,5 ×5 · 90 ×5 · 102,5 ×5+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~11",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"120"},
+    {sets:"85 ×3 · 95 ×3 · 107,5 ×3+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"120"},
+    {sets:"90 ×5 · 102,5 ×3 · 115 ×1+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"120"},
+    {sets:"47,5 ×5 · 60 ×5 · 72,5 ×5",warm:"47,5×5 · 60×5 · 72,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"120"},
+    {sets:"80 ×5 · 92,5 ×5 · 105 ×5+",warm:"50×5 · 60×5 · 72,5×3",cible:"~10",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"122,5"},
+    {sets:"85 ×3 · 97,5 ×3 · 110 ×3+",warm:"50×5 · 60×5 · 72,5×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"122,5"},
+    {sets:"92,5 ×5 · 105 ×3 · 117,5 ×1+",warm:"50×5 · 60×5 · 72,5×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"122,5"},
+    {sets:"50 ×5 · 60 ×5 · 72,5 ×5",warm:"50×5 · 60×5 · 72,5×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"122,5"},
+    {sets:"80 ×5 · 95 ×5 · 105 ×5+",warm:"50×5 · 62,5×5 · 75×3",cible:"~10",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"125"},
+    {sets:"87,5 ×3 · 100 ×3 · 112,5 ×3+",warm:"50×5 · 62,5×5 · 75×3",cible:"~7",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"125"},
+    {sets:"95 ×5 · 105 ×3 · 120 ×1+",warm:"50×5 · 62,5×5 · 75×3",cible:"~5",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"125"},
+    {sets:"50 ×5 · 62,5 ×5 · 75 ×5",warm:"50×5 · 62,5×5 · 75×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"125"}
   ]
 };
 
 // Nom affiché + clé vidéo du mouvement principal 5/3/1
-const MAINNAME = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", jerk:"Split Jerk / Épaulé-jeté"};
-const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", jerk:"Split Jerk (épaulé-jeté)"};
+const MAINNAME = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
+const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
 
 // Séances moteur / cardio
 const COND = {
-  ski:     {title:"Ski / Rameur — technique", tag:"Cardio porté", desc:"Cardio porté (assis, sans impact) pour travailler la technique ski-erg / rameur. Intervalles ou volume Z2 selon ta forme — ça ménage les jambes avant la semaine."},
-  metcon:  {title:"Metcon ATHX", tag:"Moteur", desc:"Chipper (cap ~25 min) : 2×45 cal row · 30 G2OH DB 20 kg · 30 DB bench 2×20 kg · 30 sandbag squats/carry 50 kg · 30 burpees over bench."},
-  weekend: {title:"Week-end — au choix", tag:"Repos / EF", desc:"Samedi et dimanche : <b>repos complet</b>, OU une <b>sortie course longue en endurance fondamentale</b> (très facile, Z2), selon ta forme. Tu choisis."},
+  metcon:  {title:"WOD ATHX", tag:"Moteur", desc:"Chipper (cap ~25 min) : 2×45 cal row · 30 G2OH DB 20 kg · 30 DB bench 2×20 kg · 30 sandbag squats/carry 50 kg · 30 burpees over bench."},
+  ef:      {title:"Sortie EF", tag:"Endurance", desc:"Course en <b>endurance fondamentale</b> : très facile, Z2 (~6:45-7:15/km, HR 135-148). 45-75 min selon la forme. Ça doit rester conversationnel — c'est de la récup active, pas une séance."},
 };
 
 // Cardio rugby terrain (RC Courbevoie) — contenu par semaine. Sem. 1 = feuille 27/07 (profils lourds), sem. 2 = feuille 03/08 (profils coureurs).
@@ -520,20 +520,23 @@ const RUGBY = {
 };
 function rugbyContent(ck, w){ return (RUGBY[w] && RUGBY[w][ck]) ? RUGBY[w][ck] : {title:"Cardio rugby (terrain)", desc:"Séance cardio terrain du club de la semaine — reprends la feuille RC Courbevoie et note ta séance ci-dessous."}; }
 
-// Bench en FORCE sur la séance Jerk (sous-maximal, ménage le système nerveux)
-const BENCH_FORCE = {sets:"3 × 5-6 @ ~130 kg (≈77%)", note:"RPE 7-8 · garde 2-3 reps en réserve, jamais l'échec · +2,5 kg quand tu tiens 3×6 propre"};
+// Jerk = travail TECHNIQUE chargé (après le push press). % sur le jerk RÉEL (140), pas sur l'objectif.
+const JERK_TECH = {
+  sets:"5 × 2 @ 100 → 112,5 kg (70-80 % de 140)",
+  bul:"<b>Objectif = la technique, pas la charge</b> : ton jerk est limité par le <b>dip trop court</b> — c'est là qu'est le gain<br><b>Dip</b> : vertical, buste droit, <b>descends plus bas</b> (~10-15 cm), genoux qui partent vers l'avant/extérieur<br><b>Drive</b> : explose des jambes, bras passifs jusqu'au bout de l'extension<br><b>Split</b> : pied avant à plat, arrière sur la pointe, réception <b>bras verrouillés d'un coup</b> (pas de press-out)<br>Repos 1'30-2' · arrête la série dès que la technique se dégrade<br><b>Drills</b> (2-3 séries avant) : dip-drive avec <b>pause 2''</b> en bas · jerk balance · split jerk depuis les racks"
+};
 
 // Planning de la semaine (ordre des jours). hyp = index séance hypertrophie (0 squat, 1 deadlift, 2 bench) ; null = pas d'accessoires. bench = ajoute le bloc bench force.
 const SCHEDULE = [
-  {day:"Lundi",    kind:"cond", ck:"ski"},
-  {day:"Mardi",    kind:"lift", lift:"squat",    hyp:0,    title:"Squat"},
+  {day:"Lundi",    kind:"lift", lift:"squat",     hyp:0,    title:"Squat"},
+  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:2,    title:"Développé couché"},
   {day:"Mardi",    kind:"cond", ck:"rugby1"},
-  {day:"Mercredi", kind:"lift", lift:"jerk",     hyp:2,    title:"Jerk + Bench", bench:true},
+  {day:"Mercredi", kind:"lift", lift:"pushpress", hyp:null, title:"Push press + Jerk + Ski", jerk:true, ski:true},
   {day:"Mercredi", kind:"cond", ck:"rugby2"},
-  {day:"Jeudi",    kind:"cond", ck:"metcon"},
-  {day:"Vendredi", kind:"lift", lift:"deadlift", hyp:1,    title:"Soulevé de terre"},
+  {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:1,    title:"Soulevé de terre"},
   {day:"Vendredi", kind:"cond", ck:"rugby3"},
-  {day:"Samedi",   kind:"cond", ck:"weekend"},
+  {day:"Samedi",   kind:"cond", ck:"metcon"},
+  {day:"Dimanche", kind:"cond", ck:"ef"},
 ];
 function cycleInfo(w){ return {cyc:Math.floor((w-1)/4), wk:(w-1)%4}; }
 function bullets(s){ const a=String(s).split('<br>').map(x=>x.trim()).filter(Boolean); return '<ul class="bul">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; }
@@ -637,10 +640,10 @@ function renderProgramme(){
     if(sc.kind==="lift"){
       const d=S531[sc.lift][week-1];
       html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
-        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · ${sc.bench?"Jerk 5/3/1 + Bench force":"5/3/1"}${sc.hyp!=null?" + accessoires":""}</div></div>
+        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · ${sc.ski?"Push press 5/3/1 · Jerk technique · SkiErg":"5/3/1"}${sc.hyp!=null?" + accessoires":""}</div></div>
         <div class="chev">›</div></div><div class="sbody">`;
       // Partie 1 — 5/3/1
-      html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 1 — ${sc.bench?"Jerk":sc.title} · 5/3/1</div>`;
+      html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 1 — ${sc.ski?"Push press":sc.title} · 5/3/1</div>`;
       html+=`<div class="pmeta">${d.label} · échauffement ${d.warm}${d.deload?` · <span class="pnote">décharge : reps prescrites, pas de max</span>`:``}</div>`;
       const mn=MAINNAME[sc.lift], vn=MAINVID[sc.lift];
       const yt=VIDEOS[vn]||("https://www.youtube.com/results?search_query="+encodeURIComponent(vn+" technique"));
@@ -650,16 +653,31 @@ function renderProgramme(){
         <a class="vid" href="${yt}" target="_blank" rel="noopener">Vidéo ›</a></div>
         <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
           placeholder="Charges × reps réalisées (surtout le dernier set +)…">${val.replace(/</g,"&lt;")}</textarea></div>`;
-      // Partie 2 — Bench force (jour Jerk)
-      if(sc.bench){
-        const bk=`w${week}-bench-force`, bv=(LOG[bk]||""), byt=VIDEOS["Bench Press"];
-        html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 2 — Développé couché · Force</div>
-          <div class="pmeta">${BENCH_FORCE.sets} · <span class="pnote">${BENCH_FORCE.note}</span></div>
-          <div class="ex"><div class="exhead">
-            <div class="exname">${BENCH_FORCE.sets}<div class="extarget">Bench Press · force sous-maximale (protège le nerveux après le jerk)</div></div>
-            <a class="vid" href="${byt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-            <textarea class="log ${bv.trim()?"filled":""}" data-key="${bk}"
-              placeholder="Charge × reps (ex. 130×6 · 130×6 · 130×5)…">${bv.replace(/</g,"&lt;")}</textarea></div>`;
+      // Partie 2 — Jerk technique (jour Push press)
+      if(sc.jerk){
+        const jk=`w${week}-jerk-tech`, jv=(LOG[jk]||"");
+        const jyt="https://www.youtube.com/results?search_query="+encodeURIComponent("split jerk dip drive technique");
+        html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Partie 2 — Jerk · technique chargée<a class="pchip" href="${jyt}" target="_blank" rel="noopener">Vidéo ›</a></div>
+          <div class="pset">${JERK_TECH.sets}</div>
+          ${bullets(JERK_TECH.bul)}
+          <textarea class="log ${jv.trim()?"filled":""}" data-key="${jk}"
+            placeholder="Charges × reps + ressenti technique (dip, réception…)">${jv.replace(/</g,"&lt;")}</textarea></div>`;
+      }
+      // Partie 3 — SkiErg (cardio ATHX)
+      if(sc.ski){
+        const benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
+        const syt="https://www.youtube.com/results?search_query="+encodeURIComponent("Concept2 SkiErg technique");
+        html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Technique — SkiErg<a class="pchip" href="${syt}" target="_blank" rel="noopener">Vidéo ›</a></div>
+          ${bullets("<b>Position haute</b> : bras tendus en haut, léger hinge de hanche, gainage serré<br><b>Tirage</b> : initie avec les <b>lats + abdos</b> (crunch/hinge), pas juste les bras — coudes près des flancs<br><b>Fléchis un peu jambes/hanches</b> → mets le poids du corps dedans<br><b>Retour</b> contrôlé (ratio ~1:2) · <b>damper 5-6</b> · ~32-38 c/min")}</div>`;
+        const sk=`w${week}-ski-endurance`, sv=(LOG[sk]||"");
+        const skiBul = isB
+          ? bullets(`<b>🏁 TEST — SkiErg 15 min, max distance</b> (= ton format de score endurance ATHX)<br>Pars à une allure tenable, régularité, finis fort<br><b>Note tes mètres</b>${prev?` et compare à la sem. ${prev}`:` — c'est ta baseline`}`)
+          : bullets(`<b>4 × 4 min</b> à allure « seuil » tenable sur 15 min (~<b>P2k +6-10</b>, soit ~2:12-2:18/500)<br>Récup 2 min · régulier et relâché<br>But : construire l'allure que tu tiendras sur le score max-distance`);
+        html+=`<div class="part" style="--ac:var(--cardio)"><div class="plabel">Partie 3 — Cardio ATHX · SkiErg${isB?" · 🏁 TEST":""}<span class="pchip">~25 min</span></div>
+          ${skiBul}
+          <div class="pmeta" style="margin-top:0"><span class="pnote">Test 15 min toutes les 4 sem (1 · 4 · 8 · 12) pour suivre tes progrès.</span></div>
+          <textarea class="log ${sv.trim()?"filled":""}" data-key="${sk}"
+            placeholder="${isB?'Distance sur 15 min (m) + ressenti':'Tes 4×4 min (allure /500m, ressenti)'}">${sv.replace(/</g,"&lt;")}</textarea></div>`;
       }
       // Accessoires hypertrophie (Parties 2+)
       if(sc.hyp!=null){
@@ -677,53 +695,7 @@ function renderProgramme(){
           });
           html+=`</div>`;
         });
-      } else if(sc.metcon){
-        const c=COND.metcon, mk=`w${week}-cond-metcon`, mv=(LOG[mk]||"");
-        const benches=[1,4,8,12], isBench=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-        let mlabel, mdesc, mph;
-        if(isBench){
-          mlabel=`Partie 2 — ${c.title} · 🏁 BENCHMARK`;
-          mdesc = (week===1)
-            ? `<b>Semaine test — BASELINE.</b> Fais le chipper de référence <b>chronométré</b> et note ton temps : c'est ton point de départ à battre.<br>${c.desc}`
-            : `<b>Semaine test.</b> Refais le <b>même</b> chipper de référence, chronométré. Compare à la <b>sem. ${prev}</b> pour mesurer tes progrès.<br>${c.desc}`;
-          mph="Ton TEMPS sur le chipper (+ sensations)…";
-        } else {
-          mlabel=`Partie 2 — ${c.title} · varié`;
-          mdesc=`<b>Metcon libre / varié</b> (après le jerk). Choisis un <b>autre format</b> que le benchmark — varie la durée (court &lt;10′ / moyen / long) et la modalité (ergo, gym, haltéro), selon ton ressenti ou ton plan ATHX. Le chipper de référence se refait sem. <b>1 · 4 · 8 · 12</b> pour mesurer les progrès.`;
-          mph="Le metcon fait aujourd'hui (format, temps, sensations…)";
-        }
-        html+=`<div class="part"><div class="plabel">${mlabel}</div>
-          <div class="pmeta">${mdesc}</div>
-          <textarea class="log ${mv.trim()?"filled":""}" data-key="${mk}"
-            placeholder="${mph}">${mv.replace(/</g,"&lt;")}</textarea></div>`;
-      } else {
-        html+=`<div class="part"><div class="pmeta"><span class="pnote">Suite après le 5/3/1 : à définir (tu y réfléchis). Note tes essais dans le champ ci-dessus.</span></div></div>`;
       }
-      html+=`</div>`;
-    } else if(sc.ck==='ski'){
-      const benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
-        <div class="stitle">Ski / Rameur${isB?" · 🏁 Test ski":""}<div class="ssub">${sc.day} · Technique + cardio spécifique ATHX</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
-      html+=`<div class="part"><div class="plabel">Échauffement<span class="pchip">~8 min</span></div>
-        ${bullets("3 min facile en alternant rameur / SkiErg<br>puis 2×30'' un peu plus vif sur chaque — reste relâché")}</div>`;
-      html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Technique — SkiErg<a class="pchip" href="https://www.youtube.com/results?search_query=Concept2+SkiErg+technique" target="_blank" rel="noopener">Vidéo ›</a></div>
-        ${bullets("<b>Position haute</b> : bras tendus en haut (mains ~largeur d'épaules), léger hinge de hanche, gainage serré<br><b>Tirage</b> : initie avec les <b>lats + abdos</b> (crunch/hinge), pas juste les bras — coudes près des flancs<br><b>Fléchis un peu jambes/hanches</b> → mets le poids du corps dedans ; termine mains derrière les hanches<br><b>Retour</b> contrôlé (ratio ~1:2) · <b>damper 5-6</b> · ~32-38 c/min<br><b>À éviter</b> : tout tirer aux bras · dos rond · oublier le hinge")}</div>`;
-      html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Technique — Rameur<a class="pchip" href="https://www.youtube.com/results?search_query=Concept2+rowing+technique+drive+sequence" target="_blank" rel="noopener">Vidéo ›</a></div>
-        ${bullets("<b>Le drive</b> : ordre <b>JAMBES → HANCHES (dos) → BRAS</b> — jambes fort d'abord, puis ouvre le buste (~11h), puis tire les bras<br><b>Le retour</b> : l'inverse — <b>BRAS → HANCHES → JAMBES</b> ; retour lent (ratio ~1:2)<br><b>Force</b> : ~60% jambes · 30% dos · 10% bras<br><b>Damper 6</b> (drag ~120-130) · cadence 24-28 c/min sur les efforts<br><b>À éviter</b> : bras trop tôt · plier les genoux avant d'avoir tendu les bras · s'arracher le dos")}</div>`;
-      const rk=`w${week}-ski-rameur`, rv=(LOG[rk]||"");
-      html+=`<div class="part" style="--ac:var(--cardio)"><div class="plabel">Cardio 1 — Rameur « 45 cal »<span class="pchip">~22 min</span></div>
-        <div class="pset">5 × 45 cal</div>
-        ${bullets("Allure cible ~<b>1:50-1:55/500 m</b> (damper 6)<br>Récup <b>2:30-3'</b> entre les efforts<br>But : 45 cal rapide <b>ET répétable</b> (comme les 2×45 cal du chipper) — note tes 5 temps<br><b>Progression</b> : baisse ton temps moyen ou réduis la récup")}
-        <textarea class="log ${rv.trim()?"filled":""}" data-key="${rk}" placeholder="Tes 5 temps sur 45 cal (ex. 1:16 / 1:17 …)">${rv.replace(/</g,"&lt;")}</textarea></div>`;
-      const sk=`w${week}-ski-endurance`, sv=(LOG[sk]||"");
-      const skiBul = isB
-        ? bullets(`<b>🏁 TEST — SkiErg 15 min, max distance</b> (= ton format de score endurance ATHX)<br>Pars à une allure tenable, régularité, finis fort<br><b>Note tes mètres</b>${prev?` et compare à la sem. ${prev}`:` — c'est ta baseline`}`)
-        : bullets(`<b>3 × 4 min</b> à allure « seuil » soutenable sur 15 min (~<b>P2k +6-10</b>, soit ~2:12-2:18/500)<br>Récup 2 min · régulier et relâché<br>But : construire l'allure que tu tiendras sur le score max-distance`);
-      html+=`<div class="part" style="--ac:var(--cardio)"><div class="plabel">Cardio 2 — SkiErg endurance${isB?" · 🏁 TEST":""}</div>
-        ${skiBul}
-        <div class="pmeta" style="margin-top:0"><span class="pnote">Test 15 min toutes les 4 sem (1 · 4 · 8 · 12) pour suivre tes progrès.</span></div>
-        <textarea class="log ${sv.trim()?"filled":""}" data-key="${sk}" placeholder="${isB?'Distance sur 15 min (m) + ressenti':'Tes 3×4 min (allure /500m, ressenti)'}">${sv.replace(/</g,"&lt;")}</textarea></div>`;
       html+=`</div>`;
     } else {
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
@@ -773,13 +745,9 @@ function exportLog(){
             const v=LOG[`w${w}-${sc.lift}-a${pi}-e${ei}`];
             if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; }));
         }
-        if(sc.bench){ const v=LOG[`w${w}-bench-force`]; if(v&&v.trim()) ses+=`  • Bench (force) : ${v.trim()}\n`; }
+        if(sc.jerk){ const v=LOG[`w${w}-jerk-tech`]; if(v&&v.trim()) ses+=`  • Jerk (technique) : ${v.trim()}\n`; }
+        if(sc.ski){ const v=LOG[`w${w}-ski-endurance`]; if(v&&v.trim()) ses+=`  • SkiErg : ${v.trim()}\n`; }
         if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
-      } else if(sc.ck==='ski'){
-        const r=LOG[`w${w}-ski-rameur`], s=LOG[`w${w}-ski-endurance`]; let ss="";
-        if(r&&r.trim()) ss+=`  • Rameur 45 cal : ${r.trim()}\n`;
-        if(s&&s.trim()) ss+=`  • SkiErg : ${s.trim()}\n`;
-        if(ss) wk+=` ${sc.day} — Ski / Rameur\n${ss}`;
       } else {
         const v=LOG[`w${w}-cond-${sc.ck}`];
         if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? rugbyContent(sc.ck,w).title : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
@@ -797,19 +765,19 @@ function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.dis
 // ---------- PLANNING (kanban glissable) ----------
 const DAYS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
 const PLAN_ITEMS={
-  ski:{label:"Ski / Rameur (technique)",tag:"Cardio porté"},
   squat:{label:"Squat",tag:"Force 5/3/1"},
-  rugby1:{label:"Cardio rugby 1",tag:"Rugby · soir"},
-  jerkbench:{label:"Jerk + Bench",tag:"Force"},
-  rugby2:{label:"Cardio rugby 2",tag:"Rugby · soir"},
-  metcon:{label:"Metcon",tag:"Moteur"},
+  bench:{label:"Développé couché",tag:"Force 5/3/1"},
+  rugby1:{label:"Rugby",tag:"Cardio · soir"},
+  pushpress:{label:"Push press + Jerk + Ski",tag:"Force · technique · cardio"},
+  rugby2:{label:"Rugby",tag:"Cardio · soir"},
   deadlift:{label:"Soulevé de terre",tag:"Force 5/3/1"},
-  rugby3:{label:"Cardio rugby 3",tag:"Rugby · soir"},
-  weekend:{label:"Repos / sortie EF",tag:"Week-end"},
+  rugby3:{label:"Rugby",tag:"Cardio · soir"},
+  metcon:{label:"WOD ATHX",tag:"Moteur"},
+  ef:{label:"Sortie EF",tag:"Endurance"},
 };
-const PLAN_TO_SCHED={ski:0,squat:1,rugby1:2,jerkbench:3,rugby2:4,metcon:5,deadlift:6,rugby3:7,weekend:8};
-const DEFAULT_PLAN_IDS={Lundi:["ski"],Mardi:["squat","rugby1"],Mercredi:["jerkbench","rugby2"],Jeudi:["metcon"],Vendredi:["deadlift","rugby3"],Samedi:["weekend"],Dimanche:[]};
-const BS="athx_boards_v2";
+const PLAN_TO_SCHED={squat:0,bench:1,rugby1:2,pushpress:3,rugby2:4,deadlift:5,rugby3:6,metcon:7,ef:8};
+const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby1"],Mercredi:["pushpress","rugby2"],Jeudi:["deadlift"],Vendredi:["rugby3"],Samedi:["metcon"],Dimanche:["ef"]};
+const BS="athx_boards_v3";
 let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
 function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
 function freshBoard(){ const b={}; DAYS.forEach(d=>b[d]=(DEFAULT_PLAN_IDS[d]||[]).map(id=>({t:'s',id}))); return b; }
