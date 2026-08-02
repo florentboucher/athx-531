@@ -531,9 +531,9 @@ const SCHEDULE = [
   {day:"Lundi",    kind:"lift", lift:"squat",     hyp:0,    title:"Squat"},
   {day:"Mardi",    kind:"lift", lift:"bench",     hyp:2,    title:"Développé couché"},
   {day:"Mardi",    kind:"cond", ck:"rugby1"},
-  {day:"Mercredi", kind:"lift", lift:"pushpress", hyp:null, title:"Push press + Jerk + Ski", jerk:true, ski:true},
+  {day:"Mercredi", kind:"lift", lift:"deadlift",  hyp:1,    title:"Soulevé de terre"},
   {day:"Mercredi", kind:"cond", ck:"rugby2"},
-  {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:1,    title:"Soulevé de terre"},
+  {day:"Jeudi",    kind:"lift", lift:"pushpress", hyp:null, title:"Push press + Jerk + Ski", jerk:true, ski:true},
   {day:"Vendredi", kind:"cond", ck:"rugby3"},
   {day:"Samedi",   kind:"cond", ck:"metcon"},
   {day:"Dimanche", kind:"cond", ck:"ef"},
@@ -775,9 +775,9 @@ const PLAN_ITEMS={
   metcon:{label:"WOD ATHX",tag:"Moteur"},
   ef:{label:"Sortie EF",tag:"Endurance"},
 };
-const PLAN_TO_SCHED={squat:0,bench:1,rugby1:2,pushpress:3,rugby2:4,deadlift:5,rugby3:6,metcon:7,ef:8};
-const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby1"],Mercredi:["pushpress","rugby2"],Jeudi:["deadlift"],Vendredi:["rugby3"],Samedi:["metcon"],Dimanche:["ef"]};
-const BS="athx_boards_v3";
+const PLAN_TO_SCHED={squat:0,bench:1,rugby1:2,deadlift:3,rugby2:4,pushpress:5,rugby3:6,metcon:7,ef:8};
+const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby1"],Mercredi:["deadlift","rugby2"],Jeudi:["pushpress"],Vendredi:["rugby3"],Samedi:["metcon"],Dimanche:["ef"]};
+const BS="athx_boards_v4";
 let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
 function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
 function freshBoard(){ const b={}; DAYS.forEach(d=>b[d]=(DEFAULT_PLAN_IDS[d]||[]).map(id=>({t:'s',id}))); return b; }
