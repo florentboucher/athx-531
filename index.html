@@ -68,11 +68,6 @@
   .bul li:before{content:''; position:absolute; left:2px; top:8px; width:5px; height:5px; border-radius:50%; background:var(--ac)}
   .bul li b{color:var(--txt)}
   .pset{font-size:16px; font-weight:800; color:var(--txt); margin:4px 0 6px; letter-spacing:-.01em}
-  .bonus{margin:14px 0 2px; border-left:3px solid var(--line2); padding-left:13px}
-  .bonus>summary{list-style:none; cursor:pointer; font-size:12px; font-weight:700; color:var(--dim); text-transform:uppercase; letter-spacing:.04em; padding:2px 0}
-  .bonus>summary::-webkit-details-marker{display:none}
-  .bonus>summary:before{content:'+ '; color:var(--dim2)}
-  .bonus[open]>summary:before{content:'– '}
   .ex{background:var(--field); border-radius:12px; padding:11px 12px; margin-bottom:7px}
   .exhead{display:flex; align-items:flex-start; gap:10px}
   .exname{flex:1; font-size:15px; font-weight:700; line-height:1.3}
@@ -186,7 +181,7 @@
       <b>Format compact ~1h</b> (rugby + travail obligent) : Échauffement 10 min → 5/3/1 → 2 supersets hypertrophie (3×12, bas puis haut du corps) → gainage. 1 seul mouvement par jour : bench mardi, squat mercredi, soulevé jeudi, push press + jerk vendredi.<br>
       <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total.<br>
       <b>Jerk</b> (vendredi, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
-      <b>Supersets hypertrophie</b> : 3×12 enchaînés, récup 60-75'' en fin de tour. Thème par jour : bench = ischios/fessiers + poussée/tirage vertical · squat = hip thrust/quadriceps + dips/rowing · soulevé et push press = renfo complémentaire (adducteurs/abducteurs/mollets, épaules/shrug/nuque/bras). Le vendredi (déjà push press + jerk), les 2 supersets passent en <b>bonus (si temps)</b>, repliés par défaut — le premier truc à couper si l'heure est dépassée.<br>
+      <b>Accessoires</b> : programme <b>fixe</b> (mêmes exercices chaque semaine, tu montes les charges pendant au moins 8 semaines). Bench = postérieur chaîne + poussée/tirage vertical · Squat = trapèzes/épaules + circuit adducteurs/abducteurs/mollets · Soulevé = hip thrust/front squat (charge légère, focus technique) + dips/rowing · Push press = leg extension/leg curl. « circuit » = enchaîne les 3 mouvements sans t'arrêter.<br>
       <b>Matin télétravail</b> (mardi/mercredi) : alterne technique SkiErg/rameur (spécifique ATHX, pas du cardio d'endurance) et séance kiné/prévention.<br>
       <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
       <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement/récup</span>.
@@ -318,48 +313,37 @@
 
 <script>
 // ---------- DONNÉES PROGRAMME ----------
-// Format compact : 5/3/1 (Partie 1) + 1 superset bas du corps + 1 superset haut du corps (3×12) + gainage.
-// Rotation tous les 3 semaines (4 blocs sur les 12 semaines). Push press = bloc bonus (si temps) seulement,
-// vu que Push press + Jerk occupe déjà l'essentiel de l'heure ce jour-là.
-// Thème par jour (stable sur les 12 semaines, la variante tourne tous les 3 semaines) :
-//  bench (mardi)    = postérieur chaîne (RDL/jambe tendue + fentes) · poussée/tirage vertical (dev. militaire/tractions)
-//  squat (mercredi) = hip thrust + quadriceps · dips/rowing (poussée/tirage horizontal)
-//  soulevé + push press (jeudi/vendredi) = renfo complémentaire : adducteurs/abducteurs/mollets/ischios · épaules/shrug/nuque/bras
-// Push press (vendredi) : le bloc accessoires passe en bonus (si temps), vu que push press + jerk occupe déjà l'essentiel de l'heure.
-const BLOCKS = [
-  { // Bloc 1 · sem. 1-3
-    bench:     { lower:[["Barbell Romanian Deadlift","3×12"],["Back Rack Lunges","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Hip Thrust","3×12"],["Leg Extension","3×12"]], upper:[["Dips","3×8-10"],["Barbell Bent Over Row","3×12"]] },
-    deadlift:  { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Side Band Walk ou Machine Abductor","3×12/side"]], upper:[["DB Curl","3×12"],["Cable Triceps Extension","3×15"]] },
-    pushpress: { lower:[["Copenhagen Plank",'3×20-30"/side'],["Side Band Walk ou Machine Abductor","3×12/side"]], upper:[["DB Lateral Raises","3×15"],["Shrug barre","3×12"]] },
+// Format compact : 5/3/1 (Partie 1) + blocs accessoires (3×12 environ, en superset ou circuit) + finition.
+// Programme FIXE sur au moins 8 semaines : mêmes exercices chaque semaine, seule la charge progresse.
+const ACCESSORIES = {
+  bench: {
+    blocks: [
+      {label:"Bloc 1", note:"enchaîner les 2 mouvements", ex:[["Barbell Romanian Deadlift","3×12"],["Fentes (Back Rack Lunges)","3×12"]]},
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Développé militaire","8-10"],["Tractions pronation lestées","8-10"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["Gainage ventral (Plank)","3×30-40''"],["Ab Wheel (roulette de gainage)","3×10-12"]]},
   },
-  { // Bloc 2 · sem. 4-6
-    bench:     { lower:[["Barbell Romanian Deadlift","3×12"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Hip Thrust","3×12"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Dips","3×8-10"],["Cable Row","3×12"]] },
-    deadlift:  { lower:[["Copenhagen Plank",'3×20-30"/side'],["Leg Curl","3×12"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
-    pushpress: { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Extension mollet","3×15"]], upper:[["DB Front Raises","3×15"],["Shrug barre","3×12"]] },
+  squat: {
+    blocks: [
+      {label:"Bloc 1", note:"enchaîner les 2 mouvements", ex:[["Shrug barre (lourd)","3×12"],["Épaule — latérale, frontale, oiseau ou ATY (au choix)","3×12-15"]]},
+      {label:"Bloc 2", note:"circuit · enchaîne les 3 mouvements", ex:[["Exo Adducteurs","3×12/side"],["Exo Abducteurs","3×12/side"],["Extension mollet","3×15"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["DB Curl (biceps)","3×12"],["Cable Triceps Extension (triceps)","3×15"]]},
   },
-  { // Bloc 3 · sem. 7-9
-    bench:     { lower:[["Soulevé jambes tendues (Stiff Leg DL)","3×10"],["Back Rack Lunges","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Hip Thrust","3×12"],["Leg Extension","3×12"]], upper:[["Dips","3×8-10"],["Barbell Seal Row","3×12"]] },
-    deadlift:  { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Extension mollet","3×15"]], upper:[["Barbell Curl","3×10"],["Overhead Dumbbell Triceps Extension","3×12/side"]] },
-    pushpress: { lower:[["Single Leg Banded Abduction","3×12/side"],["Leg Curl","3×12"]], upper:[["Complexe Y-T-W-A (épaules)","3×10 (chaque lettre)"],["Shrug barre","3×12"]] },
+  deadlift: {
+    blocks: [
+      {label:"Bloc 1", note:"charge légère · focus technique + hypertrophie, pas de charge max", ex:[["Hip Thrust","3×10"],["Front Squat","3×8"]]},
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Dips","3×10"],["Rowing","3×10"]]},
+    ],
+    fin: {note:"circuit · enchaîne les 3 mouvements", ex:[["Gainage ventral (Plank)","3×30-40''"],["Relevé de jambes pendu","3×10-12"],["Renforcement cervical","circuit"]]},
   },
-  { // Bloc 4 · sem. 10-12
-    bench:     { lower:[["Soulevé jambes tendues (Stiff Leg DL)","3×10"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Hip Thrust","3×12"],["Walking Lunge","3×10/side"]], upper:[["Dips","3×8-10"],["Gorilla Row","3×12"]] },
-    deadlift:  { lower:[["Single Leg Banded Abduction","3×12/side"],["Leg Curl","3×12"]], upper:[["DB Lateral Raises","3×15"],["Shrug barre","3×12"]] },
-    pushpress: { lower:[["Copenhagen Plank",'3×20-30"/side'],["Extension mollet","3×15"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
+  pushpress: {
+    blocks: [
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Leg Extension","3×12"],["Leg Curl","3×12"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["DB Curl (biceps)","3×12"],["Cable Triceps Extension (triceps)","3×15"]]},
   },
-];
-
-// Gainage : 1 exercice, change avec le bloc (même rotation que BLOCKS)
-const CORE_BLOCKS = [
-  {name:"Gainage ventral (Plank)", target:"3 × 30-40''"},
-  {name:"Pallof Press (anti-rotation)", target:"3 × 10/côté"},
-  {name:"Relevé de jambes pendu", target:"3 × 10-12"},
-  {name:"Ab Wheel (roulette de gainage)", target:"3 × 10-12"},
-];
+};
 
 const WARMUP_BUL = "Cardio léger 3-4 min (vélo/rameur/corde) pour monter en température<br>Mobilité articulaire : chevilles, hanches, dos, épaules (cercles, balancements)<br>Activation courte : gainage + fessiers/scapula<br>2-3 répétitions du mouvement du jour à vide/léger pour rentrer dans le geste";
 
@@ -473,18 +457,18 @@ const JERK_TECH = {
   bul:"<b>Objectif = la technique, pas la charge</b> : ton jerk est limité par le <b>dip trop court</b> — c'est là qu'est le gain<br><b>Dip</b> : vertical, buste droit, <b>descends plus bas</b> (~10-15 cm), genoux qui partent vers l'avant/extérieur<br><b>Drive</b> : explose des jambes, bras passifs jusqu'au bout de l'extension<br><b>Split</b> : pied avant à plat, arrière sur la pointe, réception <b>bras verrouillés d'un coup</b> (pas de press-out)<br>Repos 1'30-2' · arrête la série dès que la technique se dégrade<br><b>Drills</b> (2-3 séries avant) : dip-drive avec <b>pause 2''</b> en bas · jerk balance · split jerk depuis les racks"
 };
 
-// Planning de la semaine. hyp = accessoires (bas + haut + gainage) ; hypBonus = accessoires en option/repliés (jour serré en temps).
+// Planning de la semaine. hyp = accessoires (blocs + finition, cf. ACCESSORIES).
 // Lundi repos (lendemain de match) · muscu mar/mer/jeu/ven midi (1h) · rugby club mar/mer soir + ven soir (léger) · TT mar/mer.
 const SCHEDULE = [
   {day:"Lundi",    kind:"cond", ck:"repos"},
   {day:"Mardi",    kind:"cond", ck:"amtt"},
-  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:true,                title:"Développé couché"},
+  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:true,             title:"Développé couché"},
   {day:"Mardi",    kind:"cond", ck:"rugby1"},
   {day:"Mercredi", kind:"cond", ck:"amtt"},
-  {day:"Mercredi", kind:"lift", lift:"squat",     hyp:true,                title:"Squat"},
+  {day:"Mercredi", kind:"lift", lift:"squat",     hyp:true,             title:"Squat"},
   {day:"Mercredi", kind:"cond", ck:"rugby2"},
-  {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:true,                title:"Soulevé de terre"},
-  {day:"Vendredi", kind:"lift", lift:"pushpress", hyp:true, hypBonus:true, jerk:true, title:"Push press + Jerk"},
+  {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:true,             title:"Soulevé de terre"},
+  {day:"Vendredi", kind:"lift", lift:"pushpress", hyp:true, jerk:true,  title:"Push press + Jerk"},
   {day:"Vendredi", kind:"cond", ck:"rugby3"},
   {day:"Samedi",   kind:"cond", ck:"presam"},
   {day:"Dimanche", kind:"cond", ck:"matchday"},
@@ -548,7 +532,6 @@ let openSession = {};
 function saveLog(){ localStorage.setItem(LS, JSON.stringify(LOG)); }
 function saveProfile(){ localStorage.setItem(PS, JSON.stringify(PROFILE)); }
 function saveNutri(){ localStorage.setItem(NS, JSON.stringify(NUTRI)); }
-function blockOf(w){ return Math.floor((w-1)/3); }
 
 // ---------- ONGLETS ----------
 function switchTab(t){
@@ -578,10 +561,10 @@ const PROG_START = new Date(2026,8,21); // lundi Semaine 1
 function weekMonday(w){ const d=new Date(PROG_START); d.setDate(d.getDate()+(w-1)*7); return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
 function renderProgramme(){
   renderWeeks();
-  const bi=blockOf(week), ci=cycleInfo(week);
+  const ci=cycleInfo(week);
   const wkN=["Sem. 1","Sem. 2","Sem. 3","Deload"];
   document.getElementById("blockline").innerHTML =
-    "Semaine "+week+" / 12 · lundi "+weekMonday(week)+" &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
+    "Semaine "+week+" / 12 · lundi "+weekMonday(week)+" &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : programme fixe (charges progressives)";
   const app=document.getElementById("progContent"); app.innerHTML="";
 
   SCHEDULE.forEach((sc,si)=>{
@@ -622,16 +605,16 @@ function renderProgramme(){
           <textarea class="log ${jv.trim()?"filled":""}" data-key="${jk}"
             placeholder="Charges × reps + ressenti technique (dip, réception…)">${jv.replace(/</g,"&lt;")}</textarea></div>`;
       }
-      // Accessoires : 1 superset bas du corps + 1 superset haut du corps (3×12) + gainage
+      // Accessoires : blocs fixes (2-3 exercices en superset/circuit) + finition
       if(sc.hyp){
-        const hb=BLOCKS[bi][sc.lift]||{};
-        const partNum = sc.jerk ? 3 : 2;
-        function supersetHtml(label, list, pikey){
-          if(!list) return "";
-          let h=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${label}<span class="pchip">3 × 12 · REST 60-75''</span></div>`;
-          h+=`<div class="pmeta"><span class="pnote">enchaîner les 2 mouvements</span></div>`;
-          list.forEach((e,ei)=>{
-            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-${pikey}-e${ei}`, v2=(LOG[k2]||"");
+        const acc=ACCESSORIES[sc.lift]||{};
+        let partNum = sc.jerk ? 3 : 2;
+        function groupHtml(label, group, gkey){
+          if(!group || !group.ex) return "";
+          let h=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${label}</div>`;
+          h+=`<div class="pmeta"><span class="pnote">${group.note}</span></div>`;
+          group.ex.forEach((e,ei)=>{
+            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-${gkey}-e${ei}`, v2=(LOG[k2]||"");
             const yt2=VIDEOS[name]||("https://www.youtube.com/results?search_query="+encodeURIComponent(name+" exercise technique"));
             h+=`<div class="ex"><div class="exhead">
               <div class="exname">${name}<div class="extarget">${target}</div></div>
@@ -642,26 +625,11 @@ function renderProgramme(){
           h+=`</div>`;
           return h;
         }
-        if(sc.hypBonus){
-          const lowerHtml = supersetHtml(`Bonus — Bas du corps · superset`, hb.lower, "low");
-          const upperHtml = supersetHtml(`Bonus — Haut du corps · superset`, hb.upper, "up");
-          if(lowerHtml||upperHtml) html+=`<details class="bonus"><summary>Bonus accessoires (si temps)</summary>${lowerHtml}${upperHtml}</details>`;
-        } else {
-          html += supersetHtml(`Partie ${partNum} — Bas du corps · superset`, hb.lower, "low");
-          html += supersetHtml(`Partie ${partNum+1} — Haut du corps · superset`, hb.upper, "up");
-        }
-        // Gainage
-        const cb=CORE_BLOCKS[bi];
-        if(cb){
-          const cok=`w${week}-${sc.lift}-core`, cov=(LOG[cok]||"");
-          const cyt=VIDEOS[cb.name]||("https://www.youtube.com/results?search_query="+encodeURIComponent(cb.name+" exercise technique"));
-          html+=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">Gainage</div>
-            <div class="ex"><div class="exhead">
-              <div class="exname">${cb.name}<div class="extarget">${cb.target}</div></div>
-              <a class="vid" href="${cyt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-              <textarea class="log ${cov.trim()?"filled":""}" data-key="${cok}"
-                placeholder="Ce que j'ai fait…">${cov.replace(/</g,"&lt;")}</textarea></div></div>`;
-        }
+        (acc.blocks||[]).forEach((b,bi2)=>{
+          html += groupHtml(`Partie ${partNum} — ${b.label}`, b, `b${bi2}`);
+          partNum++;
+        });
+        if(acc.fin) html += groupHtml(`Finition`, acc.fin, `fin`);
       }
     } else {
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
@@ -707,7 +675,7 @@ function renderProgramme(){
 function exportLog(){
   let out="ATHX — 5/3/1 + Hypertrophie — Mon journal\n\n";
   for(let w=1; w<=12; w++){
-    const bi=blockOf(w); let wk="";
+    let wk="";
     SCHEDULE.forEach(sc=>{
       if(sc.kind==="lift"){
         let ses="";
@@ -715,10 +683,11 @@ function exportLog(){
         if(LOG[mk]&&LOG[mk].trim()) ses+=`  • ${sc.title} (5/3/1) : ${LOG[mk].trim()}\n`;
         if(sc.jerk){ const v=LOG[`w${w}-jerk-tech`]; if(v&&v.trim()) ses+=`  • Jerk (technique) : ${v.trim()}\n`; }
         if(sc.hyp){
-          const hb=(BLOCKS[bi]&&BLOCKS[bi][sc.lift])||{};
-          (hb.lower||[]).forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-low-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
-          (hb.upper||[]).forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-up-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
-          const cv=LOG[`w${w}-${sc.lift}-core`]; if(cv&&cv.trim()) ses+=`  • Gainage : ${cv.trim()}\n`;
+          const acc=ACCESSORIES[sc.lift]||{};
+          (acc.blocks||[]).forEach((b,bi2)=>{
+            b.ex.forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-b${bi2}-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
+          });
+          if(acc.fin) acc.fin.ex.forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-fin-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
         }
         if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
       } else {
