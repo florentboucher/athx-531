@@ -430,7 +430,13 @@ const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", 
 // Séances moteur / cardio / récup
 const COND = {
   repos:    {title:"Repos complet", tag:"Récup", desc:"Lendemain de match : repos total, pas d'entraînement. Le corps encaisse le choc du match — marche légère ou étirements doux seulement si besoin, rien de plus."},
-  cardio_am:{title:"Cardio ATHX", tag:"Technique", desc:"<b>Technique SkiErg/rameur</b> — spécifique ATHX, pas de l'endurance : on bosse juste le mouvement et l'habitude, pas le cardio pur.<br><span class=\"pnote\">Peut s'échanger avec la Kiné selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"},
+  cardio_am:{title:"Cardio ATHX", tag:"Technique", desc:
+    "Technique SkiErg + rameur — spécifique ATHX, pas de l'endurance pure : on travaille le mouvement et la cadence, pas la distance.<br><b>Échauffement</b> 5 min, cadence très légère sur l'un des deux ergos.<br><br><b>SkiErg — technique (10-12 min)</b>"
+    + bullets("Position haute : bras tendus en haut, léger hinge de hanche, gainage serré<br>Tirage initié par les lats + abdos (crunch/hinge), pas juste les bras — coudes près des flancs<br>Fléchis légèrement jambes/hanches pour mettre le poids du corps dedans<br>Retour contrôlé, ratio ~1:2 · damper 5-6 · cadence ~32-38 c/min<br>Format : 4-5 × 2 min à cadence contrôlée (qualité, pas vitesse) · récup 1'")
+    + "<br><b>Rameur — technique (10-12 min)</b>"
+    + bullets("Séquence à la poussée : jambes → buste → bras · inverse au retour : bras → buste → jambes<br>Assise droite, pas de recul excessif du buste, talons qui décollent légèrement en fin de poussée<br>Damper 3-5 · ratio ~1:2, retour plus lent que la poussée<br>Format : 4-5 × 2 min même logique, focus qualité du mouvement")
+    + "<br><span class=\"pnote\">Test mensuel (sem. 1 · 4 · 8 · 12) : SkiErg 15 min max distance ou Rameur 45 cal chrono, en alternance — note ton résultat pour suivre ta progression.</span><br><span class=\"pnote\">Peut s'échanger avec la Kiné selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"
+  },
   kine_am:  {title:"Kiné / prévention", tag:"Prévention", desc:"Séance kiné/prévention — selon tes blessures du moment, contenu que tu gères toi-même.<br><span class=\"pnote\">Peut s'échanger avec le Cardio ATHX selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"},
   presam:   {title:"Repos pré-match", tag:"Récup", desc:"Veille de match : repos complet, aucune charge (surtout pas le bas du corps). Mobilité légère si besoin, rien de plus.<br><span class=\"pnote\">Semaine sans match ? Tu peux caler un WOD ATHX ici à la place — dis-le-moi et j'ajuste.</span>"},
   matchday: {title:"Match", tag:"Rugby", desc:"Jour de match.<br><span class=\"pnote\">Semaine sans match (trêve) ? Tu peux caler une course courte ~3 km ici pour garder du rythme — dis-le-moi et j'ajuste.</span>"},
@@ -706,8 +712,10 @@ function renderProgramme(){
         tag = we.type==='match' ? "Récup" : "Moteur";
         desc = we.type==='match'
           ? `Match le lendemain (${we.date} vs ${we.opp}${we.home?' · à domicile':' · à l\'extérieur'}) → repos complet, aucune charge (surtout pas le bas du corps).${!we.home?' <span class="pnote">Déplacement à prévoir, pense au trajet/repas.</span>':''}`
-          : `Pas de match ce week-end (trêve) → tu peux caler un <b>WOD ATHX</b> ici si tu veux garder du rythme. Sinon repos, comme tu sens.`;
-        ph = we.type==='match' ? "Ressenti pré-match, mobilité faite…" : "Le WOD fait (format, temps…)";
+          : `Pas de match ce week-end (trêve) → cale ce chipper si tu veux garder du rythme. Sinon repos, comme tu sens.<br><b>Chipper ATHX · cap ~25 min</b>`
+            + bullets("2 × 45 cal row<br>30 G2OH (ground to overhead) DB 20 kg<br>30 DB bench press 2×20 kg<br>30 sandbag squat + carry 50 kg<br>30 burpees over bench")
+            + `<br><span class="pnote">Toujours le même format à chaque trêve : note ton temps (ou le nombre de rounds si tu caps à 25 min) et compare à la dernière fois.</span>`;
+        ph = we.type==='match' ? "Ressenti pré-match, mobilité faite…" : "Ton temps ou tes rounds sur le chipper + ressenti…";
       } else if(sc.ck==='matchday' && we){
         title = we.type==='match' ? `Match vs ${we.opp}` : "Course 3 km (trêve)";
         tag = we.type==='match' ? (we.home?"Rugby · domicile":"Rugby · extérieur") : "Cardio ATHX";
