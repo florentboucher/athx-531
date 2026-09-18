@@ -38,6 +38,10 @@
   .lsub{font-size:14px; color:var(--dim); margin-bottom:16px}
 
   /* Onglet Programme */
+  .progwrap{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .progbar{flex:1; height:6px; border-radius:3px; background:var(--field); overflow:hidden}
+  .progfill{height:100%; border-radius:3px; background:#34c759; width:0%; transition:width .25s}
+  .progtxt{flex:0 0 auto; font-size:12.5px; font-weight:600; color:var(--dim)}
   .weeks{display:flex; gap:8px; overflow-x:auto; padding:6px 0 12px; scrollbar-width:none}
   .weeks::-webkit-scrollbar{display:none}
   .wk{flex:0 0 auto; width:44px; height:44px; border-radius:14px; border:1px solid var(--line2);
@@ -54,6 +58,9 @@
   .sbadge.dark-on-cat{color:#1d1d1f}
   .stitle{flex:1; font-size:16px; font-weight:600}
   .ssub{font-size:12.5px; color:var(--dim); font-weight:400; margin-top:1px}
+  .donebadge{display:none; flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:#34c759;
+    color:#fff; align-items:center; justify-content:center; font-size:12px; font-weight:800}
+  .session.done .donebadge{display:flex}
   .chev{color:var(--dim2); font-size:13px; transition:transform .2s}
   .session.open .chev{transform:rotate(90deg)}
   .sbody{display:none; padding:0 16px 6px}
@@ -171,6 +178,7 @@
 <section class="view active" id="view-prog">
   <div class="ltitle">Programme</div>
   <div class="lsub" id="blockline"></div>
+  <div class="progwrap"><div class="progbar"><div class="progfill" id="progfill"></div></div><div class="progtxt" id="progtxt"></div></div>
   <div class="weeks" id="weeks"></div>
   <div id="progContent"></div>
   <div class="tools">
@@ -573,6 +581,31 @@ function sessionCatColor(sc){
   if(sc.ck==="matchday"){ const we=WEEKEND[week-1]; return (we&&we.type==='bye') ? "var(--cardio)" : "var(--rugby)"; }
   return "var(--warm)";
 }
+// Complétion : une séance est "faite" quand tous ses champs texte sont remplis.
+function sessionLogKeys(sc, w){
+  if(sc.kind!=="lift") return [`w${w}-cond-${sc.ck}`];
+  const keys=[`w${w}-${sc.lift}-warmup`, `w${w}-${sc.lift}-main`];
+  if(sc.jerk) keys.push(`w${w}-jerk-tech`);
+  if(sc.hyp){
+    const acc=ACCESSORIES[sc.lift]||{};
+    (acc.blocks||[]).forEach((b,bi2)=>{ b.ex.forEach((e,ei)=>keys.push(`w${w}-${sc.lift}-b${bi2}-e${ei}`)); });
+    if(acc.fin) acc.fin.ex.forEach((e,ei)=>keys.push(`w${w}-${sc.lift}-fin-e${ei}`));
+  }
+  return keys;
+}
+function isSessionDone(sc, w){ return sessionLogKeys(sc,w).every(k=>LOG[k]&&LOG[k].trim()); }
+function updateWeekProgress(){
+  let done=0;
+  SCHEDULE.forEach(sc=>{ if(isSessionDone(sc, week)) done++; });
+  const pct=Math.round(done/SCHEDULE.length*100);
+  const fill=document.getElementById("progfill"), txt=document.getElementById("progtxt");
+  if(fill) fill.style.width=pct+"%";
+  if(txt) txt.textContent=pct+"% · "+done+"/"+SCHEDULE.length;
+  document.querySelectorAll(".session").forEach(card=>{
+    const sc=SCHEDULE[+card.dataset.si];
+    card.classList.toggle("done", sc?isSessionDone(sc, week):false);
+  });
+}
 function renderProgramme(){
   renderWeeks();
   const ci=cycleInfo(week);
@@ -583,7 +616,8 @@ function renderProgramme(){
 
   SCHEDULE.forEach((sc,si)=>{
     const isOpen=openSession[week]===si;
-    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"");
+    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"")+(isSessionDone(sc,week)?" done":"");
+    card.dataset.si=si;
     const catColor=sessionCatColor(sc);
     card.style.setProperty("--catac", catColor);
     const badgeCls=catColor==="var(--wod)"?" dark-on-cat":"";
@@ -594,7 +628,7 @@ function renderProgramme(){
       const d=S531[sc.lift][week-1];
       html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
         <div class="stitle">${sc.title}<div class="ssub">${sc.day} · 5/3/1${sc.jerk?" + Jerk technique":""}${sc.hyp?" + accessoires":""} · ~1h</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
+        <div class="donebadge">✓</div><div class="chev">›</div></div><div class="sbody">`;
       // Partie 0 — Échauffement
       const wmk=`w${week}-${sc.lift}-warmup`, wmv=(LOG[wmk]||"");
       html+=`<div class="part" style="--ac:var(--warm)"><div class="plabel">Échauffement<span class="pchip">~10 min</span></div>
@@ -672,7 +706,7 @@ function renderProgramme(){
       }
       html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
         <div class="stitle">${title}<div class="ssub">${sc.day} · ${tag}</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
+        <div class="donebadge">✓</div><div class="chev">›</div></div><div class="sbody">`;
       const key=`w${week}-cond-${sc.ck}`, val=(LOG[key]||"");
       const ac=catColor;
       const body=(sc.ck.indexOf('rugby')===0)?bullets(desc):`<div class="pmeta">${desc}</div>`;
@@ -686,7 +720,8 @@ function renderProgramme(){
   app.querySelectorAll(".shead").forEach(h=>h.onclick=()=>{
     const si=+h.dataset.s; openSession[week]=(openSession[week]===si)?null:si; renderProgramme(); });
   app.querySelectorAll(".log").forEach(t=>t.addEventListener("input",()=>{
-    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); }));
+    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); updateWeekProgress(); }));
+  updateWeekProgress();
 }
 
 function exportLog(){
