@@ -65,6 +65,11 @@
   .session.open .chev{transform:rotate(90deg)}
   .sbody{display:none; padding:0 16px 6px}
   .session.open .sbody{display:block}
+  .doneToggle{margin:14px 0 4px}
+  .doneToggle>summary{list-style:none; cursor:pointer; font-size:13px; font-weight:600; color:var(--dim); padding:10px 2px; display:flex; align-items:center; gap:6px}
+  .doneToggle>summary::-webkit-details-marker{display:none}
+  .doneToggle>summary:before{content:'▸'; color:var(--dim2); font-size:11px; transition:transform .15s}
+  .doneToggle[open]>summary:before{transform:rotate(90deg)}
   .part{--ac:var(--warm); margin:14px 0; border-left:3px solid var(--ac); padding:2px 0 2px 13px}
   .part:first-child{margin-top:4px}
   .plabel{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:800; color:var(--ac); letter-spacing:.04em; text-transform:uppercase}
@@ -571,6 +576,13 @@ function renderWeeks(){
 }
 const PROG_START = new Date(2026,8,21); // lundi Semaine 1
 function weekMonday(w){ const d=new Date(PROG_START); d.setDate(d.getDate()+(w-1)*7); return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
+const DAYNAMES=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+function todayInfo(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const diffDays=Math.round((now-PROG_START)/86400000);
+  if(diffDays<0 || diffDays>=12*7) return null;
+  return {week:Math.floor(diffDays/7)+1, day:DAYNAMES[((diffDays%7)+7)%7]};
+}
 // Couleur par catégorie : muscu (force) · rugby · cardio ATHX · kiné · WOD (repli les semaines de trêve).
 function sessionCatColor(sc){
   if(sc.kind==="lift") return "var(--force)";
@@ -613,6 +625,8 @@ function renderProgramme(){
   document.getElementById("blockline").innerHTML =
     "Semaine "+week+" / 12 · lundi "+weekMonday(week)+" &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : programme fixe (charges progressives)";
   const app=document.getElementById("progContent"); app.innerHTML="";
+  const ti=todayInfo(), showToday=ti && ti.week===week;
+  const todayCards=[], todoCards=[], doneCards=[];
 
   SCHEDULE.forEach((sc,si)=>{
     const isOpen=openSession[week]===si;
@@ -714,9 +728,27 @@ function renderProgramme(){
         <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
           placeholder="${ph}">${val.replace(/</g,"&lt;")}</textarea></div></div>`;
     }
-    card.innerHTML=html; app.appendChild(card);
+    card.innerHTML=html;
+    const isToday=showToday && sc.day===ti.day;
+    if(isToday) todayCards.push(card);
+    else if(isSessionDone(sc,week)) doneCards.push(card);
+    else todoCards.push(card);
   });
 
+  if(todayCards.length){
+    const h=document.createElement("div"); h.className="seclabel"; h.textContent="Aujourd'hui · "+ti.day;
+    app.appendChild(h); todayCards.forEach(c=>app.appendChild(c));
+  }
+  if(todoCards.length){
+    if(todayCards.length){ const h=document.createElement("div"); h.className="seclabel"; h.style.marginTop="10px"; h.textContent="À faire"; app.appendChild(h); }
+    todoCards.forEach(c=>app.appendChild(c));
+  }
+  if(doneCards.length){
+    const det=document.createElement("details"); det.className="doneToggle";
+    det.innerHTML=`<summary>✓ ${doneCards.length} terminée${doneCards.length>1?"s":""}</summary>`;
+    doneCards.forEach(c=>det.appendChild(c));
+    app.appendChild(det);
+  }
   app.querySelectorAll(".shead").forEach(h=>h.onclick=()=>{
     const si=+h.dataset.s; openSession[week]=(openSession[week]===si)?null:si; renderProgramme(); });
   app.querySelectorAll(".log").forEach(t=>t.addEventListener("input",()=>{
