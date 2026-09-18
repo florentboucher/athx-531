@@ -15,6 +15,7 @@
     --ink:#1d1d1f; --oninval:#ffffff;
     --nav:rgba(255,255,255,.82);
     --warm:#8e8e93; --tech:#0a84ff; --cardio:#ff9500; --force:#ff3b30; --hyp:#bf5af2;
+    --kine:#34c759; --rugby:#5e5ce6; --wod:#ffd60a;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -46,10 +47,11 @@
   .wk .dot{position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%; background:var(--dim2)}
   .wk.active .dot{background:var(--oninval)}
 
-  .session{margin-bottom:12px; border:1px solid var(--line); border-radius:18px; background:var(--elev); overflow:hidden}
+  .session{--catac:var(--line); margin-bottom:12px; border:1px solid var(--line); border-left:4px solid var(--catac); border-radius:18px; background:var(--elev); overflow:hidden}
   .shead{display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer; user-select:none}
   .sbadge{flex:0 0 auto; width:34px; height:34px; border-radius:10px; font-weight:700; font-size:14px;
-    display:flex; align-items:center; justify-content:center; background:var(--field); color:var(--txt)}
+    display:flex; align-items:center; justify-content:center; background:var(--catac); color:#fff}
+  .sbadge.dark-on-cat{color:#1d1d1f}
   .stitle{flex:1; font-size:16px; font-weight:600}
   .ssub{font-size:12.5px; color:var(--dim); font-weight:400; margin-top:1px}
   .chev{color:var(--dim2); font-size:13px; transition:transform .2s}
@@ -184,7 +186,8 @@
       <b>Accessoires</b> : programme <b>fixe</b> (mêmes exercices chaque semaine, tu montes les charges pendant au moins 8 semaines). Bench = postérieur chaîne + poussée/tirage vertical · Squat = trapèzes/épaules + circuit adducteurs/abducteurs/mollets · Soulevé = hip thrust/front squat (charge légère, focus technique) + dips/rowing · Push press = leg extension/leg curl. « circuit » = enchaîne les 3 mouvements sans t'arrêter.<br>
       <b>Matin télétravail</b> (mardi/mercredi) : alterne technique SkiErg/rameur (spécifique ATHX, pas du cardio d'endurance) et séance kiné/prévention.<br>
       <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
-      <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement/récup</span>.
+      <b>Couleurs des séances</b> (liseré + pastille du jour) : <span style="color:var(--force)">● muscu</span> · <span style="color:var(--rugby)">● rugby</span> · <span style="color:var(--cardio)">● cardio ATHX</span> · <span style="color:var(--kine)">● kiné</span> · <span style="color:var(--wod)">● WOD</span> · <span style="color:var(--warm)">● repos/récup</span>.<br>
+      <b>Couleurs des blocs</b> (dans une séance muscu) : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--warm)">● échauffement</span>.
     </div>
   </div>
   <div id="goalsBox" style="display:none">
@@ -414,7 +417,8 @@ const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", 
 // Séances moteur / cardio / récup
 const COND = {
   repos:    {title:"Repos complet", tag:"Récup", desc:"Lendemain de match : repos total, pas d'entraînement. Le corps encaisse le choc du match — marche légère ou étirements doux seulement si besoin, rien de plus."},
-  amtt:     {title:"Matin TT — Cardio ATHX ou Kiné/prévention", tag:"Cardio · Prévention", desc:"À alterner entre mardi et mercredi matin (une semaine sur l'autre, ou selon ton ressenti) :<br>• <b>Technique SkiErg/rameur</b> — spécifique ATHX, pas de l'endurance : on bosse juste le mouvement et l'habitude, pas le cardio pur.<br>• <b>Kiné/prévention</b> — selon tes blessures du moment, contenu que tu gères toi-même."},
+  cardio_am:{title:"Cardio ATHX", tag:"Technique", desc:"<b>Technique SkiErg/rameur</b> — spécifique ATHX, pas de l'endurance : on bosse juste le mouvement et l'habitude, pas le cardio pur.<br><span class=\"pnote\">Peut s'échanger avec la Kiné selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"},
+  kine_am:  {title:"Kiné / prévention", tag:"Prévention", desc:"Séance kiné/prévention — selon tes blessures du moment, contenu que tu gères toi-même.<br><span class=\"pnote\">Peut s'échanger avec le Cardio ATHX selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"},
   presam:   {title:"Repos pré-match", tag:"Récup", desc:"Veille de match : repos complet, aucune charge (surtout pas le bas du corps). Mobilité légère si besoin, rien de plus.<br><span class=\"pnote\">Semaine sans match ? Tu peux caler un WOD ATHX ici à la place — dis-le-moi et j'ajuste.</span>"},
   matchday: {title:"Match", tag:"Rugby", desc:"Jour de match.<br><span class=\"pnote\">Semaine sans match (trêve) ? Tu peux caler une course courte ~3 km ici pour garder du rythme — dis-le-moi et j'ajuste.</span>"},
 };
@@ -461,10 +465,10 @@ const JERK_TECH = {
 // Lundi repos (lendemain de match) · muscu mar/mer/jeu/ven midi (1h) · rugby club mar/mer soir + ven soir (léger) · TT mar/mer.
 const SCHEDULE = [
   {day:"Lundi",    kind:"cond", ck:"repos"},
-  {day:"Mardi",    kind:"cond", ck:"amtt"},
+  {day:"Mardi",    kind:"cond", ck:"cardio_am"},
   {day:"Mardi",    kind:"lift", lift:"bench",     hyp:true,             title:"Développé couché"},
   {day:"Mardi",    kind:"cond", ck:"rugby1"},
-  {day:"Mercredi", kind:"cond", ck:"amtt"},
+  {day:"Mercredi", kind:"cond", ck:"kine_am"},
   {day:"Mercredi", kind:"lift", lift:"squat",     hyp:true,             title:"Squat"},
   {day:"Mercredi", kind:"cond", ck:"rugby2"},
   {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:true,             title:"Soulevé de terre"},
@@ -559,6 +563,16 @@ function renderWeeks(){
 }
 const PROG_START = new Date(2026,8,21); // lundi Semaine 1
 function weekMonday(w){ const d=new Date(PROG_START); d.setDate(d.getDate()+(w-1)*7); return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
+// Couleur par catégorie : muscu (force) · rugby · cardio ATHX · kiné · WOD (repli les semaines de trêve).
+function sessionCatColor(sc){
+  if(sc.kind==="lift") return "var(--force)";
+  if(sc.ck && sc.ck.indexOf('rugby')===0) return "var(--rugby)";
+  if(sc.ck==="cardio_am") return "var(--cardio)";
+  if(sc.ck==="kine_am") return "var(--kine)";
+  if(sc.ck==="presam"){ const we=WEEKEND[week-1]; return (we&&we.type==='bye') ? "var(--wod)" : "var(--warm)"; }
+  if(sc.ck==="matchday"){ const we=WEEKEND[week-1]; return (we&&we.type==='bye') ? "var(--cardio)" : "var(--rugby)"; }
+  return "var(--warm)";
+}
 function renderProgramme(){
   renderWeeks();
   const ci=cycleInfo(week);
@@ -570,12 +584,15 @@ function renderProgramme(){
   SCHEDULE.forEach((sc,si)=>{
     const isOpen=openSession[week]===si;
     const card=document.createElement("div"); card.className="session"+(isOpen?" open":"");
+    const catColor=sessionCatColor(sc);
+    card.style.setProperty("--catac", catColor);
+    const badgeCls=catColor==="var(--wod)"?" dark-on-cat":"";
     const badge=sc.day.slice(0,3);
     let html="";
 
     if(sc.kind==="lift"){
       const d=S531[sc.lift][week-1];
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
         <div class="stitle">${sc.title}<div class="ssub">${sc.day} · 5/3/1${sc.jerk?" + Jerk technique":""}${sc.hyp?" + accessoires":""} · ~1h</div></div>
         <div class="chev">›</div></div><div class="sbody">`;
       // Partie 0 — Échauffement
@@ -635,7 +652,7 @@ function renderProgramme(){
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
       const we=WEEKEND[week-1];
       if(sc.ck.indexOf('rugby')===0){
-        const r=rugbyContent(sc.ck, week); title=r.title; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
+        const r=rugbyContent(sc.ck, week); title="Rugby"; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
       } else if(sc.ck==='presam' && we){
         title = we.type==='match' ? "Repos pré-match" : "WOD ATHX (trêve)";
         tag = we.type==='match' ? "Récup" : "Moteur";
@@ -653,11 +670,11 @@ function renderProgramme(){
       } else {
         const c=COND[sc.ck]; title=c.title; tag=c.tag; desc=c.desc;
       }
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
         <div class="stitle">${title}<div class="ssub">${sc.day} · ${tag}</div></div>
         <div class="chev">›</div></div><div class="sbody">`;
       const key=`w${week}-cond-${sc.ck}`, val=(LOG[key]||"");
-      const ac=(sc.ck.indexOf('rugby')===0)?'var(--cardio)':'var(--warm)';
+      const ac=catColor;
       const body=(sc.ck.indexOf('rugby')===0)?bullets(desc):`<div class="pmeta">${desc}</div>`;
       html+=`<div class="part" style="--ac:${ac}">${body}
         <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
@@ -692,7 +709,7 @@ function exportLog(){
         if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
       } else {
         const v=LOG[`w${w}-cond-${sc.ck}`];
-        if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? rugbyContent(sc.ck,w).title : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
+        if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? "Rugby" : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
       }
     });
     if(wk) out+=`=== SEMAINE ${w} ===\n${wk}\n`;
@@ -708,20 +725,20 @@ function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.dis
 const DAYS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
 const PLAN_ITEMS={
   repos:{label:"Repos",tag:"Récup"},
-  amtt1:{label:"Cardio/Kiné (matin)",tag:"TT · matin"},
+  cardio_am:{label:"Cardio ATHX",tag:"TT · matin"},
   bench:{label:"Développé couché",tag:"Force 5/3/1"},
-  rugby1:{label:"Rugby",tag:"Cardio · soir"},
-  amtt2:{label:"Cardio/Kiné (matin)",tag:"TT · matin"},
+  rugby1:{label:"Rugby",tag:"Soir"},
+  kine_am:{label:"Kiné",tag:"TT · matin"},
   squat:{label:"Squat",tag:"Force 5/3/1"},
-  rugby2:{label:"Rugby",tag:"Cardio · soir"},
+  rugby2:{label:"Rugby",tag:"Soir"},
   deadlift:{label:"Soulevé de terre",tag:"Force 5/3/1"},
   pushpress:{label:"Push press + Jerk",tag:"Force · technique"},
-  rugby3:{label:"Rugby (léger)",tag:"Cardio · soir"},
+  rugby3:{label:"Rugby (léger)",tag:"Soir"},
   presam:{label:"Repos pré-match",tag:"Récup"},
   matchday:{label:"Match",tag:"Rugby"},
 };
-const PLAN_TO_SCHED={repos:0,amtt1:1,bench:2,rugby1:3,amtt2:4,squat:5,rugby2:6,deadlift:7,pushpress:8,rugby3:9,presam:10,matchday:11};
-const DEFAULT_PLAN_IDS={Lundi:["repos"],Mardi:["amtt1","bench","rugby1"],Mercredi:["amtt2","squat","rugby2"],Jeudi:["deadlift"],Vendredi:["pushpress","rugby3"],Samedi:["presam"],Dimanche:["matchday"]};
+const PLAN_TO_SCHED={repos:0,cardio_am:1,bench:2,rugby1:3,kine_am:4,squat:5,rugby2:6,deadlift:7,pushpress:8,rugby3:9,presam:10,matchday:11};
+const DEFAULT_PLAN_IDS={Lundi:["repos"],Mardi:["cardio_am","bench","rugby1"],Mercredi:["kine_am","squat","rugby2"],Jeudi:["deadlift"],Vendredi:["pushpress","rugby3"],Samedi:["presam"],Dimanche:["matchday"]};
 const BS="athx_boards_v4";
 let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
 function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
