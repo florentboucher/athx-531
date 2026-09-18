@@ -430,6 +430,23 @@ const COND = {
   matchday: {title:"Match", tag:"Rugby", desc:"Jour de match.<br><span class=\"pnote\">Semaine sans match (trêve) ? Tu peux caler une course courte ~3 km ici pour garder du rythme — dis-le-moi et j'ajuste.</span>"},
 };
 
+// Week-end réel du calendrier RC Courbevoie Fed 1 (saison 2026-2027), calé sur Semaine 1 = lundi 21/09/2026.
+// type "match" : samedi repos pré-match, dimanche match (dom/ext). type "bye" : trêve → WOD samedi + course dimanche possibles.
+const WEEKEND = [
+  {type:"bye"},                                                                 // Sem. 1 · 26-27/09 · trêve
+  {type:"match", date:"4 oct.",  opp:"S C Royannais",           home:true},     // Sem. 2 · J4
+  {type:"match", date:"11 oct.", opp:"U S Montmélianaise",      home:false},    // Sem. 3 · J5
+  {type:"match", date:"18 oct.", opp:"U S Annecy",              home:false},    // Sem. 4 (deload) · J6
+  {type:"bye"},                                                                 // Sem. 5 · 24-25/10 · trêve
+  {type:"match", date:"1 nov.",  opp:"AS Bièvre St Geoirs",     home:true},     // Sem. 6 · J7
+  {type:"match", date:"8 nov.",  opp:"Paris Université Club",   home:false},    // Sem. 7 · J8
+  {type:"match", date:"15 nov.", opp:"U S Tours",               home:true},     // Sem. 8 (deload) · J9
+  {type:"bye"},                                                                 // Sem. 9 · 21-22/11 · trêve
+  {type:"match", date:"29 nov.", opp:"C S Nuiton",              home:false},    // Sem. 10 · J10
+  {type:"match", date:"6 déc.",  opp:"XV Corsaire Saint Malo",  home:true},     // Sem. 11 · J11
+  {type:"match", date:"13 déc.", opp:"U S Issoirienne",         home:true},     // Sem. 12 (deload) · J12
+];
+
 // Cardio rugby terrain (RC Courbevoie) — contenu par semaine. Sem. 1 = feuille 27/07 (profils lourds), sem. 2 = feuille 03/08 (profils coureurs).
 const RUGBY = {
   1: {
@@ -552,12 +569,14 @@ function renderWeeks(){
     el.appendChild(d);
   }
 }
+const PROG_START = new Date(2026,8,21); // lundi Semaine 1
+function weekMonday(w){ const d=new Date(PROG_START); d.setDate(d.getDate()+(w-1)*7); return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
 function renderProgramme(){
   renderWeeks();
   const bi=blockOf(week), ci=cycleInfo(week);
   const wkN=["Sem. 1","Sem. 2","Sem. 3","Deload"];
   document.getElementById("blockline").innerHTML =
-    "Semaine "+week+" / 12 &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
+    "Semaine "+week+" / 12 · lundi "+weekMonday(week)+" &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
   const app=document.getElementById("progContent"); app.innerHTML="";
 
   SCHEDULE.forEach((sc,si)=>{
@@ -640,8 +659,23 @@ function renderProgramme(){
       }
     } else {
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
+      const we=WEEKEND[week-1];
       if(sc.ck.indexOf('rugby')===0){
         const r=rugbyContent(sc.ck, week); title=r.title; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
+      } else if(sc.ck==='presam' && we){
+        title = we.type==='match' ? "Repos pré-match" : "WOD ATHX (trêve)";
+        tag = we.type==='match' ? "Récup" : "Moteur";
+        desc = we.type==='match'
+          ? `Match le lendemain (${we.date} vs ${we.opp}${we.home?' · à domicile':' · à l\'extérieur'}) → repos complet, aucune charge (surtout pas le bas du corps).${!we.home?' <span class="pnote">Déplacement à prévoir, pense au trajet/repas.</span>':''}`
+          : `Pas de match ce week-end (trêve) → tu peux caler un <b>WOD ATHX</b> ici si tu veux garder du rythme. Sinon repos, comme tu sens.`;
+        ph = we.type==='match' ? "Ressenti pré-match, mobilité faite…" : "Le WOD fait (format, temps…)";
+      } else if(sc.ck==='matchday' && we){
+        title = we.type==='match' ? `Match vs ${we.opp}` : "Course 3 km (trêve)";
+        tag = we.type==='match' ? (we.home?"Rugby · domicile":"Rugby · extérieur") : "Cardio ATHX";
+        desc = we.type==='match'
+          ? `${we.date} · ${we.home?'à domicile':'à l\'extérieur'}.`
+          : `Pas de match ce week-end (trêve) → course courte ~3 km si tu veux garder du rythme, pas de l'EF.`;
+        ph = we.type==='match' ? "Le match (résultat, ressenti, coups pris…)" : "Ta course (temps, ressenti…)";
       } else {
         const c=COND[sc.ck]; title=c.title; tag=c.tag; desc=c.desc;
       }
