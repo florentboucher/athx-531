@@ -15,6 +15,7 @@
     --ink:#1d1d1f; --oninval:#ffffff;
     --nav:rgba(255,255,255,.82);
     --warm:#8e8e93; --tech:#0a84ff; --cardio:#ff9500; --force:#ff3b30; --hyp:#bf5af2;
+    --kine:#34c759; --rugby:#5e5ce6; --wod:#ffd60a;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -37,6 +38,10 @@
   .lsub{font-size:14px; color:var(--dim); margin-bottom:16px}
 
   /* Onglet Programme */
+  .progwrap{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .progbar{flex:1; height:6px; border-radius:3px; background:var(--field); overflow:hidden}
+  .progfill{height:100%; border-radius:3px; background:#34c759; width:0%; transition:width .25s}
+  .progtxt{flex:0 0 auto; font-size:12.5px; font-weight:600; color:var(--dim)}
   .weeks{display:flex; gap:8px; overflow-x:auto; padding:6px 0 12px; scrollbar-width:none}
   .weeks::-webkit-scrollbar{display:none}
   .wk{flex:0 0 auto; width:44px; height:44px; border-radius:14px; border:1px solid var(--line2);
@@ -46,16 +51,25 @@
   .wk .dot{position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%; background:var(--dim2)}
   .wk.active .dot{background:var(--oninval)}
 
-  .session{margin-bottom:12px; border:1px solid var(--line); border-radius:18px; background:var(--elev); overflow:hidden}
+  .session{--catac:var(--line); margin-bottom:12px; border:1px solid var(--line); border-left:4px solid var(--catac); border-radius:18px; background:var(--elev); overflow:hidden}
   .shead{display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer; user-select:none}
   .sbadge{flex:0 0 auto; width:34px; height:34px; border-radius:10px; font-weight:700; font-size:14px;
-    display:flex; align-items:center; justify-content:center; background:var(--field); color:var(--txt)}
+    display:flex; align-items:center; justify-content:center; background:var(--catac); color:#fff}
+  .sbadge.dark-on-cat{color:#1d1d1f}
   .stitle{flex:1; font-size:16px; font-weight:600}
   .ssub{font-size:12.5px; color:var(--dim); font-weight:400; margin-top:1px}
+  .donebadge{display:none; flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:#34c759;
+    color:#fff; align-items:center; justify-content:center; font-size:12px; font-weight:800}
+  .session.done .donebadge{display:flex}
   .chev{color:var(--dim2); font-size:13px; transition:transform .2s}
   .session.open .chev{transform:rotate(90deg)}
   .sbody{display:none; padding:0 16px 6px}
   .session.open .sbody{display:block}
+  .doneToggle{margin:14px 0 4px}
+  .doneToggle>summary{list-style:none; cursor:pointer; font-size:13px; font-weight:600; color:var(--dim); padding:10px 2px; display:flex; align-items:center; gap:6px}
+  .doneToggle>summary::-webkit-details-marker{display:none}
+  .doneToggle>summary:before{content:'▸'; color:var(--dim2); font-size:11px; transition:transform .15s}
+  .doneToggle[open]>summary:before{transform:rotate(90deg)}
   .part{--ac:var(--warm); margin:14px 0; border-left:3px solid var(--ac); padding:2px 0 2px 13px}
   .part:first-child{margin-top:4px}
   .plabel{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:800; color:var(--ac); letter-spacing:.04em; text-transform:uppercase}
@@ -169,6 +183,7 @@
 <section class="view active" id="view-prog">
   <div class="ltitle">Programme</div>
   <div class="lsub" id="blockline"></div>
+  <div class="progwrap"><div class="progbar"><div class="progfill" id="progfill"></div></div><div class="progtxt" id="progtxt"></div></div>
   <div class="weeks" id="weeks"></div>
   <div id="progContent"></div>
   <div class="tools">
@@ -178,11 +193,14 @@
   </div>
   <div id="legendBox" style="display:none">
     <div class="legend">
-      <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total. Échauffement 40/50/60% du TM avant.<br>
-      <b>Jerk</b> (mer, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
-      <b>PARTIES 2+ = accessoires hypertrophie</b> (volume/prévention). <b>TEMPO</b> (ex. 30X1) : excentrique / pause basse / concentrique (X=explosif) / pause haute (s). <b>RPE</b> : intensité /10. <b>REST</b> : récup. <b>/side</b> : par côté. « enchaîner » = superset/triset (récup en fin de tour).<br>
+      <b>Format compact ~1h</b> (rugby + travail obligent) : Échauffement 10 min → 5/3/1 → 2 supersets hypertrophie (3×12, bas puis haut du corps) → gainage. 1 seul mouvement par jour : bench mardi, squat mercredi, soulevé jeudi, push press + jerk vendredi.<br>
+      <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total.<br>
+      <b>Jerk</b> (vendredi, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
+      <b>Accessoires</b> : programme <b>fixe</b> (mêmes exercices chaque semaine, tu montes les charges pendant au moins 8 semaines). Bench = postérieur chaîne + poussée/tirage vertical · Squat = trapèzes/épaules + circuit adducteurs/abducteurs/mollets · Soulevé = hip thrust/front squat (charge légère, focus technique) + dips/rowing · Push press = leg extension/leg curl. « circuit » = enchaîne les 3 mouvements sans t'arrêter.<br>
+      <b>Matin télétravail</b> (mardi/mercredi) : alterne technique SkiErg/rameur (spécifique ATHX, pas du cardio d'endurance) et séance kiné/prévention.<br>
       <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
-      <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement</span>.
+      <b>Couleurs des séances</b> (liseré + pastille du jour) : <span style="color:var(--force)">● muscu</span> · <span style="color:var(--rugby)">● rugby</span> · <span style="color:var(--cardio)">● cardio ATHX</span> · <span style="color:var(--kine)">● kiné</span> · <span style="color:var(--wod)">● WOD</span> · <span style="color:var(--warm)">● repos/récup</span>.<br>
+      <b>Couleurs des blocs</b> (dans une séance muscu) : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--warm)">● échauffement</span>.
     </div>
   </div>
   <div id="goalsBox" style="display:none">
@@ -199,8 +217,9 @@
         <tr><td>Jerk (technique)</td><td>140</td><td>155-165</td><td>+15-25</td></tr>
       </table>
       <p class="gnote"><b>≈ +35 à +50 kg cumulés</b> sur les 4 mouvements. Ces cibles supposent que tes maxes de départ sont réels — tes AMRAP de la semaine 1 te le confirmeront (bien au-dessus des reps cibles = tu es plus fort ; en-dessous = le TM se recale).</p>
-      <p class="gnote">Le <b>jerk</b> : l'essentiel du gain viendra de la <b>technique</b> (dip-drive) qui débloque ta force déjà là. Côté <b>physique</b>, les accessoires hypertrophie ajoutent du muscle (dos, jambes, épaules) sans casser ton moteur (metcon, ski, course).</p>
+      <p class="gnote">Le <b>jerk</b> : l'essentiel du gain viendra de la <b>technique</b> (dip-drive) qui débloque ta force déjà là. Côté <b>physique</b>, les 2 supersets hypertrophie (bas + haut, 3×12) ajoutent du muscle et de la prévention sans déborder de l'heure dispo entre rugby et travail.</p>
       <p class="gnote">Pile dans tes cibles ATHX : squat 2RM 220-230 · jerk 160-170 · un deadlift qui soutient un 3RM à 225-235.</p>
+      <p class="gnote"><b>Structure ajustée sept. 2025</b> pour tenir dans 45-60 min/séance avec le rugby (mar/mer/ven soir) et le travail (site lun/jeu/ven, télétravail mar/mer) : repos total le lundi (lendemain de match), 1 mouvement 5/3/1 par jour, gainage systématique, et le week-end calé sur le calendrier de matchs.</p>
     </div>
   </div>
 </section>
@@ -310,130 +329,39 @@
 
 <script>
 // ---------- DONNÉES PROGRAMME ----------
-const P1 = ["12 reps @ 55-60% 1RM","10 reps @ 60-65% 1RM","8 reps @ 65-70% 1RM","6 reps @ 70-75% 1RM"];
-function b(idx){ return [
-  {title:"Squat", parts:[
-    {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[idx]]]},
-    {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 3110 · RPE 7-8 · REST 2'", ex:[
-      ["Single Leg Romanian Deadlift","10-12/side"],["Suitcase Front Foot Elevated Split Squat","10-12/side"]]},
-    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-      ["2DB Bench Press","10-12 · TEMPO 2020"],["Tractions pronation lestées","4-6 · TEMPO 21X1"]]},
-    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO contrôlé · RPE 7-8 · REST 2'", ex:[
-      ["Sorenson Hold","1'-2'"],["AB Wheel","10-12"]]},
-  ]},
-  {title:"Deadlift", parts:[
-    {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[idx]]]},
-    {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 31X0 · RPE 7-8 · REST 2'", ex:[["Weighted High Step Ups","6-8/side"]]},
-    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-      ["Strict Press","6 · TEMPO 21X1"],["Barbell Bent Over Row","8-10 · TEMPO 2020"]]},
-    {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO 2020 · RPE 9 · REST 1'30", ex:[
-      ["Inclined DB Biceps Curl","10-12"],["Cable Triceps Extension","12-15"]]},
-    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'", ex:[
-      ["Plate Rotation in a Split Squat","20"],["Tuck Sit Knee Wiper","20"]]},
-  ]},
-  {title:"Bench Press", parts:[
-    {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[idx]]]},
-    {label:"Part 2 – Rowing", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[["Barbell Seal Row","10-12"]]},
-    {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"3 sets · RPE 8-9 · REST 1'30", ex:[
-      ["2DB Bulgarian Split Squat","10-12/side · TEMPO 30X0"],["Copenhagen Plank",'20-30"/side'],["Single Leg Banded Abduction","12-15/side"]]},
-    {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'30", ex:[
-      ["Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral Raises","15 · TEMPO 2121"],["Single Arm Farmer Carry",'20-30"/side']]},
-  ]},
- ]; }
+// Format compact : 5/3/1 (Partie 1) + blocs accessoires (3×12 environ, en superset ou circuit) + finition.
+// Programme FIXE sur au moins 8 semaines : mêmes exercices chaque semaine, seule la charge progresse.
+const ACCESSORIES = {
+  bench: {
+    blocks: [
+      {label:"Bloc 1", note:"enchaîner les 2 mouvements", ex:[["Barbell Romanian Deadlift","3×12"],["Fentes (Back Rack Lunges)","3×12"]]},
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Développé militaire","8-10"],["Tractions pronation lestées","8-10"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["Gainage ventral (Plank)","3×30-40''"],["Ab Wheel (roulette de gainage)","3×10-12"]]},
+  },
+  squat: {
+    blocks: [
+      {label:"Bloc 1", note:"enchaîner les 2 mouvements", ex:[["Shrug barre (lourd)","3×12"],["Épaule — latérale, frontale, oiseau ou ATY (au choix)","3×12-15"]]},
+      {label:"Bloc 2", note:"circuit · enchaîne les 3 mouvements", ex:[["Exo Adducteurs","3×12/side"],["Exo Abducteurs","3×12/side"],["Extension mollet","3×15"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["DB Curl (biceps)","3×12"],["Cable Triceps Extension (triceps)","3×15"]]},
+  },
+  deadlift: {
+    blocks: [
+      {label:"Bloc 1", note:"charge légère · focus technique + hypertrophie, pas de charge max", ex:[["Hip Thrust","3×10"],["Front Squat","3×8"]]},
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Dips","3×10"],["Rowing","3×10"]]},
+    ],
+    fin: {note:"circuit · enchaîne les 3 mouvements", ex:[["Gainage ventral (Plank)","3×30-40''"],["Relevé de jambes pendu","3×10-12"],["Renforcement cervical","circuit"]]},
+  },
+  pushpress: {
+    blocks: [
+      {label:"Bloc 2", note:"enchaîner les 2 mouvements", ex:[["Leg Extension","3×12"],["Leg Curl","3×12"]]},
+    ],
+    fin: {note:"enchaîner les 2 mouvements", ex:[["DB Curl (biceps)","3×12"],["Cable Triceps Extension (triceps)","3×15"]]},
+  },
+};
 
-const BLOCKS = [
-  b(0),
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[1]]]},
-     {label:"Part 2 – Hinge", meta:"4 sets · REST 1'-1'30", ex:[["Staggered KB Swing","20/side"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Back Rack Lunges","10-12/side"],["DB Death March","10-12/side"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 2'", ex:[
-       ["Alternating Seated Pike Leg Lift","20"],["Hanging L-Sit","Max Time (ou Half L-Sit)"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[1]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · REST 1'30", ex:[["Weighted Crossover Step Over","10/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Arnold Press","10-12"],["Gorilla Row","10-12"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
-       ["DB Curl","12-15"],["Overhead Dumbbell Triceps Extension","12-15/side"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'30", ex:[
-       ["Split Stance PVC Anti Rotation",'20/20"'],["Dragon Flag 4 sec Eccentric","6"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[1]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30", ex:[["Pendlay Row","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Single Leg Hip Thrust","10/side · TEMPO 20X2"],["Goblet Cyclist Squat","10 · TEMPO 2020"],["Monster Walk","10m"]]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Ring Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral + Frontal Raises","12"],["Single Arm KB Side Bend",'25"/side']]},
-   ]},
-  ],
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[2]]]},
-     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
-       ["Barbell Romanian Deadlift","10-12"],["Suitcase Front Foot Elevated Split Squat","8/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Ring Push Ups","12 · TEMPO 12X1"],["DB Butterfly Chest Supported","12 · TEMPO 20X1"]]},
-     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
-       ["MB Lateral Shot","12/side"],["Heavy Farmer Carry","20m/side"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[2]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 30X1 · RPE 8 · REST 1'30-2'", ex:[["Hip Thrust","10"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Cable Pull Behind The Neck","10-12"],["Half Kneeling Landmine Press","10/side"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
-       ["Spider Curl","12-15"],["Barbell Body Triceps Extension","12-15"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
-       ["Banded Pallof Walk Out","6/side (A/R)"],["Cable Crunch","12 · TEMPO 2020"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[2]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Cable Horizontal Narrow Grip Pull","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Eccentric Nordic Hamstring Curl","5"],["Leg Extension","10/side · TEMPO 20X2"],["Banded Clamshell","10/side"]]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Alternating DB See Saw Press","12"],["Low Cable Fly","12 · TEMPO 20X0"],["Lateral Star Plank",'25"/side']]},
-   ]},
-  ],
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[3]]]},
-     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
-       ["Single Leg GHD Hip Extension","10/side"],["RNT Barbell Split Squat","8/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Seated DB Complex Strict Press","12"],["DB Three Point Row","10/side · TEMPO 20X1"]]},
-     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
-       ["Lateral Plank Pulse","25/side"],["Ring Body Saw","15"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[3]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 3030 · RPE 7 · REST 1'30-2'", ex:[["Seated Wide Stance Good Morning","10"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 20X0 · RPE 8 · REST 1'30-2'", ex:[
-       ["Upright Row","10-12"],["DB LU Raises","10"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 1'-1'30", ex:[
-       ["Skull Crusher","12 · TEMPO 20X0"],["Barbell Curl 21's","7-7-7"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
-       ["Half Kneeling Chop And Lift","8/8 · TEMPO 20X0"],["L-Sit","Max Time"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[3]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Wide Grip Pull Ups or Cable Vertical Row","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Sissy Squat","6"],["Side Band Walk ou Machine Abductor","10/side · TEMPO 20X2"],["Single Leg Wall Sit",'20"/side']]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Cable Pull Over","12 · TEMPO 20X0"],["Inclined DB Bench Press","12 · TEMPO 20X0"],["Cable Rowing Pass Through","12/side"]]},
-   ]},
-  ],
-];
-
-const BLOCK_INFO = [
-  {r:"12 reps @ 55-60% 1RM"},{r:"10 reps @ 60-65% 1RM"},{r:"8 reps @ 65-70% 1RM"},{r:"6 reps @ 70-75% 1RM"},
-];
+const WARMUP_BUL = "Cardio léger 3-4 min (vélo/rameur/corde) pour monter en température<br>Mobilité articulaire : chevilles, hanches, dos, épaules (cercles, balancements)<br>Activation courte : gainage + fessiers/scapula<br>2-3 répétitions du mouvement du jour à vide/léger pour rentrer dans le geste";
 
 // ---------- 5/3/1 (Partie 1 de chaque séance de force) — 12 semaines = 3 cycles ----------
 const S531 = {
@@ -499,11 +427,37 @@ const S531 = {
 const MAINNAME = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
 const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
 
-// Séances moteur / cardio
+// Séances moteur / cardio / récup
 const COND = {
-  metcon:  {title:"WOD ATHX", tag:"Moteur", desc:"Chipper (cap ~25 min) : 2×45 cal row · 30 G2OH DB 20 kg · 30 DB bench 2×20 kg · 30 sandbag squats/carry 50 kg · 30 burpees over bench."},
-  ef:      {title:"Sortie EF", tag:"Endurance", desc:"Course en <b>endurance fondamentale</b> : très facile, Z2 (~6:45-7:15/km, HR 135-148). 45-75 min selon la forme. Ça doit rester conversationnel — c'est de la récup active, pas une séance."},
+  repos:    {title:"Repos complet", tag:"Récup", desc:"Lendemain de match : repos total, pas d'entraînement. Le corps encaisse le choc du match — marche légère ou étirements doux seulement si besoin, rien de plus."},
+  cardio_am:{title:"Cardio ATHX", tag:"Technique", desc:
+    "Technique SkiErg + rameur — spécifique ATHX, pas de l'endurance pure : on travaille le mouvement et la cadence, pas la distance.<br><b>Échauffement</b> 5 min, cadence très légère sur l'un des deux ergos.<br><br><b>SkiErg — technique (10-12 min)</b>"
+    + bullets("Position haute : bras tendus en haut, léger hinge de hanche, gainage serré<br>Tirage initié par les lats + abdos (crunch/hinge), pas juste les bras — coudes près des flancs<br>Fléchis légèrement jambes/hanches pour mettre le poids du corps dedans<br>Retour contrôlé, ratio ~1:2 · damper 5-6 · cadence ~32-38 c/min<br>Format : 4-5 × 2 min à cadence contrôlée (qualité, pas vitesse) · récup 1'")
+    + "<br><b>Rameur — technique (10-12 min)</b>"
+    + bullets("Séquence à la poussée : jambes → buste → bras · inverse au retour : bras → buste → jambes<br>Assise droite, pas de recul excessif du buste, talons qui décollent légèrement en fin de poussée<br>Damper 3-5 · ratio ~1:2, retour plus lent que la poussée<br>Format : 4-5 × 2 min même logique, focus qualité du mouvement")
+    + "<br><span class=\"pnote\">Test mensuel (sem. 1 · 4 · 8 · 12) : SkiErg 15 min max distance ou Rameur 45 cal chrono, en alternance — note ton résultat pour suivre ta progression.</span><br><span class=\"pnote\">Peut s'échanger avec la Kiné selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"
+  },
+  kine_am:  {title:"Kiné / prévention", tag:"Prévention", desc:"Séance kiné/prévention — selon tes blessures du moment, contenu que tu gères toi-même.<br><span class=\"pnote\">Peut s'échanger avec le Cardio ATHX selon ton ressenti de la semaine (glisse-la dans l'onglet Planning).</span>"},
+  presam:   {title:"Repos pré-match", tag:"Récup", desc:"Veille de match : repos complet, aucune charge (surtout pas le bas du corps). Mobilité légère si besoin, rien de plus.<br><span class=\"pnote\">Semaine sans match ? Tu peux caler un WOD ATHX ici à la place — dis-le-moi et j'ajuste.</span>"},
+  matchday: {title:"Match", tag:"Rugby", desc:"Jour de match.<br><span class=\"pnote\">Semaine sans match (trêve) ? Tu peux caler une course courte ~3 km ici pour garder du rythme — dis-le-moi et j'ajuste.</span>"},
 };
+
+// Week-end réel du calendrier RC Courbevoie Fed 1 (saison 2026-2027), calé sur Semaine 1 = lundi 21/09/2026.
+// type "match" : samedi repos pré-match, dimanche match (dom/ext). type "bye" : trêve → WOD samedi + course dimanche possibles.
+const WEEKEND = [
+  {type:"bye"},                                                                 // Sem. 1 · 26-27/09 · trêve
+  {type:"match", date:"4 oct.",  opp:"S C Royannais",           home:true},     // Sem. 2 · J4
+  {type:"match", date:"11 oct.", opp:"U S Montmélianaise",      home:false},    // Sem. 3 · J5
+  {type:"match", date:"18 oct.", opp:"U S Annecy",              home:false},    // Sem. 4 (deload) · J6
+  {type:"bye"},                                                                 // Sem. 5 · 24-25/10 · trêve
+  {type:"match", date:"1 nov.",  opp:"AS Bièvre St Geoirs",     home:true},     // Sem. 6 · J7
+  {type:"match", date:"8 nov.",  opp:"Paris Université Club",   home:false},    // Sem. 7 · J8
+  {type:"match", date:"15 nov.", opp:"U S Tours",               home:true},     // Sem. 8 (deload) · J9
+  {type:"bye"},                                                                 // Sem. 9 · 21-22/11 · trêve
+  {type:"match", date:"29 nov.", opp:"C S Nuiton",              home:false},    // Sem. 10 · J10
+  {type:"match", date:"6 déc.",  opp:"XV Corsaire Saint Malo",  home:true},     // Sem. 11 · J11
+  {type:"match", date:"13 déc.", opp:"U S Issoirienne",         home:true},     // Sem. 12 (deload) · J12
+];
 
 // Cardio rugby terrain (RC Courbevoie) — contenu par semaine. Sem. 1 = feuille 27/07 (profils lourds), sem. 2 = feuille 03/08 (profils coureurs).
 const RUGBY = {
@@ -526,17 +480,21 @@ const JERK_TECH = {
   bul:"<b>Objectif = la technique, pas la charge</b> : ton jerk est limité par le <b>dip trop court</b> — c'est là qu'est le gain<br><b>Dip</b> : vertical, buste droit, <b>descends plus bas</b> (~10-15 cm), genoux qui partent vers l'avant/extérieur<br><b>Drive</b> : explose des jambes, bras passifs jusqu'au bout de l'extension<br><b>Split</b> : pied avant à plat, arrière sur la pointe, réception <b>bras verrouillés d'un coup</b> (pas de press-out)<br>Repos 1'30-2' · arrête la série dès que la technique se dégrade<br><b>Drills</b> (2-3 séries avant) : dip-drive avec <b>pause 2''</b> en bas · jerk balance · split jerk depuis les racks"
 };
 
-// Planning de la semaine (ordre des jours). hyp = index séance hypertrophie (0 squat, 1 deadlift, 2 bench) ; null = pas d'accessoires. bench = ajoute le bloc bench force.
+// Planning de la semaine. hyp = accessoires (blocs + finition, cf. ACCESSORIES).
+// Lundi repos (lendemain de match) · muscu mar/mer/jeu/ven midi (1h) · rugby club mar/mer soir + ven soir (léger) · TT mar/mer.
 const SCHEDULE = [
-  {day:"Lundi",    kind:"lift", lift:"squat",     hyp:0,    title:"Squat"},
-  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:2,    title:"Développé couché"},
+  {day:"Lundi",    kind:"cond", ck:"repos"},
+  {day:"Mardi",    kind:"cond", ck:"cardio_am"},
+  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:true,             title:"Développé couché"},
   {day:"Mardi",    kind:"cond", ck:"rugby1"},
-  {day:"Mercredi", kind:"lift", lift:"deadlift",  hyp:1,    title:"Soulevé de terre"},
+  {day:"Mercredi", kind:"cond", ck:"kine_am"},
+  {day:"Mercredi", kind:"lift", lift:"squat",     hyp:true,             title:"Squat"},
   {day:"Mercredi", kind:"cond", ck:"rugby2"},
-  {day:"Jeudi",    kind:"lift", lift:"pushpress", hyp:null, title:"Push press + Jerk + Ski", jerk:true, ski:true},
+  {day:"Jeudi",    kind:"lift", lift:"deadlift",  hyp:true,             title:"Soulevé de terre"},
+  {day:"Vendredi", kind:"lift", lift:"pushpress", hyp:true, jerk:true,  title:"Push press + Jerk"},
   {day:"Vendredi", kind:"cond", ck:"rugby3"},
-  {day:"Samedi",   kind:"cond", ck:"metcon"},
-  {day:"Dimanche", kind:"cond", ck:"ef"},
+  {day:"Samedi",   kind:"cond", ck:"presam"},
+  {day:"Dimanche", kind:"cond", ck:"matchday"},
 ];
 function cycleInfo(w){ return {cyc:Math.floor((w-1)/4), wk:(w-1)%4}; }
 function bullets(s){ const a=String(s).split('<br>').map(x=>x.trim()).filter(Boolean); return '<ul class="bul">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; }
@@ -597,7 +555,6 @@ let openSession = {};
 function saveLog(){ localStorage.setItem(LS, JSON.stringify(LOG)); }
 function saveProfile(){ localStorage.setItem(PS, JSON.stringify(PROFILE)); }
 function saveNutri(){ localStorage.setItem(NS, JSON.stringify(NUTRI)); }
-function blockOf(w){ return Math.floor((w-1)/3); }
 
 // ---------- ONGLETS ----------
 function switchTab(t){
@@ -623,28 +580,84 @@ function renderWeeks(){
     el.appendChild(d);
   }
 }
+const PROG_START = new Date(2026,8,21); // lundi Semaine 1
+function weekMonday(w){ const d=new Date(PROG_START); d.setDate(d.getDate()+(w-1)*7); return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
+const DAYNAMES=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+function todayInfo(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const diffDays=Math.round((now-PROG_START)/86400000);
+  if(diffDays<0 || diffDays>=12*7) return null;
+  return {week:Math.floor(diffDays/7)+1, day:DAYNAMES[((diffDays%7)+7)%7]};
+}
+// Couleur par catégorie : muscu (force) · rugby · cardio ATHX · kiné · WOD (repli les semaines de trêve).
+function sessionCatColor(sc){
+  if(sc.kind==="lift") return "var(--force)";
+  if(sc.ck && sc.ck.indexOf('rugby')===0) return "var(--rugby)";
+  if(sc.ck==="cardio_am") return "var(--cardio)";
+  if(sc.ck==="kine_am") return "var(--kine)";
+  if(sc.ck==="presam"){ const we=WEEKEND[week-1]; return (we&&we.type==='bye') ? "var(--wod)" : "var(--warm)"; }
+  if(sc.ck==="matchday"){ const we=WEEKEND[week-1]; return (we&&we.type==='bye') ? "var(--cardio)" : "var(--rugby)"; }
+  return "var(--warm)";
+}
+// Complétion : une séance est "faite" quand tous ses champs texte sont remplis.
+function sessionLogKeys(sc, w){
+  if(sc.kind!=="lift") return [`w${w}-cond-${sc.ck}`];
+  const keys=[`w${w}-${sc.lift}-warmup`, `w${w}-${sc.lift}-main`];
+  if(sc.jerk) keys.push(`w${w}-jerk-tech`);
+  if(sc.hyp){
+    const acc=ACCESSORIES[sc.lift]||{};
+    (acc.blocks||[]).forEach((b,bi2)=>{ b.ex.forEach((e,ei)=>keys.push(`w${w}-${sc.lift}-b${bi2}-e${ei}`)); });
+    if(acc.fin) acc.fin.ex.forEach((e,ei)=>keys.push(`w${w}-${sc.lift}-fin-e${ei}`));
+  }
+  return keys;
+}
+function isSessionDone(sc, w){ return sessionLogKeys(sc,w).every(k=>LOG[k]&&LOG[k].trim()); }
+function updateWeekProgress(){
+  let done=0;
+  SCHEDULE.forEach(sc=>{ if(isSessionDone(sc, week)) done++; });
+  const pct=Math.round(done/SCHEDULE.length*100);
+  const fill=document.getElementById("progfill"), txt=document.getElementById("progtxt");
+  if(fill) fill.style.width=pct+"%";
+  if(txt) txt.textContent=pct+"% · "+done+"/"+SCHEDULE.length;
+  document.querySelectorAll(".session").forEach(card=>{
+    const sc=SCHEDULE[+card.dataset.si];
+    card.classList.toggle("done", sc?isSessionDone(sc, week):false);
+  });
+}
 function renderProgramme(){
   renderWeeks();
-  const bi=blockOf(week), ci=cycleInfo(week);
+  const ci=cycleInfo(week);
   const wkN=["Sem. 1","Sem. 2","Sem. 3","Deload"];
   document.getElementById("blockline").innerHTML =
-    "Semaine "+week+" / 12 &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
+    "Semaine "+week+" / 12 · lundi "+weekMonday(week)+" &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : programme fixe (charges progressives)";
   const app=document.getElementById("progContent"); app.innerHTML="";
+  const ti=todayInfo(), showToday=ti && ti.week===week;
+  const todayCards=[], todoCards=[], doneCards=[];
 
   SCHEDULE.forEach((sc,si)=>{
     const isOpen=openSession[week]===si;
-    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"");
+    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"")+(isSessionDone(sc,week)?" done":"");
+    card.dataset.si=si;
+    const catColor=sessionCatColor(sc);
+    card.style.setProperty("--catac", catColor);
+    const badgeCls=catColor==="var(--wod)"?" dark-on-cat":"";
     const badge=sc.day.slice(0,3);
     let html="";
 
     if(sc.kind==="lift"){
       const d=S531[sc.lift][week-1];
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
-        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · ${sc.ski?"Push press 5/3/1 · Jerk technique · SkiErg":"5/3/1"}${sc.hyp!=null?" + accessoires":""}</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
+        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · 5/3/1${sc.jerk?" + Jerk technique":""}${sc.hyp?" + accessoires":""} · ~1h</div></div>
+        <div class="donebadge">✓</div><div class="chev">›</div></div><div class="sbody">`;
+      // Partie 0 — Échauffement
+      const wmk=`w${week}-${sc.lift}-warmup`, wmv=(LOG[wmk]||"");
+      html+=`<div class="part" style="--ac:var(--warm)"><div class="plabel">Échauffement<span class="pchip">~10 min</span></div>
+        ${bullets(WARMUP_BUL)}
+        <textarea class="log ${wmv.trim()?"filled":""}" data-key="${wmk}"
+          placeholder="Optionnel : ressenti, douleurs à surveiller…">${wmv.replace(/</g,"&lt;")}</textarea></div>`;
       // Partie 1 — 5/3/1
-      html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 1 — ${sc.ski?"Push press":sc.title} · 5/3/1</div>`;
-      html+=`<div class="pmeta">${d.label} · échauffement ${d.warm}${d.deload?` · <span class="pnote">décharge : reps prescrites, pas de max</span>`:``}</div>`;
+      html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 1 — ${sc.jerk?"Push press":sc.title} · 5/3/1</div>`;
+      html+=`<div class="pmeta">${d.label} · échauffement barre ${d.warm}${d.deload?` · <span class="pnote">décharge : reps prescrites, pas de max</span>`:``}</div>`;
       const mn=MAINNAME[sc.lift], vn=MAINVID[sc.lift];
       const yt=VIDEOS[vn]||("https://www.youtube.com/results?search_query="+encodeURIComponent(vn+" technique"));
       const key=`w${week}-${sc.lift}-main`, val=(LOG[key]||"");
@@ -652,7 +665,7 @@ function renderProgramme(){
         <div class="exname">${d.sets}<div class="extarget">${mn}${d.cible?` · dernier set : cible ${d.cible}`:``}</div></div>
         <a class="vid" href="${yt}" target="_blank" rel="noopener">Vidéo ›</a></div>
         <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
-          placeholder="Charges × reps réalisées (surtout le dernier set +)…">${val.replace(/</g,"&lt;")}</textarea></div>`;
+          placeholder="Charges × reps réalisées (surtout le dernier set +)…">${val.replace(/</g,"&lt;")}</textarea></div></div>`;
       // Partie 2 — Jerk technique (jour Push press)
       if(sc.jerk){
         const jk=`w${week}-jerk-tech`, jv=(LOG[jk]||"");
@@ -663,94 +676,115 @@ function renderProgramme(){
           <textarea class="log ${jv.trim()?"filled":""}" data-key="${jk}"
             placeholder="Charges × reps + ressenti technique (dip, réception…)">${jv.replace(/</g,"&lt;")}</textarea></div>`;
       }
-      // Partie 3 — SkiErg (cardio ATHX)
-      if(sc.ski){
-        const benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-        const syt="https://www.youtube.com/results?search_query="+encodeURIComponent("Concept2 SkiErg technique");
-        html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Technique — SkiErg<a class="pchip" href="${syt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-          ${bullets("<b>Position haute</b> : bras tendus en haut, léger hinge de hanche, gainage serré<br><b>Tirage</b> : initie avec les <b>lats + abdos</b> (crunch/hinge), pas juste les bras — coudes près des flancs<br><b>Fléchis un peu jambes/hanches</b> → mets le poids du corps dedans<br><b>Retour</b> contrôlé (ratio ~1:2) · <b>damper 5-6</b> · ~32-38 c/min")}</div>`;
-        const sk=`w${week}-ski-endurance`, sv=(LOG[sk]||"");
-        const skiBul = isB
-          ? bullets(`<b>🏁 TEST — SkiErg 15 min, max distance</b> (= ton format de score endurance ATHX)<br>Pars à une allure tenable, régularité, finis fort<br><b>Note tes mètres</b>${prev?` et compare à la sem. ${prev}`:` — c'est ta baseline`}`)
-          : bullets(`<b>4 × 4 min</b> à allure « seuil » tenable sur 15 min (~<b>P2k +6-10</b>, soit ~2:12-2:18/500)<br>Récup 2 min · régulier et relâché<br>But : construire l'allure que tu tiendras sur le score max-distance`);
-        html+=`<div class="part" style="--ac:var(--cardio)"><div class="plabel">Partie 3 — Cardio ATHX · SkiErg${isB?" · 🏁 TEST":""}<span class="pchip">~25 min</span></div>
-          ${skiBul}
-          <div class="pmeta" style="margin-top:0"><span class="pnote">Test 15 min toutes les 4 sem (1 · 4 · 8 · 12) pour suivre tes progrès.</span></div>
-          <textarea class="log ${sv.trim()?"filled":""}" data-key="${sk}"
-            placeholder="${isB?'Distance sur 15 min (m) + ressenti':'Tes 4×4 min (allure /500m, ressenti)'}">${sv.replace(/</g,"&lt;")}</textarea></div>`;
-      }
-      // Accessoires hypertrophie (Parties 2+)
-      if(sc.hyp!=null){
-        BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>{
-          html+=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${p.label}</div>`;
-          html+=`<div class="pmeta">${p.meta}${p.note?` · <span class="pnote">${p.note}</span>`:""}</div>`;
-          p.ex.forEach((e,ei)=>{
-            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-a${pi}-e${ei}`, v2=(LOG[k2]||"");
+      // Accessoires : blocs fixes (2-3 exercices en superset/circuit) + finition
+      if(sc.hyp){
+        const acc=ACCESSORIES[sc.lift]||{};
+        let partNum = sc.jerk ? 3 : 2;
+        function groupHtml(label, group, gkey){
+          if(!group || !group.ex) return "";
+          let h=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${label}</div>`;
+          h+=`<div class="pmeta"><span class="pnote">${group.note}</span></div>`;
+          group.ex.forEach((e,ei)=>{
+            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-${gkey}-e${ei}`, v2=(LOG[k2]||"");
             const yt2=VIDEOS[name]||("https://www.youtube.com/results?search_query="+encodeURIComponent(name+" exercise technique"));
-            html+=`<div class="ex"><div class="exhead">
+            h+=`<div class="ex"><div class="exhead">
               <div class="exname">${name}<div class="extarget">${target}</div></div>
               <a class="vid" href="${yt2}" target="_blank" rel="noopener">Vidéo ›</a></div>
               <textarea class="log ${v2.trim()?"filled":""}" data-key="${k2}"
                 placeholder="Ce que j'ai fait (charges, reps, sensations…)">${v2.replace(/</g,"&lt;")}</textarea></div>`;
           });
-          html+=`</div>`;
+          h+=`</div>`;
+          return h;
+        }
+        (acc.blocks||[]).forEach((b,bi2)=>{
+          html += groupHtml(`Partie ${partNum} — ${b.label}`, b, `b${bi2}`);
+          partNum++;
         });
+        if(acc.fin) html += groupHtml(`Finition`, acc.fin, `fin`);
       }
-      html+=`</div>`;
     } else {
       let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
-      if(sc.ck==='metcon'){
-        const c=COND.metcon, benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-        title=c.title; tag=isB?'🏁 Benchmark':'Moteur';
-        desc = isB ? (week===1
-            ? `<b>Semaine test — BASELINE.</b> Fais le chipper de référence <b>chronométré</b> et note ton temps : ton point de départ à battre.<br>${c.desc}`
-            : `<b>Semaine test.</b> Refais le <b>même</b> chipper de référence, chronométré. Compare à la <b>sem. ${prev}</b> pour mesurer tes progrès.<br>${c.desc}`)
-          : `<b>Metcon libre / varié.</b> Choisis un <b>autre format</b> que le benchmark (varie durée court/moyen/long et modalité), selon ton ressenti ou ton plan ATHX. Benchmark refait sem. <b>1 · 4 · 8 · 12</b>.`;
-        ph = isB?"Ton TEMPS sur le chipper (+ sensations)…":"Le metcon fait aujourd'hui (format, temps…)";
-      } else if(sc.ck.indexOf('rugby')===0){
-        const r=rugbyContent(sc.ck, week); title=r.title; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
+      const we=WEEKEND[week-1];
+      if(sc.ck.indexOf('rugby')===0){
+        const r=rugbyContent(sc.ck, week); title="Rugby"; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
+      } else if(sc.ck==='presam' && we){
+        title = we.type==='match' ? "Repos pré-match" : "WOD ATHX (trêve)";
+        tag = we.type==='match' ? "Récup" : "Moteur";
+        desc = we.type==='match'
+          ? `Match le lendemain (${we.date} vs ${we.opp}${we.home?' · à domicile':' · à l\'extérieur'}) → repos complet, aucune charge (surtout pas le bas du corps).${!we.home?' <span class="pnote">Déplacement à prévoir, pense au trajet/repas.</span>':''}`
+          : `Pas de match ce week-end (trêve) → cale ce chipper si tu veux garder du rythme. Sinon repos, comme tu sens.<br><b>Chipper ATHX · cap ~25 min</b>`
+            + bullets("2 × 45 cal row<br>30 G2OH (ground to overhead) DB 20 kg<br>30 DB bench press 2×20 kg<br>30 sandbag squat + carry 50 kg<br>30 burpees over bench")
+            + `<br><span class="pnote">Toujours le même format à chaque trêve : note ton temps (ou le nombre de rounds si tu caps à 25 min) et compare à la dernière fois.</span>`;
+        ph = we.type==='match' ? "Ressenti pré-match, mobilité faite…" : "Ton temps ou tes rounds sur le chipper + ressenti…";
+      } else if(sc.ck==='matchday' && we){
+        title = we.type==='match' ? `Match vs ${we.opp}` : "Course 3 km (trêve)";
+        tag = we.type==='match' ? (we.home?"Rugby · domicile":"Rugby · extérieur") : "Cardio ATHX";
+        desc = we.type==='match'
+          ? `${we.date} · ${we.home?'à domicile':'à l\'extérieur'}.`
+          : `Pas de match ce week-end (trêve) → course courte ~3 km si tu veux garder du rythme, pas de l'EF.`;
+        ph = we.type==='match' ? "Le match (résultat, ressenti, coups pris…)" : "Ta course (temps, ressenti…)";
       } else {
         const c=COND[sc.ck]; title=c.title; tag=c.tag; desc=c.desc;
       }
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
+      html+=`<div class="shead" data-s="${si}"><div class="sbadge${badgeCls}">${badge}</div>
         <div class="stitle">${title}<div class="ssub">${sc.day} · ${tag}</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
+        <div class="donebadge">✓</div><div class="chev">›</div></div><div class="sbody">`;
       const key=`w${week}-cond-${sc.ck}`, val=(LOG[key]||"");
-      const ac=(sc.ck.indexOf('rugby')===0||sc.ck==='metcon')?'var(--cardio)':'var(--warm)';
+      const ac=catColor;
       const body=(sc.ck.indexOf('rugby')===0)?bullets(desc):`<div class="pmeta">${desc}</div>`;
       html+=`<div class="part" style="--ac:${ac}">${body}
         <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
           placeholder="${ph}">${val.replace(/</g,"&lt;")}</textarea></div></div>`;
     }
-    card.innerHTML=html; app.appendChild(card);
+    card.innerHTML=html;
+    const isToday=showToday && sc.day===ti.day;
+    if(isToday) todayCards.push(card);
+    else if(isSessionDone(sc,week)) doneCards.push(card);
+    else todoCards.push(card);
   });
 
+  if(todayCards.length){
+    const h=document.createElement("div"); h.className="seclabel"; h.textContent="Aujourd'hui · "+ti.day;
+    app.appendChild(h); todayCards.forEach(c=>app.appendChild(c));
+  }
+  if(todoCards.length){
+    if(todayCards.length){ const h=document.createElement("div"); h.className="seclabel"; h.style.marginTop="10px"; h.textContent="À faire"; app.appendChild(h); }
+    todoCards.forEach(c=>app.appendChild(c));
+  }
+  if(doneCards.length){
+    const det=document.createElement("details"); det.className="doneToggle";
+    det.innerHTML=`<summary>✓ ${doneCards.length} terminée${doneCards.length>1?"s":""}</summary>`;
+    doneCards.forEach(c=>det.appendChild(c));
+    app.appendChild(det);
+  }
   app.querySelectorAll(".shead").forEach(h=>h.onclick=()=>{
     const si=+h.dataset.s; openSession[week]=(openSession[week]===si)?null:si; renderProgramme(); });
   app.querySelectorAll(".log").forEach(t=>t.addEventListener("input",()=>{
-    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); }));
+    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); updateWeekProgress(); }));
+  updateWeekProgress();
 }
 
 function exportLog(){
   let out="ATHX — 5/3/1 + Hypertrophie — Mon journal\n\n";
   for(let w=1; w<=12; w++){
-    const bi=blockOf(w); let wk="";
+    let wk="";
     SCHEDULE.forEach(sc=>{
       if(sc.kind==="lift"){
         let ses="";
         const mk=`w${w}-${sc.lift}-main`;
         if(LOG[mk]&&LOG[mk].trim()) ses+=`  • ${sc.title} (5/3/1) : ${LOG[mk].trim()}\n`;
-        if(sc.hyp!=null){
-          BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>p.ex.forEach((e,ei)=>{
-            const v=LOG[`w${w}-${sc.lift}-a${pi}-e${ei}`];
-            if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; }));
-        }
         if(sc.jerk){ const v=LOG[`w${w}-jerk-tech`]; if(v&&v.trim()) ses+=`  • Jerk (technique) : ${v.trim()}\n`; }
-        if(sc.ski){ const v=LOG[`w${w}-ski-endurance`]; if(v&&v.trim()) ses+=`  • SkiErg : ${v.trim()}\n`; }
+        if(sc.hyp){
+          const acc=ACCESSORIES[sc.lift]||{};
+          (acc.blocks||[]).forEach((b,bi2)=>{
+            b.ex.forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-b${bi2}-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
+          });
+          if(acc.fin) acc.fin.ex.forEach((e,ei)=>{ const v=LOG[`w${w}-${sc.lift}-fin-e${ei}`]; if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; });
+        }
         if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
       } else {
         const v=LOG[`w${w}-cond-${sc.ck}`];
-        if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? rugbyContent(sc.ck,w).title : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
+        if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? "Rugby" : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
       }
     });
     if(wk) out+=`=== SEMAINE ${w} ===\n${wk}\n`;
@@ -765,18 +799,21 @@ function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.dis
 // ---------- PLANNING (kanban glissable) ----------
 const DAYS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
 const PLAN_ITEMS={
-  squat:{label:"Squat",tag:"Force 5/3/1"},
+  repos:{label:"Repos",tag:"Récup"},
+  cardio_am:{label:"Cardio ATHX",tag:"TT · matin"},
   bench:{label:"Développé couché",tag:"Force 5/3/1"},
-  rugby1:{label:"Rugby",tag:"Cardio · soir"},
-  pushpress:{label:"Push press + Jerk + Ski",tag:"Force · technique · cardio"},
-  rugby2:{label:"Rugby",tag:"Cardio · soir"},
+  rugby1:{label:"Rugby",tag:"Soir"},
+  kine_am:{label:"Kiné",tag:"TT · matin"},
+  squat:{label:"Squat",tag:"Force 5/3/1"},
+  rugby2:{label:"Rugby",tag:"Soir"},
   deadlift:{label:"Soulevé de terre",tag:"Force 5/3/1"},
-  rugby3:{label:"Rugby",tag:"Cardio · soir"},
-  metcon:{label:"WOD ATHX",tag:"Moteur"},
-  ef:{label:"Sortie EF",tag:"Endurance"},
+  pushpress:{label:"Push press + Jerk",tag:"Force · technique"},
+  rugby3:{label:"Rugby (léger)",tag:"Soir"},
+  presam:{label:"Repos pré-match",tag:"Récup"},
+  matchday:{label:"Match",tag:"Rugby"},
 };
-const PLAN_TO_SCHED={squat:0,bench:1,rugby1:2,deadlift:3,rugby2:4,pushpress:5,rugby3:6,metcon:7,ef:8};
-const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby1"],Mercredi:["deadlift","rugby2"],Jeudi:["pushpress"],Vendredi:["rugby3"],Samedi:["metcon"],Dimanche:["ef"]};
+const PLAN_TO_SCHED={repos:0,cardio_am:1,bench:2,rugby1:3,kine_am:4,squat:5,rugby2:6,deadlift:7,pushpress:8,rugby3:9,presam:10,matchday:11};
+const DEFAULT_PLAN_IDS={Lundi:["repos"],Mardi:["cardio_am","bench","rugby1"],Mercredi:["kine_am","squat","rugby2"],Jeudi:["deadlift"],Vendredi:["pushpress","rugby3"],Samedi:["presam"],Dimanche:["matchday"]};
 const BS="athx_boards_v4";
 let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
 function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
