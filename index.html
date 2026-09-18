@@ -186,7 +186,7 @@
       <b>Format compact ~1h</b> (rugby + travail obligent) : Échauffement 10 min → 5/3/1 → 2 supersets hypertrophie (3×12, bas puis haut du corps) → gainage. 1 seul mouvement par jour : bench mardi, squat mercredi, soulevé jeudi, push press + jerk vendredi.<br>
       <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total.<br>
       <b>Jerk</b> (vendredi, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
-      <b>Supersets hypertrophie</b> : 3×12 enchaînés, récup 60-75'' en fin de tour. Le vendredi (déjà push press + jerk), le superset haut du corps passe en <b>bonus (si temps)</b>, replié par défaut — c'est le premier truc à couper si l'heure est dépassée.<br>
+      <b>Supersets hypertrophie</b> : 3×12 enchaînés, récup 60-75'' en fin de tour. Thème par jour : bench = ischios/fessiers + poussée/tirage vertical · squat = hip thrust/quadriceps + dips/rowing · soulevé et push press = renfo complémentaire (adducteurs/abducteurs/mollets, épaules/shrug/nuque/bras). Le vendredi (déjà push press + jerk), les 2 supersets passent en <b>bonus (si temps)</b>, repliés par défaut — le premier truc à couper si l'heure est dépassée.<br>
       <b>Matin télétravail</b> (mardi/mercredi) : alterne technique SkiErg/rameur (spécifique ATHX, pas du cardio d'endurance) et séance kiné/prévention.<br>
       <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
       <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement/récup</span>.
@@ -321,34 +321,35 @@
 // Format compact : 5/3/1 (Partie 1) + 1 superset bas du corps + 1 superset haut du corps (3×12) + gainage.
 // Rotation tous les 3 semaines (4 blocs sur les 12 semaines). Push press = bloc bonus (si temps) seulement,
 // vu que Push press + Jerk occupe déjà l'essentiel de l'heure ce jour-là.
-// Antagonistes : haut du corps = poussée/tirage ou delt antérieur/postérieur · bas du corps = quadriceps/ischios-fessiers.
 // Thème par jour (stable sur les 12 semaines, la variante tourne tous les 3 semaines) :
-//  bench (mardi) = postérieur chaîne + poussée/tirage · squat (mercredi) = adducteurs/abducteurs + épaules ant/post
-//  soulevé (jeudi) = quadriceps + bras/nuque (pas plus de tirage dos, déjà saturé par le soulevé)
+//  bench (mardi)    = postérieur chaîne (RDL/jambe tendue + fentes) · poussée/tirage vertical (dev. militaire/tractions)
+//  squat (mercredi) = hip thrust + quadriceps · dips/rowing (poussée/tirage horizontal)
+//  soulevé + push press (jeudi/vendredi) = renfo complémentaire : adducteurs/abducteurs/mollets/ischios · épaules/shrug/nuque/bras
+// Push press (vendredi) : le bloc accessoires passe en bonus (si temps), vu que push press + jerk occupe déjà l'essentiel de l'heure.
 const BLOCKS = [
   { // Bloc 1 · sem. 1-3
-    bench:     { lower:[["Barbell Romanian Deadlift","3×12"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Copenhagen Plank",'3×20-30"/side'],["Side Band Walk ou Machine Abductor","3×12/side"]], upper:[["DB Lateral Raises","3×15"],["Complexe Y-T-W-A (épaules)","3×10 (chaque lettre)"]] },
-    deadlift:  { lower:[["2DB Bulgarian Split Squat","3×10/side"],["Leg Extension","3×12"]], upper:[["DB Curl","3×12"],["Cable Triceps Extension","3×15"]] },
-    pushpress: { upper:[["Barbell Bent Over Row","3×12"],["DB Curl","3×12"]] },
+    bench:     { lower:[["Barbell Romanian Deadlift","3×12"],["Back Rack Lunges","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
+    squat:     { lower:[["Hip Thrust","3×12"],["Leg Extension","3×12"]], upper:[["Dips","3×8-10"],["Barbell Bent Over Row","3×12"]] },
+    deadlift:  { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Side Band Walk ou Machine Abductor","3×12/side"]], upper:[["DB Curl","3×12"],["Cable Triceps Extension","3×15"]] },
+    pushpress: { lower:[["Copenhagen Plank",'3×20-30"/side'],["Side Band Walk ou Machine Abductor","3×12/side"]], upper:[["DB Lateral Raises","3×15"],["Shrug barre","3×12"]] },
   },
   { // Bloc 2 · sem. 4-6
-    bench:     { lower:[["Hip Thrust","3×12"],["Back Rack Lunges","3×10/side"]], upper:[["2DB Bench Press","3×12"],["Cable Row","3×12"]] },
-    squat:     { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Back Rack Lunges","3×10/side"]], upper:[["DB Front Raises","3×15"],["Shrug barre","3×12"]] },
-    deadlift:  { lower:[["Leg Curl","3×12"],["Walking Lunge","3×10/side"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
-    pushpress: { upper:[["Cable Triceps Extension","3×15"],["Shrug barre","3×12"]] },
+    bench:     { lower:[["Barbell Romanian Deadlift","3×12"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
+    squat:     { lower:[["Hip Thrust","3×12"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Dips","3×8-10"],["Cable Row","3×12"]] },
+    deadlift:  { lower:[["Copenhagen Plank",'3×20-30"/side'],["Leg Curl","3×12"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
+    pushpress: { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Extension mollet","3×15"]], upper:[["DB Front Raises","3×15"],["Shrug barre","3×12"]] },
   },
   { // Bloc 3 · sem. 7-9
-    bench:     { lower:[["Soulevé jambes tendues (Stiff Leg DL)","3×10"],["Leg Extension","3×12"]], upper:[["Dips","3×8-10"],["Tractions pronation lestées","3×8-10"]] },
-    squat:     { lower:[["Copenhagen Plank",'3×20-30"/side'],["Extension mollet","3×15"]], upper:[["DB Lateral Raises","3×15"],["Shrug barre","3×12"]] },
-    deadlift:  { lower:[["2DB Bulgarian Split Squat","3×10/side"],["Extension mollet","3×15"]], upper:[["Barbell Curl","3×10"],["Overhead Dumbbell Triceps Extension","3×12/side"]] },
-    pushpress: { upper:[["Tractions pronation lestées","3×8-10"],["Dips","3×8-10"]] },
+    bench:     { lower:[["Soulevé jambes tendues (Stiff Leg DL)","3×10"],["Back Rack Lunges","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
+    squat:     { lower:[["Hip Thrust","3×12"],["Leg Extension","3×12"]], upper:[["Dips","3×8-10"],["Barbell Seal Row","3×12"]] },
+    deadlift:  { lower:[["Cable Adduction (adducteurs)","3×12/side"],["Extension mollet","3×15"]], upper:[["Barbell Curl","3×10"],["Overhead Dumbbell Triceps Extension","3×12/side"]] },
+    pushpress: { lower:[["Single Leg Banded Abduction","3×12/side"],["Leg Curl","3×12"]], upper:[["Complexe Y-T-W-A (épaules)","3×10 (chaque lettre)"],["Shrug barre","3×12"]] },
   },
   { // Bloc 4 · sem. 10-12
-    bench:     { lower:[["Single Leg Hip Thrust","3×10/side"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Cable Row","3×12"]] },
-    squat:     { lower:[["Side Band Walk ou Machine Abductor","3×12/side"],["Single Leg Romanian Deadlift","3×10/side"]], upper:[["DB Front Raises","3×15"],["Complexe Y-T-W-A (épaules)","3×10 (chaque lettre)"]] },
-    deadlift:  { lower:[["Leg Extension","3×12"],["Leg Curl","3×12"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
-    pushpress: { upper:[["DB Lateral Raises","3×15"],["DB Front Raises","3×15"]] },
+    bench:     { lower:[["Soulevé jambes tendues (Stiff Leg DL)","3×10"],["2DB Bulgarian Split Squat","3×10/side"]], upper:[["Développé militaire","3×12"],["Tractions pronation lestées","3×8-10"]] },
+    squat:     { lower:[["Hip Thrust","3×12"],["Walking Lunge","3×10/side"]], upper:[["Dips","3×8-10"],["Gorilla Row","3×12"]] },
+    deadlift:  { lower:[["Single Leg Banded Abduction","3×12/side"],["Leg Curl","3×12"]], upper:[["DB Lateral Raises","3×15"],["Shrug barre","3×12"]] },
+    pushpress: { lower:[["Copenhagen Plank",'3×20-30"/side'],["Extension mollet","3×15"]], upper:[["Shrug barre","3×12"],["Renforcement cervical","3×12-15"]] },
   },
 ];
 
@@ -642,8 +643,9 @@ function renderProgramme(){
           return h;
         }
         if(sc.hypBonus){
+          const lowerHtml = supersetHtml(`Bonus — Bas du corps · superset`, hb.lower, "low");
           const upperHtml = supersetHtml(`Bonus — Haut du corps · superset`, hb.upper, "up");
-          if(upperHtml) html+=`<details class="bonus"><summary>Bonus accessoires (si temps)</summary>${upperHtml}</details>`;
+          if(lowerHtml||upperHtml) html+=`<details class="bonus"><summary>Bonus accessoires (si temps)</summary>${lowerHtml}${upperHtml}</details>`;
         } else {
           html += supersetHtml(`Partie ${partNum} — Bas du corps · superset`, hb.lower, "low");
           html += supersetHtml(`Partie ${partNum+1} — Haut du corps · superset`, hb.upper, "up");
