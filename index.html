@@ -722,7 +722,6 @@ const EXO_GROUPS = [
     ["Développé couché (bench press)", ["Développé haltères","Développé incliné haltères","Pompes lestées"]],
     ["Développé haltères", ["Développé couché (bench press)","Développé incliné haltères","Pompes lestées"]],
     ["Développé incliné haltères", ["Développé incliné barre","Développé haltères","Pompes pieds surélevés"]],
-    ["Pompes aux anneaux lestées", ["Pompes lestées","Développé haltères","Pompes pieds surélevés"]],
     ["Dips lestés", ["Dips (poids du corps)","Développé couché prise serrée","Pompes diamant"]],
     ["Développé incliné barre"],["Développé couché prise serrée"],["Pompes lestées"],["Pompes pieds surélevés"],["Dips (poids du corps)"],["Pompes diamant"]]},
   {g:"Dos · tirage", items:[
@@ -1756,7 +1755,7 @@ function exoInProgram(){
 function renderExo(){
   const box=document.getElementById("exoBox"); if(!box) return;
   const prog=exoInProgram(), total=Object.keys(CATALOG).length, on=Object.keys(CATALOG).filter(exoOK).length;
-  let h=`<div class="legend" style="margin:0 0 10px">Coche ce que tu peux faire dans ta salle (${on}/${total} cochés). Un exercice <b>du programme</b> décoché est remplacé partout par sa 1re alternative cochée, avec les mêmes séries et reps. Les anneaux sont décochés d'office.</div>`;
+  let h=`<div class="legend" style="margin:0 0 10px">Coche ce que tu peux faire dans ta salle (${on}/${total} cochés). Un exercice <b>du programme</b> décoché est remplacé partout par sa 1re alternative cochée, avec les mêmes séries et reps. </div>`;
   EXO_GROUPS.forEach(gr=>{
     const names=gr.items.map(x=>x[0]), n=names.filter(exoOK).length;
     h+=`<details class="exogrp"><summary>${gr.g}<span>${n}/${names.length}</span></summary>`;
