@@ -15,6 +15,11 @@
     --ink:#1d1d1f; --oninval:#ffffff;
     --nav:rgba(255,255,255,.82);
     --warm:#8e8e93; --tech:#0a84ff; --cardio:#ff9500; --force:#ff3b30; --hyp:#bf5af2;
+    --kine:#34c759; --rugby:#5e5ce6; --wod:#ffd60a;
+    /* graphiques : palette catégorielle validée (fond clair) + couleurs d'état */
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+    --good:#0ca30c; --warnc:#fab219; --crit:#d03b3b;
+    --wodtxt:#8a6d00; /* titres des blocs WOD : jaune foncé lisible sur blanc */
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -22,6 +27,8 @@
       --txt:#f5f5f7; --dim:#aeaeb2; --dim2:#8e8e93;
       --ink:#f5f5f7; --oninval:#000000;
       --nav:rgba(20,20,22,.8);
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+      --wodtxt:#ffd60a;
     }
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -37,27 +44,54 @@
   .lsub{font-size:14px; color:var(--dim); margin-bottom:16px}
 
   /* Onglet Programme */
+  .progwrap{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .progbar{flex:1; height:6px; border-radius:3px; background:var(--field); overflow:hidden}
+  .progfill{height:100%; border-radius:3px; background:#34c759; width:0%; transition:width .25s}
+  .progtxt{flex:0 0 auto; font-size:12.5px; font-weight:600; color:var(--dim)}
   .weeks{display:flex; gap:8px; overflow-x:auto; padding:6px 0 12px; scrollbar-width:none}
   .weeks::-webkit-scrollbar{display:none}
   .wk{flex:0 0 auto; width:44px; height:44px; border-radius:14px; border:1px solid var(--line2);
     background:var(--elev); color:var(--dim); font-size:15px; font-weight:600; cursor:pointer;
     display:flex; align-items:center; justify-content:center; position:relative; transition:.15s}
   .wk.active{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
-  .wk .dot{position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%; background:var(--dim2)}
+  .wk{box-shadow:inset 0 -3px 0 var(--phc, transparent)}
+  .wk.now{border:2px solid #34c759}
+  .wk .dot{position:absolute; top:5px; right:5px; width:4px; height:4px; border-radius:50%; background:var(--dim2)}
   .wk.active .dot{background:var(--oninval)}
 
-  .session{margin-bottom:12px; border:1px solid var(--line); border-radius:18px; background:var(--elev); overflow:hidden}
+  .session{--catac:var(--line); margin-bottom:12px; border:1px solid var(--line); border-left:4px solid var(--catac); border-radius:18px; background:var(--elev); overflow:hidden}
   .shead{display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer; user-select:none}
   .sbadge{flex:0 0 auto; width:34px; height:34px; border-radius:10px; font-weight:700; font-size:14px;
-    display:flex; align-items:center; justify-content:center; background:var(--field); color:var(--txt)}
+    display:flex; align-items:center; justify-content:center; background:var(--catac); color:#fff}
+  .sbadge.dark-on-cat{color:#1d1d1f}
   .stitle{flex:1; font-size:16px; font-weight:600}
   .ssub{font-size:12.5px; color:var(--dim); font-weight:400; margin-top:1px}
+  .donebadge{display:none; flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:#34c759;
+    color:#fff; align-items:center; justify-content:center; font-size:12px; font-weight:800}
+  .session.done .donebadge{display:flex}
   .chev{color:var(--dim2); font-size:13px; transition:transform .2s}
   .session.open .chev{transform:rotate(90deg)}
   .sbody{display:none; padding:0 16px 6px}
   .session.open .sbody{display:block}
+  .nextchip{display:inline-block; vertical-align:2px; margin-left:6px; font-size:10.5px; font-weight:700; color:#fff; background:#34c759; border-radius:20px; padding:2px 8px}
+  .weekcard{--phc:var(--warm); border-radius:16px; background:var(--field); border-left:4px solid var(--phc); padding:14px 16px; margin:2px 0 16px; font-size:13.5px; line-height:1.55; color:var(--dim)}
+  .weekcard .wph{font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--phc)}
+  .weekcard .wtitle{font-size:17px; font-weight:700; color:var(--txt); margin:2px 0 6px; letter-spacing:-.01em}
+  .weekcard b{color:var(--txt)}
+  .weekcard .wcons{margin-top:8px; padding-top:8px; border-top:1px solid var(--line2)}
+  .weekcard .wcons div{margin:3px 0}
+  .exrow{margin-top:9px; padding-top:9px; border-top:1px solid var(--line2)}
+  .part .gtable td,.part .gtable th{font-size:13px}
+  .legacy{font-size:13px; color:var(--dim); line-height:1.6; padding:0 2px 8px}
+  .legacy b{color:var(--txt); font-weight:600}
+  .doneToggle{margin:14px 0 4px}
+  .doneToggle>summary{list-style:none; cursor:pointer; font-size:13px; font-weight:600; color:var(--dim); padding:10px 2px; display:flex; align-items:center; gap:6px}
+  .doneToggle>summary::-webkit-details-marker{display:none}
+  .doneToggle>summary:before{content:'▸'; color:var(--dim2); font-size:11px; transition:transform .15s}
+  .doneToggle[open]>summary:before{transform:rotate(90deg)}
   .part{--ac:var(--warm); margin:14px 0; border-left:3px solid var(--ac); padding:2px 0 2px 13px}
   .part:first-child{margin-top:4px}
+  .part[style*="var(--wod)"] .plabel{color:var(--wodtxt)}
   .plabel{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:800; color:var(--ac); letter-spacing:.04em; text-transform:uppercase}
   .pchip{flex:0 0 auto; font-size:11px; font-weight:600; color:var(--dim); background:var(--field); padding:3px 9px; border-radius:20px; text-transform:none; letter-spacing:0; text-decoration:none}
   .pmeta{font-size:13px; color:var(--dim); margin:6px 0 8px; line-height:1.5}
@@ -152,6 +186,102 @@
   .mealhead{font-size:14px; font-weight:600}
   .mealkcal{font-size:12.5px; color:var(--dim); margin-top:2px}
 
+  /* Mes exercices */
+  .exogrp{background:var(--elev); border:1px solid var(--line); border-radius:16px; margin-bottom:10px; overflow:hidden}
+  .exogrp>summary{list-style:none; cursor:pointer; padding:14px 16px; font-size:15px; font-weight:600; display:flex; justify-content:space-between; align-items:center}
+  .exogrp>summary::-webkit-details-marker{display:none}
+  .exogrp>summary span{font-size:13px; color:var(--dim); font-weight:500}
+  .exogrp>summary:after{content:'›'; color:var(--dim2); margin-left:8px; transition:transform .15s}
+  .exogrp[open]>summary:after{transform:rotate(90deg)}
+  .exorow{display:flex; align-items:center; gap:12px; padding:10px 16px; border-top:1px solid var(--line); cursor:pointer; font-size:14.5px}
+  .exorow input{width:22px; height:22px; accent-color:#34c759; flex:0 0 auto}
+  .exorow span{flex:1; line-height:1.3}
+  .exorow small{display:block; font-size:12px; color:var(--dim2); margin-top:2px}
+  .exorow small.exosub{color:var(--txt)}
+  /* Séries (charge × reps) */
+  .sets{margin-top:10px}
+  .sethd,.setrow{display:grid; grid-template-columns:20px 1fr 1fr 26px; gap:8px; align-items:center}
+  .sethd span{font-size:10.5px; color:var(--dim2); font-weight:700; text-transform:uppercase; letter-spacing:.04em; text-align:center}
+  .setrow{margin:6px 0}
+  .setrow input{width:100%; min-width:0; background:var(--elev); border:1px solid var(--line2); border-radius:10px; padding:8px 6px; font-family:inherit; font-size:16px; font-weight:600; color:var(--txt); text-align:center}
+  .setrow input:focus{outline:none; border-color:var(--ink)}
+  .sn{font-size:12px; color:var(--dim2); font-weight:700; text-align:center}
+  .sdel{border:none; background:none; color:var(--dim2); font-size:20px; line-height:1; cursor:pointer; padding:0}
+  .setbtns{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap}
+  .setbtns button{border:1px solid var(--line2); background:var(--elev); color:var(--txt); border-radius:980px; padding:7px 13px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer}
+  .setbtns .srx{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
+  .setsum{font-size:12.5px; color:var(--dim); margin-top:7px}
+  .setsum:empty{display:none}
+  /* Forme du jour */
+  .ready,.wellcta{display:flex; gap:12px; align-items:flex-start; border-radius:16px; padding:12px 14px; margin:2px 0 12px; background:var(--field); font-size:13px; color:var(--dim); line-height:1.5; border:none; width:100%; text-align:left; font-family:inherit}
+  .wellcta{cursor:pointer}
+  .ready b,.wellcta b{color:var(--txt); font-size:14.5px}
+  .rflags{font-size:12px; color:var(--dim2); margin-top:3px}
+  .ricon{flex:0 0 auto; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; background:var(--dim2)}
+  .ready.good .ricon{background:var(--good)} .ready.warn .ricon{background:var(--warnc); color:#0b0b0b} .ready.bad .ricon{background:var(--crit)}
+  .ricon.rnone{background:var(--elev); color:var(--txt); border:1px solid var(--line2)}
+  .chips5{display:flex; gap:6px; margin-top:9px}
+  .chips5 button{flex:1; padding:9px 0; border-radius:10px; border:1px solid var(--line2); background:var(--field); color:var(--txt); font-family:inherit; font-size:15px; font-weight:600; cursor:pointer}
+  .chips5 button.on{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
+  .daynav{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 0 10px; text-align:center; font-size:15px}
+  .daynav .dsub{font-size:12px; color:var(--dim)}
+  .daynav button{width:40px; height:40px; border-radius:12px; border:1px solid var(--line2); background:var(--elev); color:var(--txt); font-size:20px; cursor:pointer}
+  .daynav button:disabled{opacity:.3}
+  /* Suivi */
+  .segctl{display:flex; background:var(--field); border-radius:12px; padding:3px; margin-bottom:16px}
+  .segctl button{flex:1; border:none; background:none; padding:8px 0; border-radius:9px; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--dim); cursor:pointer}
+  .segctl button.on{background:var(--elev); color:var(--txt); box-shadow:0 1px 3px rgba(0,0,0,.14)}
+  .filt{display:flex; gap:6px; margin:0 0 12px; flex-wrap:wrap}
+  .filt button{border:1px solid var(--line2); background:var(--elev); color:var(--txt); border-radius:980px; padding:7px 13px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer}
+  .filt button.on{background:var(--ink); color:var(--oninval); border-color:var(--ink)}
+  .tiles{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px}
+  .tile{background:var(--elev); border:1px solid var(--line); border-radius:16px; padding:12px 14px}
+  .tile .tl{font-size:12px; color:var(--dim)}
+  .tile .tv{font-size:24px; font-weight:650; letter-spacing:-.02em; margin-top:2px; color:var(--txt)}
+  .tile .tv small{font-size:13px; font-weight:500; color:var(--dim)}
+  .tile .td{font-size:11.5px; color:var(--dim); margin-top:2px; line-height:1.4}
+  .vcard{background:var(--elev); border:1px solid var(--line); border-radius:18px; padding:14px 14px 6px; margin-bottom:14px}
+  .vtitle{font-size:15px; font-weight:650; color:var(--txt)}
+  .vsub{font-size:12.5px; color:var(--dim); margin:2px 0 8px; line-height:1.45}
+  .vhost{position:relative; width:100%}
+  .vwrap{position:relative; outline:none; border-radius:8px}
+  .vwrap:focus-visible{box-shadow:0 0 0 2px var(--ink)}
+  .vwrap svg{display:block; touch-action:pan-y; overflow:visible}
+  .vgrid{stroke:var(--line); stroke-width:1}
+  .vbase{stroke:var(--line2); stroke-width:1}
+  .vtick{font-size:10.5px; fill:var(--dim2); font-variant-numeric:tabular-nums}
+  .vend{font-size:11.5px; font-weight:650; fill:var(--txt)}
+  .vref{stroke:var(--dim); stroke-width:1}
+  .vreflbl{font-size:10.5px; fill:var(--dim); font-weight:600}
+  .vband{fill:var(--txt); opacity:.07}
+  .vbandkey{background:var(--txt)!important; opacity:.15}
+  .vcross{stroke:var(--dim2); stroke-width:1}
+  .vring{stroke:var(--elev); stroke-width:2}
+  .vbar{transition:opacity .12s}
+  .vbar.dim{opacity:.4}
+  .vtip{position:absolute; top:2px; z-index:5; pointer-events:none; background:var(--elev); border:1px solid var(--line2); border-radius:10px; padding:7px 10px; box-shadow:0 6px 18px rgba(0,0,0,.18); font-size:12px; min-width:110px; white-space:nowrap}
+  .vtipx{color:var(--dim); font-size:11.5px; margin-bottom:3px}
+  .vtiprow{display:flex; align-items:center; gap:6px; margin:2px 0}
+  .vtiprow b{font-size:13.5px; color:var(--txt)}
+  .vtot{border-top:1px solid var(--line); padding-top:3px; margin-top:4px}
+  .vkey{width:10px; height:2px; border-radius:1px; flex:0 0 auto}
+  .vtipn{color:var(--dim)}
+  .vleg{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:12px; color:var(--dim); margin:6px 0 2px}
+  .vleg span{display:inline-flex; align-items:center; gap:6px}
+  .vleg i{display:inline-block; width:12px; height:2px; border-radius:1px}
+  .vleg i.rect{width:10px; height:10px; border-radius:3px}
+  .vtable{margin-top:2px; font-size:12.5px}
+  .vtable summary{cursor:pointer; color:var(--dim); padding:7px 0; font-weight:600; font-size:12px}
+  .vtable table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; margin-bottom:6px}
+  .vtable th,.vtable td{padding:5px 4px; border-bottom:1px solid var(--line); text-align:right; font-weight:500}
+  .vtable th{font-size:11px; color:var(--dim2); font-weight:600}
+  .vtable th:first-child,.vtable td:first-child{text-align:left}
+  .vempty{font-size:13px; color:var(--dim); padding:20px 4px; text-align:center; line-height:1.5}
+  .blist{margin:4px 0 6px}
+  .bitem{display:flex; align-items:center; gap:10px; padding:7px 0; border-top:1px solid var(--line); font-size:13.5px}
+  .bitem span{flex:1; color:var(--dim)}
+  .bitem button{border:none; background:none; color:var(--dim2); font-size:19px; cursor:pointer}
+
   /* Barre d'onglets */
   nav{position:fixed; left:0; right:0; bottom:0; z-index:50; display:flex; justify-content:space-around;
     background:var(--nav); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
@@ -169,40 +299,33 @@
 <section class="view active" id="view-prog">
   <div class="ltitle">Programme</div>
   <div class="lsub" id="blockline"></div>
+  <div class="progwrap"><div class="progbar"><div class="progfill" id="progfill"></div></div><div class="progtxt" id="progtxt"></div></div>
   <div class="weeks" id="weeks"></div>
   <div id="progContent"></div>
   <div class="tools">
     <button onclick="exportLog()">Exporter mon journal</button>
     <button onclick="toggleGoals()">🎯 Objectifs</button>
     <button onclick="toggleLegend()">Légende</button>
+    <button onclick="openExo()">Mes exercices</button>
   </div>
   <div id="legendBox" style="display:none">
     <div class="legend">
-      <b>PARTIE 1 = 5/3/1</b> : le dernier set noté <b>« + »</b> se fait en <b>max de reps</b> (AMRAP), ~1 rep en réserve — jamais l'échec total. Échauffement 40/50/60% du TM avant.<br>
-      <b>Jerk</b> (mer, après le push press) : <b>technique chargée</b> — 5×2 à 70-80 %, on arrête dès que la technique se dégrade. Jamais d'AMRAP.<br>
-      <b>PARTIES 2+ = accessoires hypertrophie</b> (volume/prévention). <b>TEMPO</b> (ex. 30X1) : excentrique / pause basse / concentrique (X=explosif) / pause haute (s). <b>RPE</b> : intensité /10. <b>REST</b> : récup. <b>/side</b> : par côté. « enchaîner » = superset/triset (récup en fin de tour).<br>
-      <b>Deload</b> (sem. 4 · 8 · 12) : reps prescrites, pas de max ; allège aussi les accessoires.<br>
-      <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--tech)">● technique</span> · <span style="color:var(--cardio)">● cardio</span> · <span style="color:var(--warm)">● échauffement</span>.
+      <b>Séances numérotées, sans jour fixe</b> : fais-les dans l'ordre (1 → 2 → 3 → 4, puis 5 au printemps) quand ton planning le permet. 1h max : échauffement 10 min, puis les blocs dans l'ordre. Le % de la semaine ne compte pas les bonus (WOD et course du week-end, footings).<br>
+      <b>Noter tes séries</b> : sous chaque exercice, « ✓ Comme prévu » pré-remplit les séries de la séance (charges et reps), tu corriges ce qui change (reps du dernier set, charge réelle). « + Série » ajoute une série. Tonnage, e1RM et records se calculent tout seuls dans l'onglet <b>Suivi</b>, avec ta forme (sommeil, VFC, FC de repos) et tes repères ATHX.<br>
+      <b>Règles rugby</b> : squat et soulevé au moins 48 h avant un match, rien de lourd la veille. Lendemain de match : repos.<br>
+      <b>Rappel lourd</b> (blocs volume) : 1 série à 85, 90 puis 95 % du TM, barre rapide, jamais au max. Puis le volume à 65-80 % du TM.<br>
+      <b>5/3/1</b> (trêve, bloc force) : le dernier set « + » se fait en max de reps propres, 1 rep en réserve. <b>FSL</b> = séries en plus à la charge de la 1re série.<br>
+      <b>« 2 en réserve »</b> : tu t'arrêtes quand il te resterait 2 reps. Les séries d'accessoires montent sur le bloc : 3 → 4 → 4 → 2 (décharge).<br>
+      <b>TM</b> (training max) ≈ 90 % de ton max. Il monte à chaque bloc (+5 kg squat et soulevé, +2,5 kg push press). <b>e1RM</b> = TM ÷ 0,9. Après un test, corrige-le dans Profil › Mes références : tout le programme suit.<br>
+      <b>S2OH</b> (shoulder to overhead, style libre) : tu le fais en jerk depuis le rack. Les % partent de ta référence S2OH (Profil) : 140 = ton push press actuel, mets ton jerk dès qu'il le dépasse. Objectif : 160.<br>
+      <b>Épreuves ATHX</b> : Force (S2OH, squat 2RM, soulevé 2 × 3), Endurance (3 km de course puis SkiErg jusqu'à 24'), Metcon-X (cap 25'). La séance 4 : jerk + un WOD ATHX court et progressif pendant la saison (RPE 6-7), puis l'Endurance au printemps ; la séance 5 (au printemps) prépare le Metcon-X.<br>
+      <b>Décharge</b> : moins de séries, pas de lourd. Ne la saute pas : c'est là que tu progresses.<br>
+      <b>Couleurs des séances</b> : <span style="color:var(--force)">● muscu</span> · <span style="color:var(--cardio)">● moteur ATHX</span> · <span style="color:var(--wod)">● WOD / compétition</span> · <span style="color:var(--rugby)">● rugby</span> · <span style="color:var(--kine)">● kiné</span> · <span style="color:var(--warm)">● repos/récup</span>.<br>
+      <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--tech)">● jerk / haltéro</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--kine)">● prévention</span> · <span style="color:var(--cardio)">● moteur</span> · <span style="color:var(--warm)">● échauffement</span>.<br>
+      <b>Pastilles des semaines</b> : le trait de couleur indique la phase (<span style="color:var(--hyp)">volume</span>, <span style="color:var(--force)">5/3/1 / force</span>, <span style="color:var(--tech)">test</span>, <span style="color:var(--cardio)">spécifique</span>, <span style="color:var(--wod)">compétition</span>) ; contour vert = semaine en cours.
     </div>
   </div>
-  <div id="goalsBox" style="display:none">
-    <div class="goals">
-      <div class="ghead">🎯 Objectifs — fin des 12 semaines</div>
-      <p><b>12 semaines = 3 cycles de 5/3/1</b> (4 sem./cycle : 3 de travail + 1 décharge). Le Training Max monte de <b>+2,5 kg</b> (haut du corps) / <b>+5 kg</b> (bas) à chaque cycle.</p>
-      <p>En complétant les 3 cycles et en battant tes reps sur les séries « + », voici les cibles réalistes de 1RM :</p>
-      <table class="gtable">
-        <tr><th>Lift</th><th>Départ</th><th>Visé (fin)</th><th>Gain</th></tr>
-        <tr><td>Squat</td><td>210</td><td>220-225</td><td>+10-15</td></tr>
-        <tr><td>Soulevé</td><td>260</td><td>270-275</td><td>+10-15</td></tr>
-        <tr><td>Bench</td><td>170</td><td>177-182</td><td>+7-12</td></tr>
-        <tr><td>Push press</td><td>140</td><td>147-152</td><td>+7-12</td></tr>
-        <tr><td>Jerk (technique)</td><td>140</td><td>155-165</td><td>+15-25</td></tr>
-      </table>
-      <p class="gnote"><b>≈ +35 à +50 kg cumulés</b> sur les 4 mouvements. Ces cibles supposent que tes maxes de départ sont réels — tes AMRAP de la semaine 1 te le confirmeront (bien au-dessus des reps cibles = tu es plus fort ; en-dessous = le TM se recale).</p>
-      <p class="gnote">Le <b>jerk</b> : l'essentiel du gain viendra de la <b>technique</b> (dip-drive) qui débloque ta force déjà là. Côté <b>physique</b>, les accessoires hypertrophie ajoutent du muscle (dos, jambes, épaules) sans casser ton moteur (metcon, ski, course).</p>
-      <p class="gnote">Pile dans tes cibles ATHX : squat 2RM 220-230 · jerk 160-170 · un deadlift qui soutient un 3RM à 225-235.</p>
-    </div>
-  </div>
+  <div id="goalsBox" style="display:none"></div>
 </section>
 
 <!-- ===== PLANNING ===== -->
@@ -214,6 +337,16 @@
   <div class="tools">
     <button onclick="resetWeekPlan()">↺ Réinitialiser cette semaine</button>
   </div>
+</section>
+
+<!-- ===== SUIVI ===== -->
+<section class="view" id="view-suivi">
+  <div class="ltitle">Suivi</div>
+  <div class="lsub">Ta forme, tes charges et tes repères ATHX. Les séries se notent dans chaque séance (charge × reps).</div>
+  <div class="segctl" id="suiviTabs" role="tablist">
+    <button data-s="forme">Forme</button><button data-s="force">Force</button><button data-s="volume">Volume</button><button data-s="reperes">Repères</button>
+  </div>
+  <div id="suiviContent"></div>
 </section>
 
 <!-- ===== NUTRITION ===== -->
@@ -257,7 +390,7 @@
 <!-- ===== PROFIL ===== -->
 <section class="view" id="view-profil">
   <div class="ltitle">Profil</div>
-  <div class="lsub">Renseigne tes données pour calculer ton métabolisme.</div>
+  <div class="lsub">Tes données pour le métabolisme et tes références d'entraînement.</div>
 
   <div class="seclabel">Composition</div>
   <div class="card">
@@ -283,9 +416,48 @@
     </div>
   </div>
 
+  <div class="seclabel">Mes références (programme)</div>
+  <div class="card">
+    <div class="row">
+      <label>S2OH · référence 1RM<span class="hint">Jerk depuis le rack · 140 = ton push press actuel, mets ton jerk dès qu'il le dépasse</span></label>
+      <div class="fieldwrap"><input id="p_jerk" type="number" inputmode="decimal" placeholder="140"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Ajustement TM squat<span class="hint">+ ou − kg sur tout le programme</span></label>
+      <div class="fieldwrap"><input id="p_adj_squat" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Ajustement TM push press<span class="hint">+ ou − kg sur tout le programme</span></label>
+      <div class="fieldwrap"><input id="p_adj_pushpress" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Ajustement TM soulevé<span class="hint">+ ou − kg sur tout le programme</span></label>
+      <div class="fieldwrap"><input id="p_adj_deadlift" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
+    </div>
+  </div>
+  <div class="seclabel">Objectifs Lisbonne</div>
+  <div class="card">
+    <div class="row">
+      <label>S2OH 1RM<span class="hint">Jerk depuis le rack</span></label>
+      <div class="fieldwrap"><input id="p_goal_s2oh" type="number" inputmode="decimal" placeholder="160"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Squat 2RM<span class="hint">2 reps dans la fenêtre de 5'</span></label>
+      <div class="fieldwrap"><input id="p_goal_squat" type="number" inputmode="decimal" placeholder="220"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Soulevé · triple<span class="hint">Sur les 2 fenêtres d'1' (score = moyenne)</span></label>
+      <div class="fieldwrap"><input id="p_goal_dl" type="number" inputmode="decimal" placeholder="240"><span class="unit">kg</span></div>
+    </div>
+  </div>
+  <div class="formula" id="refsBox" style="margin:-6px 0 18px"></div>
+
   <div class="seclabel">Métabolisme</div>
   <div id="metaBox"></div>
   <div class="formula">Katch-McArdle · Masse maigre = Poids × (1 − %MG) · BMR = 370 + 21,6 × masse maigre<br>Tes macros se règlent dans l'onglet <b>Nutrition</b>.</div>
+
+  <div class="seclabel" id="exoAnchor">Mes exercices</div>
+  <div id="exoBox"></div>
 </section>
 
 <!-- ===== NAV ===== -->
@@ -297,6 +469,10 @@
   <button class="tab" data-tab="planning" onclick="switchTab('planning')">
     <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg>
     <span>Planning</span>
+  </button>
+  <button class="tab" data-tab="suivi" onclick="switchTab('suivi')">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5h16M6.5 16l4-5 3.5 3 4.5-6.5"/></svg>
+    <span>Suivi</span>
   </button>
   <button class="tab" data-tab="nutri" onclick="switchTab('nutri')">
     <svg viewBox="0 0 24 24"><path d="M5 3v18M5 8h0M8 3v6a3 3 0 0 1-6 0V3M19 3c-1.5 0-3 2-3 6s1 5 3 5v7"/></svg>
@@ -310,236 +486,765 @@
 
 <script>
 // ---------- DONNÉES PROGRAMME ----------
-const P1 = ["12 reps @ 55-60% 1RM","10 reps @ 60-65% 1RM","8 reps @ 65-70% 1RM","6 reps @ 70-75% 1RM"];
-function b(idx){ return [
-  {title:"Squat", parts:[
-    {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[idx]]]},
-    {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 3110 · RPE 7-8 · REST 2'", ex:[
-      ["Single Leg Romanian Deadlift","10-12/side"],["Suitcase Front Foot Elevated Split Squat","10-12/side"]]},
-    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-      ["2DB Bench Press","10-12 · TEMPO 2020"],["Tractions pronation lestées","4-6 · TEMPO 21X1"]]},
-    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO contrôlé · RPE 7-8 · REST 2'", ex:[
-      ["Sorenson Hold","1'-2'"],["AB Wheel","10-12"]]},
-  ]},
-  {title:"Deadlift", parts:[
-    {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[idx]]]},
-    {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 31X0 · RPE 7-8 · REST 2'", ex:[["Weighted High Step Ups","6-8/side"]]},
-    {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-      ["Strict Press","6 · TEMPO 21X1"],["Barbell Bent Over Row","8-10 · TEMPO 2020"]]},
-    {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"3 sets · TEMPO 2020 · RPE 9 · REST 1'30", ex:[
-      ["Inclined DB Biceps Curl","10-12"],["Cable Triceps Extension","12-15"]]},
-    {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'", ex:[
-      ["Plate Rotation in a Split Squat","20"],["Tuck Sit Knee Wiper","20"]]},
-  ]},
-  {title:"Bench Press", parts:[
-    {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[idx]]]},
-    {label:"Part 2 – Rowing", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[["Barbell Seal Row","10-12"]]},
-    {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"3 sets · RPE 8-9 · REST 1'30", ex:[
-      ["2DB Bulgarian Split Squat","10-12/side · TEMPO 30X0"],["Copenhagen Plank",'20-30"/side'],["Single Leg Banded Abduction","12-15/side"]]},
-    {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'30", ex:[
-      ["Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral Raises","15 · TEMPO 2121"],["Single Arm Farmer Carry",'20-30"/side']]},
-  ]},
- ]; }
+// Programmation jusqu'à l'ATHX de Lisbonne (samedi 26 juin 2027) : 34 semaines à partir du lundi 2 novembre 2026.
+// Séances numérotées, sans jour fixe : tu les fais dans l'ordre quand ton planning le permet.
+const NW = 34;
+const PROG_START = new Date(2026,10,2); // lundi de la semaine 1 (2 novembre 2026)
+function weekDate(w, d){ const x=new Date(PROG_START); x.setDate(x.getDate()+(w-1)*7+(d||0)); return x; }
+function fmtDay(d){ return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
+function weekMonday(w){ return fmtDay(weekDate(w)); }
+function calendarWeek(){
+  const t=new Date(), days=Math.round((Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())-Date.UTC(2026,10,2))/864e5);
+  return Math.min(NW, Math.max(1, Math.floor(days/7)+1));
+}
 
-const BLOCKS = [
-  b(0),
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[1]]]},
-     {label:"Part 2 – Hinge", meta:"4 sets · REST 1'-1'30", ex:[["Staggered KB Swing","20/side"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Back Rack Lunges","10-12/side"],["DB Death March","10-12/side"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 2'", ex:[
-       ["Alternating Seated Pike Leg Lift","20"],["Hanging L-Sit","Max Time (ou Half L-Sit)"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[1]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · REST 1'30", ex:[["Weighted Crossover Step Over","10/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Arnold Press","10-12"],["Gorilla Row","10-12"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
-       ["DB Curl","12-15"],["Overhead Dumbbell Triceps Extension","12-15/side"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · REST 1'30", ex:[
-       ["Split Stance PVC Anti Rotation",'20/20"'],["Dragon Flag 4 sec Eccentric","6"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[1]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30", ex:[["Pendlay Row","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Single Leg Hip Thrust","10/side · TEMPO 20X2"],["Goblet Cyclist Squat","10 · TEMPO 2020"],["Monster Walk","10m"]]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Ring Dips lestés","6-8 · TEMPO 21X1"],["DB Lateral + Frontal Raises","12"],["Single Arm KB Side Bend",'25"/side']]},
-   ]},
-  ],
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[2]]]},
-     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
-       ["Barbell Romanian Deadlift","10-12"],["Suitcase Front Foot Elevated Split Squat","8/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Ring Push Ups","12 · TEMPO 12X1"],["DB Butterfly Chest Supported","12 · TEMPO 20X1"]]},
-     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
-       ["MB Lateral Shot","12/side"],["Heavy Farmer Carry","20m/side"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[2]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 30X1 · RPE 8 · REST 1'30-2'", ex:[["Hip Thrust","10"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8 · REST 1'30-2'", ex:[
-       ["Cable Pull Behind The Neck","10-12"],["Half Kneeling Landmine Press","10/side"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 2020 · RPE 8-9 · REST 1'-1'30", ex:[
-       ["Spider Curl","12-15"],["Barbell Body Triceps Extension","12-15"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
-       ["Banded Pallof Walk Out","6/side (A/R)"],["Cable Crunch","12 · TEMPO 2020"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[2]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Cable Horizontal Narrow Grip Pull","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Eccentric Nordic Hamstring Curl","5"],["Leg Extension","10/side · TEMPO 20X2"],["Banded Clamshell","10/side"]]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Alternating DB See Saw Press","12"],["Low Cable Fly","12 · TEMPO 20X0"],["Lateral Star Plank",'25"/side']]},
-   ]},
-  ],
-  [
-   {title:"Squat", parts:[
-     {label:"Part 1 – Back Squat", meta:"4-5 sets · TEMPO 30X1 · REST 2'30-3'", ex:[["Back Squat",P1[3]]]},
-     {label:"Part 2 – Lower Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 30X0 · RPE 8 · REST 2'", ex:[
-       ["Single Leg GHD Hip Extension","10/side"],["RNT Barbell Split Squat","8/side"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Seated DB Complex Strict Press","12"],["DB Three Point Row","10/side · TEMPO 20X1"]]},
-     {label:"Part 4 – Core", meta:"3 sets · REST 1'30", ex:[
-       ["Lateral Plank Pulse","25/side"],["Ring Body Saw","15"]]},
-   ]},
-   {title:"Deadlift", parts:[
-     {label:"Part 1 – Deadlift", meta:"4-5 sets · TEMPO 20X1 · REST 3'", ex:[["Deadlift",P1[3]]]},
-     {label:"Part 2 – Lower Body", meta:"4 sets · TEMPO 3030 · RPE 7 · REST 1'30-2'", ex:[["Seated Wide Stance Good Morning","10"]]},
-     {label:"Part 3 – Upper Body", note:"enchaîner les 2 mouvements", meta:"4 sets · TEMPO 20X0 · RPE 8 · REST 1'30-2'", ex:[
-       ["Upright Row","10-12"],["DB LU Raises","10"]]},
-     {label:"Part 3b – Bras", note:"enchaîner les 2 mouvements", meta:"4 sets · RPE 8 · REST 1'-1'30", ex:[
-       ["Skull Crusher","12 · TEMPO 20X0"],["Barbell Curl 21's","7-7-7"]]},
-     {label:"Part 4 – Core", note:"enchaîner les 2 mouvements", meta:"3 sets · RPE 8 · REST 1'30", ex:[
-       ["Half Kneeling Chop And Lift","8/8 · TEMPO 20X0"],["L-Sit","Max Time"]]},
-   ]},
-   {title:"Bench Press", parts:[
-     {label:"Part 1 – Bench Press", meta:"4-5 sets · TEMPO 31X1 · REST 2'30-3'", ex:[["Bench Press",P1[3]]]},
-     {label:"Part 2 – Upper Body", meta:"4 sets · TEMPO 20X2 · RPE 8 · REST 1'30", ex:[["Wide Grip Pull Ups or Cable Vertical Row","10-12"]]},
-     {label:"Part 3 – Lower Body", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 1'30-2'", ex:[
-       ["Sissy Squat","6"],["Side Band Walk ou Machine Abductor","10/side · TEMPO 20X2"],["Single Leg Wall Sit",'20"/side']]},
-     {label:"Part 4 – Triset", note:"enchaîner les 3 mouvements", meta:"4 sets · RPE 8 · REST 2'", ex:[
-       ["Cable Pull Over","12 · TEMPO 20X0"],["Inclined DB Bench Press","12 · TEMPO 20X0"],["Cable Rowing Pass Through","12/side"]]},
-   ]},
-  ],
+// Phases de la saison (c = couleur de la pastille de semaine et de la carte « semaine »).
+const PH = {
+  I:   {name:"Reprise en volume",     c:"var(--hyp)"},
+  V:   {name:"Bloc volume",           c:"var(--hyp)"},
+  C:   {name:"Cycle 5/3/1 de trêve",  c:"var(--force)"},
+  T:   {name:"Test des TM",           c:"var(--tech)"},
+  R:   {name:"Transition post-saison",c:"var(--kine)"},
+  F:   {name:"Bloc force ATHX",       c:"var(--force)"},
+  S:   {name:"Bloc spécifique ATHX",  c:"var(--cardio)"},
+  SIM: {name:"Répétition générale",   c:"var(--wod)"},
+  TAP: {name:"Affûtage",              c:"var(--wod)"},
+  COMP:{name:"ATHX Lisbonne",         c:"var(--wod)"},
+};
+// [1re semaine, dernière semaine, phase, n° de bloc]
+const PHASE_TABLE = [
+  [1,1,"I"],[2,5,"V",1],[6,6,"T",1],[7,10,"C"],[11,14,"V",2],[15,18,"V",3],[19,19,"T",2],[20,23,"V",4],
+  [24,24,"R"],[25,28,"F"],[29,31,"S"],[32,32,"SIM"],[33,33,"TAP"],[34,34,"COMP"],
 ];
+function phaseOf(w){
+  const r=PHASE_TABLE.find(x=>w>=x[0] && w<=x[1]);
+  return Object.assign({code:r[2], blk:r[3]||0, k:w-r[0], len:r[1]-r[0]+1, from:r[0], to:r[1]}, PH[r[2]]);
+}
 
-const BLOCK_INFO = [
-  {r:"12 reps @ 55-60% 1RM"},{r:"10 reps @ 60-65% 1RM"},{r:"8 reps @ 65-70% 1RM"},{r:"6 reps @ 70-75% 1RM"},
+// Week-ends réels du calendrier RC Courbevoie Fed 1 (saison 2026-2027). Dernière journée le 11 avril (phases finales non prévues).
+// "match" : repos la veille puis match · "bye" : pas de match → WOD + course en option · "off" : saison finie.
+const WEEKEND = [
+  {type:"match", date:"dim. 8 nov.",  opp:"Paris Université Club", home:false}, // 1
+  {type:"match", date:"dim. 15 nov.", opp:"U S Tours",          home:true},     // 2
+  {type:"bye"},                                                                 // 3
+  {type:"match", date:"dim. 29 nov.", opp:"C S Nuiton",         home:false},    // 4
+  {type:"match", date:"dim. 6 déc.",  opp:"XV Corsaire Saint Malo", home:true}, // 5
+  {type:"match", date:"dim. 13 déc.", opp:"U S Issoirienne",    home:true},     // 6
+  {type:"bye"}, {type:"bye"}, {type:"bye"},                                     // 7-9 · trêve hivernale
+  {type:"match", date:"dim. 10 janv.", opp:"R C Auxerrois",     home:false},    // 10
+  {type:"match", date:"dim. 17 janv.", opp:"Beauvais XV R C",   home:true},     // 11
+  {type:"bye"},                                                                 // 12
+  {type:"match", date:"dim. 31 janv.", opp:"S C Royannais",     home:false},    // 13
+  {type:"match", date:"dim. 7 févr.",  opp:"U S Montmélianaise", home:true},    // 14
+  {type:"match", date:"dim. 14 févr.", opp:"U S Annecy",        home:true},     // 15
+  {type:"bye"},                                                                 // 16
+  {type:"match", date:"dim. 28 févr.", opp:"AS Bièvre St Geoirs", home:false},  // 17
+  {type:"match", date:"dim. 7 mars",   opp:"Paris Université Club", home:true}, // 18
+  {type:"bye"},                                                                 // 19
+  {type:"match", date:"dim. 21 mars",  opp:"U S Tours",         home:false},    // 20
+  {type:"match", date:"dim. 28 mars",  opp:"C S Nuiton",        home:true},     // 21
+  {type:"bye"},                                                                 // 22
+  {type:"match", date:"dim. 11 avril", opp:"XV Corsaire Saint Malo", home:false}, // 23 · dernière journée
+  ...Array.from({length:11}, ()=>({type:"off"})),                               // 24-34
 ];
+// WOD des week-ends sans match (en saison) : le Metcon-X complet ("chipper") revient régulièrement comme repère.
+const BYE_WOD = {7:"chipper", 8:"emom", 9:"amrap", 12:"emom", 16:"amrap", 22:"emom"};
 
-// ---------- 5/3/1 (Partie 1 de chaque séance de force) — 12 semaines = 3 cycles ----------
-const S531 = {
+// Noms des accessoires de l'ancien format (pour afficher les notes saisies avant la refonte).
+const ACC_V3 = {
+  pushpress: [
+    {label:"Bloc 2 · Bas du corps", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Soulevé de terre jambes tendues","3×8-10"],["Fentes","3×8-10/côté"]]},
+    {label:"Bloc 3 · Bras", c:"hyp", note:"superset · enchaîne les 2", ex:[["Curl biceps (haltères)","3×10-12"],["Extension triceps (poulie)","3×10-12"]]},
+  ],
   squat: [
-    {sets:"115 ×5 · 132,5 ×5 · 150 ×5+",warm:"70×5 · 90×5 · 107,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"177,5"},
-    {sets:"125 ×3 · 142,5 ×3 · 160 ×3+",warm:"70×5 · 90×5 · 107,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"177,5"},
-    {sets:"132,5 ×5 · 150 ×3 · 167,5 ×1+",warm:"70×5 · 90×5 · 107,5×3",cible:"~8",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"177,5"},
-    {sets:"70 ×5 · 90 ×5 · 107,5 ×5",warm:"70×5 · 90×5 · 107,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"177,5"},
-    {sets:"117,5 ×5 · 137,5 ×5 · 155 ×5+",warm:"72,5×5 · 90×5 · 110×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"182,5"},
-    {sets:"127,5 ×3 · 145 ×3 · 165 ×3+",warm:"72,5×5 · 90×5 · 110×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"182,5"},
-    {sets:"137,5 ×5 · 155 ×3 · 172,5 ×1+",warm:"72,5×5 · 90×5 · 110×3",cible:"~7",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"182,5"},
-    {sets:"72,5 ×5 · 90 ×5 · 110 ×5",warm:"72,5×5 · 90×5 · 110×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"182,5"},
-    {sets:"122,5 ×5 · 140 ×5 · 160 ×5+",warm:"75×5 · 95×5 · 112,5×3",cible:"~9",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"187,5"},
-    {sets:"130 ×3 · 150 ×3 · 170 ×3+",warm:"75×5 · 95×5 · 112,5×3",cible:"~7",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"187,5"},
-    {sets:"140 ×5 · 160 ×3 · 177,5 ×1+",warm:"75×5 · 95×5 · 112,5×3",cible:"~5",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"187,5"},
-    {sets:"75 ×5 · 95 ×5 · 112,5 ×5",warm:"75×5 · 95×5 · 112,5×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"187,5"}
-  ],
-  bench: [
-    {sets:"95 ×5 · 110 ×5 · 122,5 ×5+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"145"},
-    {sets:"102,5 ×3 · 115 ×3 · 130 ×3+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"145"},
-    {sets:"110 ×5 · 122,5 ×3 · 137,5 ×1+",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"145"},
-    {sets:"57,5 ×5 · 72,5 ×5 · 87,5 ×5",warm:"57,5×5 · 72,5×5 · 87,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"145"},
-    {sets:"95 ×5 · 110 ×5 · 125 ×5+",warm:"60×5 · 75×5 · 87,5×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"147,5"},
-    {sets:"102,5 ×3 · 117,5 ×3 · 132,5 ×3+",warm:"60×5 · 75×5 · 87,5×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"147,5"},
-    {sets:"110 ×5 · 125 ×3 · 140 ×1+",warm:"60×5 · 75×5 · 87,5×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"147,5"},
-    {sets:"60 ×5 · 75 ×5 · 87,5 ×5",warm:"60×5 · 75×5 · 87,5×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"147,5"},
-    {sets:"97,5 ×5 · 112,5 ×5 · 127,5 ×5+",warm:"60×5 · 75×5 · 90×3",cible:"~10",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"150"},
-    {sets:"105 ×3 · 120 ×3 · 135 ×3+",warm:"60×5 · 75×5 · 90×3",cible:"~8",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"150"},
-    {sets:"112,5 ×5 · 127,5 ×3 · 142,5 ×1+",warm:"60×5 · 75×5 · 90×3",cible:"~6",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"150"},
-    {sets:"60 ×5 · 75 ×5 · 90 ×5",warm:"60×5 · 75×5 · 90×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"150"}
+    {label:"Bloc 2 · Haut du corps", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Bench Press","3×8-10"],["Tractions pronation lestées","3×8-10"]]},
+    {label:"Bloc 3 · Prévention", c:"prev", note:"circuit · épaule, adducteurs, ischios", ex:[["Oiseau (ou Y-T-W-A) — épaule","3×15"],["Copenhagen Plank — adducteurs",'3×20-30"/côté'],["Nordic excentrique ou leg curl — ischios","3×6-8"]]},
   ],
   deadlift: [
-    {sets:"142,5 ×5 · 165 ×5 · 187,5 ×5+",warm:"87,5×5 · 110×5 · 132,5×3",cible:"~12",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"220"},
-    {sets:"155 ×3 · 175 ×3 · 197,5 ×3+",warm:"87,5×5 · 110×5 · 132,5×3",cible:"~10",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"220"},
-    {sets:"165 ×5 · 187,5 ×3 · 210 ×1+",warm:"87,5×5 · 110×5 · 132,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"220"},
-    {sets:"87,5 ×5 · 110 ×5 · 132,5 ×5",warm:"87,5×5 · 110×5 · 132,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"220"},
-    {sets:"145 ×5 · 170 ×5 · 190 ×5+",warm:"90×5 · 112,5×5 · 135×3",cible:"~11",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"225"},
-    {sets:"157,5 ×3 · 180 ×3 · 202,5 ×3+",warm:"90×5 · 112,5×5 · 135×3",cible:"~9",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"225"},
-    {sets:"170 ×5 · 190 ×3 · 215 ×1+",warm:"90×5 · 112,5×5 · 135×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"225"},
-    {sets:"90 ×5 · 112,5 ×5 · 135 ×5",warm:"90×5 · 112,5×5 · 135×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"225"},
-    {sets:"150 ×5 · 172,5 ×5 · 195 ×5+",warm:"92,5×5 · 115×5 · 137,5×3",cible:"~10",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"230"},
-    {sets:"160 ×3 · 185 ×3 · 207,5 ×3+",warm:"92,5×5 · 115×5 · 137,5×3",cible:"~8",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"230"},
-    {sets:"172,5 ×5 · 195 ×3 · 217,5 ×1+",warm:"92,5×5 · 115×5 · 137,5×3",cible:"~6",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"230"},
-    {sets:"92,5 ×5 · 115 ×5 · 137,5 ×5",warm:"92,5×5 · 115×5 · 137,5×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"230"}
+    {label:"Bloc 2 · Haut du corps", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Dips","3×8-10"],["Rowing (Barbell Bent Over Row)","3×8-10"]]},
+    {label:"Bloc 3 · Bas du corps", c:"hyp", note:"superset · charge légère, technique + hypertrophie", ex:[["Hip Thrust","3×8-10"],["Front Squat","3×8-10"]]},
+    {label:"Bloc 4 · Gainage & abdos", c:"prev", note:"superset · enchaîne les 2", ex:[["Gainage ventral (Plank)","3×40''"],["Ab Wheel (roulette de gainage)","3×10-12"]]},
   ],
-  pushpress: [
-    {sets:"77,5 ×5 · 90 ×5 · 102,5 ×5+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~11",label:"Cycle 1 · Sem. 1 — 65/75/85%",deload:false,tm:"120"},
-    {sets:"85 ×3 · 95 ×3 · 107,5 ×3+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~9",label:"Cycle 1 · Sem. 2 — 70/80/90%",deload:false,tm:"120"},
-    {sets:"90 ×5 · 102,5 ×3 · 115 ×1+",warm:"47,5×5 · 60×5 · 72,5×3",cible:"~7",label:"Cycle 1 · Sem. 3 — 75/85/95%",deload:false,tm:"120"},
-    {sets:"47,5 ×5 · 60 ×5 · 72,5 ×5",warm:"47,5×5 · 60×5 · 72,5×3",cible:"",label:"Cycle 1 · Deload — 40/50/60%",deload:true,tm:"120"},
-    {sets:"80 ×5 · 92,5 ×5 · 105 ×5+",warm:"50×5 · 60×5 · 72,5×3",cible:"~10",label:"Cycle 2 · Sem. 1 — 65/75/85%",deload:false,tm:"122,5"},
-    {sets:"85 ×3 · 97,5 ×3 · 110 ×3+",warm:"50×5 · 60×5 · 72,5×3",cible:"~8",label:"Cycle 2 · Sem. 2 — 70/80/90%",deload:false,tm:"122,5"},
-    {sets:"92,5 ×5 · 105 ×3 · 117,5 ×1+",warm:"50×5 · 60×5 · 72,5×3",cible:"~6",label:"Cycle 2 · Sem. 3 — 75/85/95%",deload:false,tm:"122,5"},
-    {sets:"50 ×5 · 60 ×5 · 72,5 ×5",warm:"50×5 · 60×5 · 72,5×3",cible:"",label:"Cycle 2 · Deload — 40/50/60%",deload:true,tm:"122,5"},
-    {sets:"80 ×5 · 95 ×5 · 105 ×5+",warm:"50×5 · 62,5×5 · 75×3",cible:"~10",label:"Cycle 3 · Sem. 1 — 65/75/85%",deload:false,tm:"125"},
-    {sets:"87,5 ×3 · 100 ×3 · 112,5 ×3+",warm:"50×5 · 62,5×5 · 75×3",cible:"~7",label:"Cycle 3 · Sem. 2 — 70/80/90%",deload:false,tm:"125"},
-    {sets:"95 ×5 · 105 ×3 · 120 ×1+",warm:"50×5 · 62,5×5 · 75×3",cible:"~5",label:"Cycle 3 · Sem. 3 — 75/85/95%",deload:false,tm:"125"},
-    {sets:"50 ×5 · 62,5 ×5 · 75 ×5",warm:"50×5 · 62,5×5 · 75×3",cible:"",label:"Cycle 3 · Deload — 40/50/60%",deload:true,tm:"125"}
-  ]
+  haltero: [
+    {label:"Bloc 2 · Prévention", c:"prev", note:"superset · adducteurs et ischios", ex:[["Copenhagen Plank — adducteurs",'3×20-30"/côté'],["Nordic excentrique ou leg curl — ischios","3×6-8"]]},
+    {label:"Bloc 3 · Gainage, cervicales, bras", c:"prev", note:"circuit · enchaîne les 3", ex:[["Gainage latéral","3×30''/côté"],["Renforcement cervical","3×15 (4 directions)"],["Bras : curl + extension triceps","3×12 chacun"]]},
+  ],
 };
+const WARMUP_BUL = "Cardio léger 3-4 min (vélo/rameur/corde) pour monter en température<br>Mobilité articulaire : chevilles, hanches, dos, épaules (cercles, balancements)<br>Activation courte : gainage + fessiers/scapula<br>2-3 répétitions du mouvement du jour à vide/léger pour rentrer dans le geste";
 
-// Nom affiché + clé vidéo du mouvement principal 5/3/1
-const MAINNAME = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
-const MAINVID  = {squat:"Back Squat", deadlift:"Deadlift", bench:"Bench Press", pushpress:"Push Press"};
-
-// Séances moteur / cardio
+// Textes communs
 const COND = {
-  metcon:  {title:"WOD ATHX", tag:"Moteur", desc:"Chipper (cap ~25 min) : 2×45 cal row · 30 G2OH DB 20 kg · 30 DB bench 2×20 kg · 30 sandbag squats/carry 50 kg · 30 burpees over bench."},
-  ef:      {title:"Sortie EF", tag:"Endurance", desc:"Course en <b>endurance fondamentale</b> : très facile, Z2 (~6:45-7:15/km, HR 135-148). 45-75 min selon la forme. Ça doit rester conversationnel — c'est de la récup active, pas une séance."},
+  repos:    {title:"Repos complet", tag:"Récup", desc:"Lendemain de match : repos total, pas d'entraînement. Le corps encaisse le choc du match — marche légère ou étirements doux seulement si besoin, rien de plus."},
+  kine_am:  {title:"Kiné / prévention", tag:"Prévention"},
 };
+function rugbyContent(ck, w){ return {title:"Rugby (terrain)", desc:"Séance du club de la semaine : reprends la feuille RC Courbevoie et note ta séance ci-dessous."}; }
 
-// Cardio rugby terrain (RC Courbevoie) — contenu par semaine. Sem. 1 = feuille 27/07 (profils lourds), sem. 2 = feuille 03/08 (profils coureurs).
-const RUGBY = {
-  1: {
-    rugby1:{title:"Cardio rugby 1 · terrain (lourds)", desc:"<b>Échauffement</b> : gammes athlétiques (amplitude puis fréquence, poussée & pied dur, travail latéral), étirements balistiques, accélérations progressives.<br><b>Sprints</b> : 2×10 m (r 1') · 1×15 m (r 1'30-2') · 1×20 m (r 2'30-3') · 1×25 m.<br><b>Cardio</b> : 3-4 séries (récup 1'30). 1 série = 3 reps de navette <b>0-5-0-10-0-15-0-20-0</b> le + vite possible (cible &lt;30''), départ toutes les 1'30."},
-    rugby2:{title:"Cardio rugby 2 · terrain (lourds)", desc:"<b>Échauffement</b> (idem cardio 1).<br><b>WOD 1 — FOR TIME</b> : (0-20-0-40-0-60-0 + 20 burpees) → +15 burpees → +10 burpees → +5 burpees.<br><b>WOD 2</b> : 2 séries de 5 tours (récup inter-séries 3-5') : 5 burpees · 3 reps T-Test · 4 burpees · 3 reps 0-5-0-10-0-15-0 · 3 burpees · 45'' repos."},
-    rugby3:{title:"Cardio rugby 3 · terrain (lourds)", desc:"<b>Échauffement</b> (idem).<br><b>WOD 1 — TABATA 10''ON/30''OFF, 10' (3 tours)</b> : max A-R aux 5 m · poussée joug/prowler lourd ou plaquages/burpees · max A-R 10 m · poussée · max A-R 15 m.<br><b>WOD 2 — AMRAP 10'</b> : 0-5-0-10-0-15 + 20 pompes + 20 sit-ups + 20 commandos.<br><b>WOD 3</b> : idem WOD 1."},
-  },
-  2: {
-    rugby1:{title:"Cardio rugby 1 · terrain (coureurs)", desc:"<b>Échauffement</b> (gammes, étirements balistiques, accélérations, changements de direction).<br><b>Sprints</b> : 1×10 m (r 1') · 2×20 m (r 2') · 1×30 m (r 3') · 2×40 m (r 5').<br><b>Cardio</b> : 8 reps 0-22-0-40-0-60 (+ rapide que la semaine passée, départ /1', R 3') · 10 reps 0-22-0-22-0 (départ /40'', R 5') · 12 reps 0-22-0 (départ /30'')."},
-    rugby2:{title:"Cardio rugby 2 · terrain (coureurs)", desc:"<b>Échauffement</b> (idem).<br><b>BROKEN BRONCO</b> : 3 séries de [3 reps de Bronco (3×[0-20-0-40-0-60-0]) à l'allure cible de ton Bronco de reprise, R 1'30 ; puis 2 reps de Bronco même allure ou + vite]. Récup inter-séries 3-5' (mieux vaut 5' et garder l'allure)."},
-    rugby3:{title:"Cardio rugby 3 · terrain (coureurs)", desc:"<b>Échauffement</b> (idem).<br><b>WOD 1</b> : 10 reps 1' course / 30'' OFF (265-280 m).<br><b>WOD 2 — FOR TIME, 10 tours</b> : 30'' course · 10'' récup · 0-5-0-5 course, départ toutes les 1'30 (durée 25'30)."},
-  },
+// ---------- PROGRAMME (sem. 1 → 34) ----------
+// TM de départ (sept. 2026) et hausse par bloc. e1RM = TM ÷ 0,9.
+const LIFTS = {
+  pushpress:{tm:120,   inc:2.5, name:"Push Press", short:"Push press"},
+  squat:    {tm:177.5, inc:5,   name:"Back Squat", short:"Squat"},
+  deadlift: {tm:220,   inc:5,   name:"Deadlift",   short:"Soulevé"},
 };
-function rugbyContent(ck, w){ return (RUGBY[w] && RUGBY[w][ck]) ? RUGBY[w][ck] : {title:"Cardio rugby (terrain)", desc:"Séance cardio terrain du club de la semaine — reprends la feuille RC Courbevoie et note ta séance ci-dessous."}; }
+// Nombre de hausses de TM depuis le départ (TM de sept. 2026). Le soulevé garde un cycle de retard.
+// Les semaines de test vérifient le TM du bloc suivant. Le bloc force ATHX est un nouveau cycle : +1 hausse.
+const TM_STEPS = {V1:2, T1:3, C:3, V2:4, V3:5, T2:6, V4:6, ATHX:7};
+function tmKey(w){ const p=phaseOf(w); if(p.code==="I") return "V1"; if(p.code==="V") return "V"+p.blk; if(p.code==="T") return "T"+p.blk; if(p.code==="C") return "C"; return "ATHX"; }
+function profNum(id){ const v=parseFloat(String(PROFILE[id]==null?"":PROFILE[id]).replace(",",".")); return isFinite(v)?v:null; }
+function adj(lift){ return profNum("p_adj_"+lift)||0; }
+function TM(lift, w){ const L=LIFTS[lift]; const n=TM_STEPS[tmKey(w)]-(lift==="deadlift"?1:0); return L.tm + L.inc*n + adj(lift); }
+function e1RM(lift, w){ return TM(lift, w)/0.9; }
+function jerkRef(){ const v=profNum("p_jerk"); return v&&v>0 ? v : 140; }
+// Objectifs ATHX (S2OH 1RM, squat 2RM, soulevé 3RM ×2) — Epley : 2RM ≈ e1RM × 30/32, 3RM ≈ e1RM × 30/33.
+// Objectifs fixés (Profil, par défaut 160 / 220 × 2 / 240 × 3 sur les 2 fenêtres).
+// proj = ce que tes références montrent (réf. S2OH, TM de fin de programme) · le plan de tentatives prend le plus bas des deux.
+// Soulevé : charge des 2 fenêtres ≈ 95 % du 3RM frais (la 2e triple arrive après 1' de repos et compte autant).
+function goals(){ return {s2oh:profNum("p_goal_s2oh")||160, squat:profNum("p_goal_squat")||220, dl:profNum("p_goal_dl")||240}; }
+function athxTargets(){
+  const G=goals(), d3=e1RM("deadlift",NW)*30/33;
+  const proj={jerk:r25(jerkRef()), squat:r25(e1RM("squat",NW)*30/32), deadlift3:r25(d3), deadlift:r25(d3*0.95)};
+  return {goal:G, proj, jerk:Math.min(G.s2oh,proj.jerk), squat:Math.min(G.squat,proj.squat), deadlift:Math.min(G.dl,proj.deadlift), deadlift3:proj.deadlift3};
+}
 
-// Jerk = travail TECHNIQUE chargé (après le push press). % sur le jerk RÉEL (140), pas sur l'objectif.
-const JERK_TECH = {
-  sets:"5 × 2 @ 100 → 112,5 kg (70-80 % de 140)",
-  bul:"<b>Objectif = la technique, pas la charge</b> : ton jerk est limité par le <b>dip trop court</b> — c'est là qu'est le gain<br><b>Dip</b> : vertical, buste droit, <b>descends plus bas</b> (~10-15 cm), genoux qui partent vers l'avant/extérieur<br><b>Drive</b> : explose des jambes, bras passifs jusqu'au bout de l'extension<br><b>Split</b> : pied avant à plat, arrière sur la pointe, réception <b>bras verrouillés d'un coup</b> (pas de press-out)<br>Repos 1'30-2' · arrête la série dès que la technique se dégrade<br><b>Drills</b> (2-3 séries avant) : dip-drive avec <b>pause 2''</b> en bas · jerk balance · split jerk depuis les racks"
-};
-
-// Planning de la semaine (ordre des jours). hyp = index séance hypertrophie (0 squat, 1 deadlift, 2 bench) ; null = pas d'accessoires. bench = ajoute le bloc bench force.
-const SCHEDULE = [
-  {day:"Lundi",    kind:"lift", lift:"squat",     hyp:0,    title:"Squat"},
-  {day:"Mardi",    kind:"lift", lift:"bench",     hyp:2,    title:"Développé couché"},
-  {day:"Mardi",    kind:"cond", ck:"rugby1"},
-  {day:"Mercredi", kind:"lift", lift:"deadlift",  hyp:1,    title:"Soulevé de terre"},
-  {day:"Mercredi", kind:"cond", ck:"rugby2"},
-  {day:"Jeudi",    kind:"lift", lift:"pushpress", hyp:null, title:"Push press + Jerk + Ski", jerk:true, ski:true},
-  {day:"Vendredi", kind:"cond", ck:"rugby3"},
-  {day:"Samedi",   kind:"cond", ck:"metcon"},
-  {day:"Dimanche", kind:"cond", ck:"ef"},
+const WAVES = [
+  {p:[65,75,85], r:["5","5","5+"]}, {p:[70,80,90], r:["3","3","3+"]},
+  {p:[75,85,95], r:["5","3","1+"]}, {p:[40,50,60], r:["5","5","5"], deload:true},
 ];
-function cycleInfo(w){ return {cyc:Math.floor((w-1)/4), wk:(w-1)%4}; }
+function r25(x){ return Math.round(x/2.5)*2.5; }
+function kg(x){ return String(x).replace(".",","); }
+function pct(base, p){ return kg(r25(base*p/100)); }
+function rampStr(base, list, first){ return (first||"barre ×10")+" · "+list.map(([p,r])=>`${pct(base,p)}×${r}`).join(" · "); }
 function bullets(s){ const a=String(s).split('<br>').map(x=>x.trim()).filter(Boolean); return '<ul class="bul">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; }
+function note(s){ return `<div class="pmeta"><span class="pnote">${s}</span></div>`; }
+
+// Vidéos : nom affiché → clé du catalogue VIDEOS (sinon recherche YouTube).
+const VID_ALIAS = {
+  "Développé couché (bench press)":"Bench Press", "Rowing barre (Pendlay)":"Pendlay Row", "Rowing barre":"Barbell Bent Over Row",
+  "Élévations latérales haltères":"DB Lateral Raises", "Élévations latérales + frontales":"DB Lateral + Frontal Raises",
+  "Curl incliné haltères":"Inclined DB Biceps Curl", "Curl haltères":"DB Curl", "Spider curl":"Spider Curl",
+  "Extension triceps poulie":"Cable Triceps Extension", "Barre au front":"Skull Crusher",
+  "Tractions lestées":"Tractions pronation lestées", "Tractions supination lestées":"weighted chin up",
+  "Copenhague — adducteurs":"Copenhagen Plank", "Nordic excentrique — ischios":"Eccentric Nordic Hamstring Curl",
+  "Oiseau / Y-T-W-A — épaules":"Y T W A shoulder", "Face pull poulie — épaules":"face pull",
+  "Développé haltères":"2DB Bench Press", "Développé incliné haltères":"Inclined DB Bench Press",
+  "Rowing un bras (3 appuis)":"DB Three Point Row", "Rowing poitrine appuyée (seal row)":"Barbell Seal Row",
+  "Pompes aux anneaux lestées":"Ring Push Ups", "Tirage horizontal poulie prise serrée":"Cable Horizontal Narrow Grip Pull",
+  "Hip thrust":"Hip Thrust", "Hip thrust une jambe":"Single Leg Hip Thrust", "Pallof press":"Banded Pallof Walk Out",
+  "Roue abdominale":"AB Wheel", "Renforcement cervical":"neck strengthening rugby", "Gainage latéral":"side plank",
+  "Fentes bulgares haltères":"2DB Bulgarian Split Squat", "Soulevé de terre roumain":"Barbell Romanian Deadlift",
+  "Farmer carry lourd":"Heavy Farmer Carry", "Spanish squat isométrique — genou":"spanish squat isometric",
+  "Rotation externe épaule (poulie)":"cable external rotation shoulder", "Tibialis raise — chevilles":"tibialis raise",
+};
+Object.assign(VID_ALIAS, {
+  "Développé incliné barre":"incline bench press", "Développé couché prise serrée":"close grip bench press", "Pompes lestées":"weighted push ups",
+  "Pompes pieds surélevés":"feet elevated push ups", "Dips (poids du corps)":"bodyweight dips", "Pompes diamant":"diamond push ups",
+  "Tractions (poids du corps)":"pull ups", "Tirage vertical poulie":"lat pulldown", "Tirage vertical poulie prise serrée":"close grip lat pulldown",
+  "Rowing haltères sur banc incliné":"incline dumbbell row", "Rowing inversé (sous une barre)":"inverted row",
+  "Élévations latérales poulie":"cable lateral raise", "Face pull élastique":"band face pull", "Oiseau haltères":"dumbbell reverse fly",
+  "Rotation externe épaule (élastique)":"band external rotation", "Rotation externe haltère couché sur le côté":"side lying external rotation",
+  "Curl marteau":"hammer curl", "Curl barre":"barbell curl", "Curl pupitre (Larry Scott)":"preacher curl", "Extension triceps haltère au-dessus de la tête":"Overhead Dumbbell Triceps Extension",
+  "Fentes arrière haltères":"dumbbell reverse lunge", "Fentes marchées haltères":"dumbbell walking lunges", "Step-up haltères":"Weighted High Step Ups",
+  "Soulevé de terre roumain haltères":"dumbbell romanian deadlift", "Good morning":"barbell good morning", "Pont fessier barre au sol":"barbell glute bridge",
+  "Pont fessier une jambe":"single leg glute bridge", "Leg curl machine":"lying leg curl", "Glissés ischios (slider ou serviette)":"slider hamstring curl",
+  "Pont ischios une jambe":"single leg hamstring bridge", "Copenhague genou plié":"short lever copenhagen plank", "Adducteurs machine":"adductor machine",
+  "Squeeze ballon entre les genoux":"adductor squeeze ball", "Chaise contre le mur (wall sit)":"wall sit", "Leg extension isométrique":"isometric leg extension",
+  "Tibialis raise contre un mur":"wall tibialis raise", "Marche sur les talons":"heel walk", "Rollout barre (disques)":"barbell rollout", "Planche avec reach":"plank reach",
+  "Crunch poulie":"Cable Crunch", "Pallof press élastique":"band pallof press", "Planche latérale genoux":"side plank from knees",
+  "Cervicales à la main (isométrique)":"neck isometrics", "Sandbag ~50 kg":"sandbag bear hug squat", "Farmer carry haltères":"dumbbell farmer carry", "Suitcase carry (un côté)":"suitcase carry",
+});
+function vidLink(name){ const k=VID_ALIAS[name]||name; return VIDEOS[k] || ("https://www.youtube.com/results?search_query="+encodeURIComponent(k+" technique")); }
+const JERK_VID = "https://www.youtube.com/results?search_query="+encodeURIComponent("split jerk technique");
+const CJ_VID = "https://www.youtube.com/results?search_query="+encodeURIComponent("clean and jerk technique");
+const JERK_CUES = "Dip vertical et court (~10-15 cm), talons au sol, coudes légèrement devant<br>Drive violent des jambes, la tête recule pour laisser passer la barre<br>Réception en fente : pied avant à plat, genou au-dessus de la cheville, <b>bras verrouillés d'un coup</b> (pas de press-out)<br>Ramène le pied avant puis le pied arrière, barre stable 1 s<br>Au premier raté technique : −10 kg ou stop";
+
+// --- Accessoires. Séries selon la semaine du bloc : 3 → 4 → 4 → 2 (décharge). « en réserve » = reps que tu pourrais encore faire.
+const EX = {
+  bench:["Développé couché (bench press)","8-10"], pendlay:["Rowing barre (Pendlay)","8-10"],
+  lat:["Élévations latérales haltères","12-15"], curlInc:["Curl incliné haltères","10-12"], tri:["Extension triceps poulie","10-12"],
+  pull:["Tractions lestées","6-8"], dips:["Dips lestés","8-10"],
+  cope:["Copenhague — adducteurs","20-30''/côté"], nordic:["Nordic excentrique — ischios","4-6"], ytwa:["Oiseau / Y-T-W-A — épaules","12-15"],
+  dbBench:["Développé haltères","10-12"], dbRow:["Rowing un bras (3 appuis)","10-12/côté"],
+  hip:["Hip thrust","10-12"], neck:["Renforcement cervical","15 · 4 directions"], wheel:["Roue abdominale","8-12"],
+};
+const ACC_V = { // A = blocs volume 1 et 3 · B = blocs volume 2 et 4 (on change les exercices toutes les 4 semaines)
+  A:{
+    s1:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[EX.bench, EX.pendlay]},
+        {label:"Épaules & bras", c:"hyp", note:"circuit · enchaîne les 3, récup 1' en fin de tour", ex:[EX.lat, EX.curlInc, EX.tri]}],
+    s2:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[EX.pull, EX.dips]},
+        {label:"Prévention rugby", c:"prev", note:"circuit · adducteurs, ischios, épaules", ex:[EX.cope, EX.nordic, EX.ytwa]}],
+    s3:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[EX.dbBench, EX.dbRow]},
+        {label:"Hanches, cou & gainage", c:"prev", note:"circuit · le cou te protège en mêlée et au plaquage · hip thrust à 2 reps en réserve", ex:[EX.hip, EX.neck, EX.wheel]}],
+  },
+  B:{
+    s1:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Développé incliné haltères","8-10"],["Rowing poitrine appuyée (seal row)","8-10"]]},
+        {label:"Épaules & bras", c:"hyp", note:"circuit · enchaîne les 3, récup 1' en fin de tour", ex:[["Élévations latérales + frontales","12-15"],["Spider curl","10-12"],["Barre au front","10-12"]]}],
+    s2:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Tractions supination lestées","6-8"], EX.dips]},
+        {label:"Prévention rugby", c:"prev", note:"circuit · adducteurs, ischios, épaules", ex:[EX.cope, EX.nordic, ["Face pull poulie — épaules","15"]]}],
+    s3:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · enchaîne les 2, récup 1'30 en fin de tour", ex:[["Développé haltères","10-12"],["Tirage horizontal poulie prise serrée","10-12"]]},
+        {label:"Hanches, cou & gainage", c:"prev", note:"circuit · le cou te protège en mêlée et au plaquage", ex:[["Hip thrust une jambe","10/côté"], EX.neck, ["Pallof press","10/côté"]]}],
+  },
+};
+const ACC_C = { // trêve : peu ou pas de rugby → on remet du bas du corps
+  s1:[{label:"Bas du corps · hypertrophie", c:"hyp", note:"superset · pas de rugby à encaisser : on en profite pour les jambes", ex:[["Fentes bulgares haltères","8/côté"],["Soulevé de terre roumain","8-10"]]},
+      {label:"Bras", c:"hyp", note:"superset · enchaîne les 2", ex:[["Curl haltères","10-12"], EX.tri]}],
+  s2:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · récup 1'30 en fin de tour", ex:[EX.bench, EX.pull]},
+      {label:"Prévention rugby", c:"prev", note:"circuit", ex:[EX.cope, EX.nordic, EX.ytwa]}],
+  s3:[{label:"Haut du corps · hypertrophie", c:"hyp", note:"superset · récup 1'30 en fin de tour", ex:[EX.dips, ["Rowing barre","8-10"]]},
+      {label:"Hanches, cou & gainage", c:"prev", note:"circuit", ex:[["Hip thrust","8-10"], EX.neck, EX.wheel]}],
+};
+const ACC_F = { // bloc force ATHX : plus de rugby
+  s1:[{label:"Tirage & dips", c:"hyp", note:"superset · récup 1'30 en fin de tour", ex:[EX.pull, EX.dips]}],
+  s2:[{label:"Jambes · unilatéral", c:"hyp", note:"superset · récup 1'30", ex:[["Fentes bulgares haltères","8/côté"], EX.nordic]},
+      {label:"Adducteurs & gainage", c:"prev", note:"superset", ex:[["Copenhague — adducteurs","25''/côté"],["Gainage latéral","30''/côté"]]}],
+  s3:[{label:"Haut du corps · force", c:"hyp", note:"superset · récup 2'", ex:[["Développé couché (bench press)","6-8"],["Rowing barre (Pendlay)","8"]]},
+      {label:"Portés, cou & gainage", c:"prev", note:"circuit · le farmer carry prépare le sandbag carry du Metcon-X", ex:[["Farmer carry lourd","30 m"], EX.neck, EX.wheel]}],
+};
+const ACC_S = { // bloc spécifique : moins d'accessoires, toute l'énergie sur les mouvements de compétition
+  s1:[{label:"Tirage & dips", c:"hyp", note:"superset", ex:[["Tractions lestées","6"],["Dips lestés","8"]]}],
+  s2:[{label:"Jambes & adducteurs", c:"hyp", note:"superset", ex:[["Fentes bulgares haltères","6/côté"],["Copenhague — adducteurs","25''/côté"]]}],
+  s3:[{label:"Haut du corps", c:"hyp", note:"superset", ex:[["Développé couché (bench press)","5"],["Rowing barre (Pendlay)","8"]]},
+      {label:"Portés & cou", c:"prev", note:"superset", ex:[["Farmer carry lourd","30 m"], EX.neck]}],
+};
+const PREV_KS = {label:"Épaule & chevilles", c:"prev", note:"superset · 2 tours · ton genou, tu le gères avec ta routine", fixed:true,
+  ex:[["Rotation externe épaule (poulie)","2×15/côté"],["Tibialis raise — chevilles","2×15"]]};
+
+function accTarget(reps, kind, p){
+  const c=p.code, k=p.k;
+  if(c==="T"||c==="R"||c==="SIM"||c==="TAP"||c==="COMP") return `2×${reps} · facile`;
+  if(c==="I") return kind==="prev" ? `2×${reps}` : `3×${reps} · 4 en réserve`;
+  if(c==="C"&&k===3) return `2×${reps} · facile`;
+  if(kind==="prev") return `${(c==="V"||c==="F")&&k===3?2:3}×${reps}`;
+  if(c==="V"||c==="F") return `${[3,4,4,2][k]}×${reps} · ${["3 en réserve","2 en réserve","1 en réserve","facile"][k]}`;
+  if(c==="S") return `${[3,3,2][k]}×${reps} · 2 en réserve`;
+  return `3×${reps} · 2 en réserve`;
+}
+// --- Mes exercices : ce que ta salle permet. Un exercice décoché est remplacé par sa 1re alternative cochée.
+// [nom, alternatives dans l'ordre de préférence]. Les noms sans alternative sont des remplaçants possibles.
+const EXO_GROUPS = [
+  {g:"Pectoraux · poussée", items:[
+    ["Développé couché (bench press)", ["Développé haltères","Développé incliné haltères","Pompes lestées"]],
+    ["Développé haltères", ["Développé couché (bench press)","Développé incliné haltères","Pompes lestées"]],
+    ["Développé incliné haltères", ["Développé incliné barre","Développé haltères","Pompes pieds surélevés"]],
+    ["Dips lestés", ["Dips (poids du corps)","Développé couché prise serrée","Pompes diamant"]],
+    ["Développé incliné barre"],["Développé couché prise serrée"],["Pompes lestées"],["Pompes pieds surélevés"],["Dips (poids du corps)"],["Pompes diamant"]]},
+  {g:"Dos · tirage", items:[
+    ["Tractions lestées", ["Tractions (poids du corps)","Tirage vertical poulie","Rowing inversé (sous une barre)"]],
+    ["Tractions supination lestées", ["Tractions lestées","Tractions (poids du corps)","Tirage vertical poulie prise serrée"]],
+    ["Rowing barre (Pendlay)", ["Rowing barre","Rowing un bras (3 appuis)","Rowing inversé (sous une barre)"]],
+    ["Rowing barre", ["Rowing barre (Pendlay)","Rowing un bras (3 appuis)","Rowing inversé (sous une barre)"]],
+    ["Rowing un bras (3 appuis)", ["Rowing barre","Rowing haltères sur banc incliné","Rowing inversé (sous une barre)"]],
+    ["Rowing poitrine appuyée (seal row)", ["Rowing haltères sur banc incliné","Rowing un bras (3 appuis)","Rowing barre (Pendlay)"]],
+    ["Tirage horizontal poulie prise serrée", ["Rowing un bras (3 appuis)","Rowing barre","Rowing inversé (sous une barre)"]],
+    ["Tractions (poids du corps)"],["Tirage vertical poulie"],["Tirage vertical poulie prise serrée"],["Rowing haltères sur banc incliné"],["Rowing inversé (sous une barre)"]]},
+  {g:"Épaules", items:[
+    ["Élévations latérales haltères", ["Élévations latérales poulie","Élévations latérales + frontales"]],
+    ["Élévations latérales + frontales", ["Élévations latérales haltères","Élévations latérales poulie"]],
+    ["Oiseau / Y-T-W-A — épaules", ["Face pull poulie — épaules","Face pull élastique","Oiseau haltères"]],
+    ["Face pull poulie — épaules", ["Face pull élastique","Oiseau / Y-T-W-A — épaules","Oiseau haltères"]],
+    ["Rotation externe épaule (poulie)", ["Rotation externe épaule (élastique)","Rotation externe haltère couché sur le côté"]],
+    ["Élévations latérales poulie"],["Face pull élastique"],["Oiseau haltères"],["Rotation externe épaule (élastique)"],["Rotation externe haltère couché sur le côté"]]},
+  {g:"Bras", items:[
+    ["Curl incliné haltères", ["Curl haltères","Curl marteau","Curl barre"]],
+    ["Curl haltères", ["Curl marteau","Curl barre","Curl incliné haltères"]],
+    ["Spider curl", ["Curl pupitre (Larry Scott)","Curl haltères","Curl barre"]],
+    ["Extension triceps poulie", ["Barre au front","Extension triceps haltère au-dessus de la tête","Pompes diamant"]],
+    ["Barre au front", ["Extension triceps poulie","Extension triceps haltère au-dessus de la tête","Pompes diamant"]],
+    ["Curl marteau"],["Curl barre"],["Curl pupitre (Larry Scott)"],["Extension triceps haltère au-dessus de la tête"]]},
+  {g:"Jambes · hanches", items:[
+    ["Fentes bulgares haltères", ["Fentes arrière haltères","Fentes marchées haltères","Step-up haltères"]],
+    ["Soulevé de terre roumain", ["Soulevé de terre roumain haltères","Good morning","Hip thrust"]],
+    ["Hip thrust", ["Pont fessier barre au sol","Hip thrust une jambe","Pont fessier une jambe"]],
+    ["Hip thrust une jambe", ["Pont fessier une jambe","Hip thrust"]],
+    ["Nordic excentrique — ischios", ["Leg curl machine","Glissés ischios (slider ou serviette)","Pont ischios une jambe"]],
+    ["Copenhague — adducteurs", ["Copenhague genou plié","Adducteurs machine","Squeeze ballon entre les genoux"]],
+    ["Tibialis raise — chevilles", ["Tibialis raise contre un mur","Marche sur les talons"]],
+    ["Fentes arrière haltères"],["Fentes marchées haltères"],["Step-up haltères"],["Soulevé de terre roumain haltères"],["Good morning"],["Pont fessier barre au sol"],["Pont fessier une jambe"],
+    ["Leg curl machine"],["Glissés ischios (slider ou serviette)"],["Pont ischios une jambe"],["Copenhague genou plié"],["Adducteurs machine"],["Squeeze ballon entre les genoux"],
+    ["Tibialis raise contre un mur"],["Marche sur les talons"]]},
+  {g:"Gainage · cou · portés", items:[
+    ["Roue abdominale", ["Rollout barre (disques)","Planche avec reach","Crunch poulie"]],
+    ["Pallof press", ["Pallof press élastique","Gainage latéral"]],
+    ["Gainage latéral", ["Planche latérale genoux","Pallof press"]],
+    ["Renforcement cervical", ["Cervicales à la main (isométrique)"]],
+    ["Farmer carry lourd", ["Farmer carry haltères","Suitcase carry (un côté)"]],
+    ["Rollout barre (disques)"],["Planche avec reach"],["Crunch poulie"],["Pallof press élastique"],["Planche latérale genoux"],["Cervicales à la main (isométrique)"],["Farmer carry haltères"],["Suitcase carry (un côté)"]]},
+  {g:"Matériel ATHX", items:[["Sandbag ~50 kg"]]},
+];
+const CATALOG = {}; EXO_GROUPS.forEach(gr=>gr.items.forEach(([n,alt])=>{ CATALOG[n]={g:gr.g, alt:alt||[]}; }));
+// Par défaut : le matériel de ta salle (réponses de nov. 2026) — pas de tib bar, pas de sandbag.
+const EXO_DEFAULT_OFF = ["Tibialis raise — chevilles","Sandbag ~50 kg"];
+let EXO_OFF = new Set(loadJSON("athx_exo_off_v2", null) || [...new Set(loadJSON("athx_exo_off_v1", []).concat(EXO_DEFAULT_OFF))]);
+function saveExo(){ localStorage.setItem("athx_exo_off_v2", JSON.stringify([...EXO_OFF])); }
+// Sans sandbag : squats Zercher (barre dans le creux des coudes, proche du bear hug) et carry avec 2 haltères de 25 kg.
+function noSB(){ return !exoOK("Sandbag ~50 kg"); }
+function sbTxt(t){
+  if(!noSB()) return t;
+  return t.replace(/sandbag squats?(\s*·)?\s*50 kg/gi, "squats Zercher 50 kg").replace(/sandbag squats?/gi, "squats Zercher")
+          .replace(/(\d+ m) sandbag carry(\s*·)?\s*50 kg/gi, "$1 carry 2 haltères de 25 kg").replace(/sandbag carry/gi, "carry 2 haltères de 25 kg");
+}
+const SB_NOTE = "Pas de sandbag : squats Zercher 50 kg (barre dans le creux des coudes, proche du bear hug) et carry avec 2 haltères de 25 kg. Si tu peux, prends un sandbag de 50 kg pour le bloc spécifique (avril-juin) : la prise et le chargement sur l'épaule ne s'imitent pas parfaitement.";
+function exoOK(n){ return !EXO_OFF.has(n); }
+function subEx(n, used){
+  if(exoOK(n) && !used.has(n)) return {name:n};
+  const alt=(CATALOG[n]&&CATALOG[n].alt||[]).find(a=>exoOK(a) && !used.has(a));
+  return alt ? {name:alt, orig:n} : {name:n};
+}
+function LIST(b, p){
+  const used=new Set();
+  const ex=b.ex.map(e=>{ const x=subEx(e[0], used); used.add(x.name); return [x.name, b.fixed ? e[1] : accTarget(e[1], b.c, p), x.orig]; });
+  return {type:"list", label:b.label, c:b.c, note:b.note, ex};
+}
+// Retour au calme en fin de séance : marche inclinée (optionnelle, ne bloque pas le « fait »).
+const COOL_BUL = "Tapis incliné à 10-12 %, 5 à 5,5 km/h, 8 à 10 minutes<br>Allure où tu peux parler (zone 2), respiration par le nez<br>Lâche les barres du tapis : bras libres, buste droit<br>Pressé ? 5 minutes suffisent";
+function COOL(){ return {type:"cool", c:"prev", label:"Retour au calme · marche inclinée", chip:"~8-10 min", bul:COOL_BUL, ph:"Optionnel : durée, pente, vitesse…", optional:true}; }
+function WARM(ph){ return {type:"warm", c:"warm", label:"Échauffement", chip:"~10 min", bul:WARMUP_BUL, ph:ph||"Optionnel : ressenti, douleurs à surveiller…", optional:true}; }
+
+// --- Les 3 épreuves ATHX Games 2027 (catégorie ATHX hommes) :
+// Force 15' (S2OH 1RM 0-5' · squat 2RM 5-10' · soulevé : 2 × 1' pour un 3RM, moyenne des 2) · Endurance 24' (3 km de course puis
+// SkiErg max distance, score = distance SkiErg) · Metcon-X cap 25' (score = temps).
+const TEST_END = ["<b>Test Endurance ATHX</b> : 3 km de course puis SkiErg max distance jusqu'à 24' (chrono continu)",
+  "Course à RPE 8 (pas un sprint), transition rapide, SkiErg régulier puis tout ce qui reste sur les 2 dernières minutes",
+  "Note le temps du 3 km et la distance SkiErg (= ton score). Genou douloureux : remplace par 15' de SkiErg max distance"];
+const ENGINE = {
+  F:  [ ["3 tours : 1 km de course à l'allure visée → 3' SkiErg à l'allure visée","Récup 3' entre les tours · transition course → SkiErg en moins de 20''"],
+        ["2 tours : 1,5 km de course → 5' SkiErg à l'allure visée · récup 4'","Puis rameur 2 × 20 cal rapide · récup 1' (pour le Metcon-X)"],
+        TEST_END.concat(["Test n°3 : compare avec les semaines 6 et 19"]),
+        ["20' facile : 10' footing + 10' SkiErg (technique)"] ],
+  S:  [ ["Course 2 km à l'allure visée → SkiErg 8' à l'allure visée, sans pause","Récup 5' puis rameur 3 × 15 cal rapide · récup 1'"],
+        ["SkiErg 4 × 3' à l'allure visée · récup 1'30","Course 4 × 500 m un peu plus vite que l'allure visée · récup 1'30"],
+        ["Brick court : 1,5 km à l'allure de course → 6' SkiErg à l'allure de course","Tu dois finir en contrôle : c'est ton allure du 26 juin"] ],
+};
+// WOD ATHX court de la séance 4 (saison + trêve), progressif bloc après bloc, toujours à RPE 6-7.
+// Semaine 1 du bloc : EMOM · 2 : tours réguliers · 3 : WOD repère identique (AMRAP 12') · 4 : flow de décharge. La trêve prend le niveau du bloc 3.
+const W4 = {
+  emom: {V1:{min:12,a:12,b:8,c:6}, V2:{min:16,a:13,b:10,c:7}, V3:{min:16,a:14,b:10,c:8}, V4:{min:20,a:15,b:12,c:8}},
+  tours:{V1:{n:3,r:15,g:10,s:8,rest:"1'30"}, V2:{n:3,r:15,g:12,s:10,rest:"1'30"}, V3:{n:4,r:15,g:12,s:10,rest:"1'"}, V4:{n:4,r:18,g:15,s:12,rest:"1'"}},
+};
+function wod4Block(p){
+  const lv = p.code==="C" ? "V3" : p.code==="V" ? "V"+p.blk : "V1", k = p.code==="I" ? 3 : p.k;
+  let title, chip, lines, nt;
+  if(k===0){ const x=W4.emom[lv]; title=`EMOM ${x.min}' · ${x.min/4} tours`; chip=x.min+"'";
+    lines=`Minute 1 : ${x.a} cal rameur<br>Minute 2 : ${x.b} DB G2OH 20 kg (alterne les bras)<br>Minute 3 : ${x.a} cal SkiErg<br>Minute 4 : ${x.c} burpees over bench`;
+    nt="Il doit te rester 20 à 25'' de repos chaque minute ; sinon retire 2 reps à ce poste."; }
+  else if(k===1){ const x=W4.tours[lv]; title=`${x.n} tours à allure régulière`; chip=`~${x.n*4+3}'`;
+    lines=`${x.r} cal rameur<br>${x.g} DB bench press 2 × 20 kg<br>${x.s} sandbag squats 50 kg<br>20 m sandbag carry 50 kg<br>Récup ${x.rest} entre les tours`;
+    nt="Note le temps de chaque tour : le dernier ne doit pas être plus lent que le premier."; }
+  else if(k===2){ title="WOD repère · AMRAP 12'"; chip="12'";
+    lines="10 cal SkiErg<br>10 DB G2OH 20 kg (alterne les bras)<br>10 sandbag squats 50 kg<br>10 burpees over bench";
+    nt="Le même à chaque bloc (sem. 4, 9, 13, 17, 22). Note tes tours + reps dans Suivi › Repères : à effort égal, c'est le chiffre qui montre ton cardio monter."; }
+  else { title="Flow 10' · sans chrono"; chip="10'";
+    lines="3 tours : 10 cal rameur · 8 DB G2OH · 8 DB bench · 6 burpees";
+    nt="Respiration nasale, mouvements propres : tu dois finir mieux qu'au début."; }
+  return {type:"text", c:"wod", label:`WOD ATHX · ${title}`, chip, ph:"Tours, temps, ressenti (RPE)…",
+    html:bullets(sbTxt(lines)) + note("RPE 6-7 : tu dois pouvoir dire une phrase. Pas de cartouche : si ça monte trop, ralentis l'ergo, jamais la technique. "+nt) + (noSB() && k<3 ? note(SB_NOTE) : "")};
+}
+const ENGINE_NOTE = "Allure visée = celle de ton dernier test Endurance (course et SkiErg). Le score de l'épreuve, c'est la distance SkiErg ; le rameur sert au Metcon-X. Damper SkiErg 5-6, rameur 4-5.";
+function engineBlock(lines, chip, label){
+  const lb = label || (/course|footing/i.test(lines.join(" ")) ? "Endurance ATHX · course + SkiErg" : "Moteur ATHX · SkiErg + rameur");
+  return {type:"text", c:"cardio", label:lb, chip:chip||"~25 min", html:bullets(lines.join("<br>"))+note(ENGINE_NOTE), ph:"Temps, distances, allures /500 m, calories, ressenti…"};
+}
+
+const WODS = {
+  chipper:{title:"Metcon-X (format officiel)", chip:"cap 25'", lines:"45 cal rameur<br>30 DB ground to overhead · 1 haltère de 20 kg<br>30 DB bench press · 2 × 20 kg<br>30 sandbag squats · 50 kg<br>30 m sandbag carry · 50 kg<br>30 burpees over soft bench<br>45 cal rameur",
+    note:"Le vrai Metcon-X, ton temps = ton score. Découpage de départ : rameur à RPE 7, G2OH 10-10-10 en alternant les bras, bench 12-10-8, squats 10-10-10, carry d'une traite, burpees réguliers, tout ce qui reste sur le dernier rameur. Note ton temps et compare."},
+  emom:   {title:"EMOM 25' (5 tours)", chip:"25'", lines:"Minute 1 : 15 cal rameur<br>Minute 2 : 10 DB G2OH 20 kg<br>Minute 3 : 10 DB bench press 2 × 20 kg<br>Minute 4 : 10 sandbag squats 50 kg + 10 m carry<br>Minute 5 : 10 burpees over bench", note:"Les 5 postes du Metcon-X. Il doit te rester ~15'' par minute ; sinon retire 2 reps à ce poste."},
+  amrap:  {title:"AMRAP 20'", chip:"20'", lines:"15 cal rameur<br>10 DB G2OH 20 kg<br>10 DB bench press 2 × 20 kg<br>10 sandbag squats 50 kg<br>10 m sandbag carry 50 kg<br>10 burpees over bench", note:"Même temps à chaque tour dès le premier. Note tours + reps."},
+  split:  {title:"Metcon-X fractionné · allure course", chip:"~25'", lines:"2 tours de : 23 cal rameur · 15 DB G2OH · 15 DB bench · 15 sandbag squats · 15 m carry · 15 burpees over bench · 23 cal rameur<br>Récup 3' entre les 2 tours", note:"Même temps sur les 2 tours : c'est ton allure de course. Matériel prêt, transitions sans pause."},
+  flow:   {title:"Flow technique (décharge)", chip:"15'", lines:"3 tours sans chrono : 10 cal rameur · 8 DB G2OH · 8 DB bench · 6 sandbag squats · 10 m carry · 6 burpees", note:"Mouvements propres, respiration nasale. Tu dois finir plus frais qu'au début."},
+};
+function wodBlock(code, label){ const W=WODS[code]; return {type:"text", c:"wod", label:label||`WOD · ${W.title}`, chip:W.chip, html:bullets(sbTxt(W.lines))+note(W.note)+(noSB()?note(SB_NOTE):""), ph:"Ton temps ou tes tours + ressenti…"}; }
+// Course : le 3 km est la 1re partie de l'épreuve Endurance. core = séance de vitesse (comptée), sinon footing optionnel.
+const RUNS = {
+  season:"Le 3 km de l'épreuve Endurance : cours-le à l'allure que tu prévois pour l'ATHX (RPE 8, pas un sprint) et note ton temps. Seulement si le genou va bien.",
+  R:{t:"Footing facile 20-25' (si le genou est OK)."},
+  F:[{t:"6 × 500 m à l'allure visée sur 3 km · récup 1'30 en marchant", core:true},{t:"3 × 1 km à l'allure visée · récup 2'", core:true},{t:"Footing 20' facile (le test est en séance 4)."},{t:"Footing 20' facile."}],
+  S:[{t:"2 × 1,5 km à l'allure visée · récup 3'", core:true},{t:"8 × 300 m un peu plus vite que l'allure visée · récup 1'", core:true},{t:"Footing 20' + 4 lignes droites relâchées."}],
+  TAP:{t:"Footing 15' + 4 lignes droites relâchées."},
+};
+
+// --- Blocs « mouvement principal »
+const VTOP = [[85,5],[90,3],[95,1]];
+const VBACK = { // [séries, reps, % TM] par semaine du bloc · [0] = blocs 1-2 (hypertrophie 10-8-6) · [1] = blocs 3-4 (force-hypertrophie 8-6-5)
+  pushpress:[[[4,10,65],[4,8,70],[4,6,75]], [[4,8,70],[4,6,75],[4,5,80]]],
+  squat:    [[[3,10,65],[3,8,70],[3,6,75]], [[3,8,70],[3,6,75],[3,5,80]]],
+  deadlift: [[[3,8,65],[3,6,70],[3,5,75]],  [[3,6,70],[3,5,75],[3,4,80]]],
+};
+const FSL = {pushpress:[5,5], squat:[5,5], deadlift:[3,5]};
+function mainV(lift, w, p){
+  const tm=TM(lift,w), L=LIFTS[lift], b={type:"main", c:"force", lift, vid:vidLink(L.name)};
+  if(p.k===3){
+    b.label=`${L.name} · décharge`;
+    b.meta=[`TM ${kg(tm)} kg · <span class="pnote">pas de rappel lourd cette semaine</span>`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5]])}`];
+    b.rows=[{txt:`3 × 5 @ ${pct(tm,60)} kg`, sub:"60 % du TM · vitesse et technique, tu sors frais"}];
+    b.ph="Charges × reps…";
+    return b;
+  }
+  const [tp,tr]=VTOP[p.k], [s,r,bp]=VBACK[lift][p.blk>=3?1:0][p.k];
+  const rp=[[40,5],[55,3],[70,2]]; if(tp>=90) rp.push([80,1]); if(tp>=95) rp.push([88,1]);
+  b.label=`${L.name} · rappel lourd + volume`;
+  b.meta=[`TM ${kg(tm)} kg · semaine ${p.k+1}/4 du bloc`, `<b>Montée en charge</b> : ${rampStr(tm,rp)}`];
+  b.rows=[
+    {txt:`1 × ${tr} @ ${pct(tm,tp)} kg`, sub:`Rappel lourd · ${tp} % du TM · barre rapide, RPE 8 max — jamais au max`},
+    {txt:`${s} × ${r} @ ${pct(tm,bp)} kg`, sub:`Volume · ${bp} % du TM · récup ${lift==="pushpress"?"1'30":"2'"} · 2-3 reps en réserve`},
+  ];
+  b.after=note("Rappel lent ou douloureux : garde-le, mais retire 5 % sur le volume. Match difficile (coups, genou) : retire 1 série de volume.");
+  b.ph="Rappel (charge × reps, ressenti) puis séries de volume…";
+  return b;
+}
+function main531(lift, w, p, fsl){
+  const tm=TM(lift,w), L=LIFTS[lift], W=WAVES[p.k], loads=W.p.map(x=>r25(tm*x/100));
+  const b={type:"main", c:"force", lift, vid:vidLink(L.name), ph:"Séries de travail (surtout le dernier set +)"+(fsl?" puis FSL":"")+"…"};
+  if(W.deload){
+    b.label=`${L.name} · décharge`;
+    b.meta=[`TM ${kg(tm)} kg · 40/50/60 % · <span class="pnote">reps prescrites, pas de max</span>`, `<b>Montée en charge</b> : barre ×10, puis directement les séries`];
+    b.rows=[{txt:loads.map(x=>`${kg(x)} ×5`).join(" · "), sub:"Vitesse et technique"}];
+    return b;
+  }
+  const e=tm/0.9, cible=Math.round(30*(e/loads[2]-1));
+  b.label=`${L.name} · 5/3/1`;
+  b.meta=[`TM ${kg(tm)} kg · ${W.p.join("/")} % du TM`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5],[50,5],[60,3]])}`];
+  b.rows=[{txt:loads.map((x,i)=>`${kg(x)} ×${W.r[i]}`).join(" · "), sub:`Dernier set + : max de reps propres, 1 en réserve · ${cible} reps = ton e1RM actuel (${kg(r25(e))} kg), au-delà = progrès`}];
+  if(fsl){ const [fs,fr]=FSL[lift]; b.rows.push({txt:`${fs} × ${fr} @ ${kg(loads[0])} kg`, sub:"FSL : charge de la 1re série · récup 1'30 · volume de qualité"}); }
+  return b;
+}
+function mainT(lift, w){
+  const tm=TM(lift,w), L=LIFTS[lift];
+  return {type:"main", c:"force", lift, vid:vidLink(L.name), label:`${L.name} · test du TM`,
+    meta:[`TM testé : <b>${kg(tm)} kg</b> (celui du prochain bloc)`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5],[55,3],[70,2],[80,1],[90,1]])}`],
+    rows:[{txt:`${kg(r25(tm))} kg × 3 à 5`, sub:"Arrête à 5 même si ça passe · technique parfaite, aucune rep à l'échec"},
+          {txt:`2 × 5 @ ${pct(tm,70)} kg`, sub:"Back-off à 70 % (optionnel)"}],
+    after:`<div class="pmeta"><b>Lecture du test</b> : 3 à 5 reps propres → TM validé, la progression continue · moins de 3 → <b>Profil › Mes références</b> : retire ${kg(r25(tm*0.1))} kg à ce mouvement (−10 %).</div>`,
+    ph:"Reps au TM + RPE…"};
+}
+function mainR(lift, w){
+  const tm=TM(lift,w), L=LIFTS[lift];
+  return {type:"main", c:"force", lift, vid:vidLink(L.name), label:`${L.name} · reprise légère`,
+    meta:[`TM ${kg(tm)} kg`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5]])}`],
+    rows:[{txt:`3 × 5 @ ${pct(tm,60)} kg`, sub:"60 % du TM · vitesse, zéro douleur"}], ph:"Charges × reps, sensations genou/épaule…"};
+}
+// Spécifique : % de l'e1RM, formats de compétition. Squat : fenêtre de 5' en fin de bloc. Soulevé : 2 triples à 1' d'intervalle
+// (= les 2 fenêtres de compétition, score = moyenne des 2).
+const SPEC = {
+  squat:   [{rows:[[5,2,82.5,"récup 2'30"],[2,5,72.5,"back-off · récup 2'"]]}, {rows:[[4,2,87.5,"récup 2'30"],[2,4,75,"back-off · récup 2'"]]}, {win:[85,90], rows:[[1,2,85,"back-off"]]}],
+  deadlift:[{pairs:2,p:80}, {pairs:2,p:84}, {pairs:1,p:86,comp:true}],
+};
+function mainSpec(lift, w, p){
+  const e=e1RM(lift,w), L=LIFTS[lift], x=SPEC[lift][p.k], T=athxTargets(), sq=lift==="squat";
+  const top = sq ? (x.win ? x.win[1] : x.rows[0][2]) : x.p;
+  const rp=[[40,5],[55,3],[65,2],[72.5,1]]; if(top>=84) rp.push([80,1]);
+  const rows=[];
+  if(sq){
+    if(x.win) rows.push({txt:`Fenêtre 5' chrono : 2 @ ${pct(e,x.win[0])} → 2 @ ${pct(e,x.win[1])} kg`, sub:`${kg(x.win[0])} puis ${kg(x.win[1])} % e1RM · ~2' entre les deux, recharge des disques comprise : comme le 26 juin`});
+    x.rows.forEach(r=>rows.push({txt:`${r[0]} × ${r[1]} @ ${pct(e,r[2])} kg`, sub:`${kg(r[2])} % de ton e1RM · ${r[3]}`}));
+  } else {
+    const ld=x.comp ? kg(T.deadlift) : pct(e,x.p);
+    rows.push({txt:`${x.pairs>1?x.pairs+" × ":""}3 @ ${ld} → 1' → 3 @ ${ld} kg`, sub:`${x.comp?"ta charge de compétition":kg(x.p)+" % e1RM"} · 2 triples à 1' d'intervalle = les 2 fenêtres de compétition${x.pairs>1?" · récup 4' entre les paires":""}`});
+  }
+  return {type:"main", c:"force", lift, vid:vidLink(L.name), label:`${L.name} · ${sq?"doubles":"triples à 1'"}`,
+    meta:[`e1RM ${kg(r25(e))} kg (TM ÷ 0,9) · objectif : <b>${sq?`${kg(T.goal.squat)} kg × 2`:`${kg(T.goal.dl)} kg × 3 sur les 2 fenêtres`}</b>`, `<b>Montée en charge</b> : ${rampStr(e,rp)}`],
+    rows, ph:"Charges × reps, vitesse, RPE…",
+    after:note(sq ? "Si la 1re double est lente (RPE > 8,5), reste à cette charge."
+      : "Règlement : 3 reps d'affilée ou 3 singles dans la minute. Si le grip ou le dos lâche, passe en singles (pose, reset, repars). Le score est la moyenne des 2 triples : la 2e compte autant que la 1re.")};
+}
+function jr(p){ return pct(jerkRef(), p); }
+// Montée au jerk : paliers jusqu'à ~5 % sous la charge de travail.
+function jRamp(work){ return [[40,3],[55,2],[65,1],[75,1],[80,1],[85,1]].filter(r=>r[0]<=work-5); }
+function jerkBlock(label, rows, rampPcts, opt){
+  opt=opt||{};
+  return Object.assign({type:"main", c:"tech", lift:opt.cj?"cj":"jerk", label, vid:opt.vid||JERK_VID, bul:opt.bul||JERK_CUES,
+    meta:[`Réf. S2OH ${kg(jerkRef())} kg (Profil) · ${opt.cj?"clean & jerk":"jerk depuis le rack"}`, `<b>Montée</b> : ${rampStr(jerkRef(), rampPcts, opt.cj?"barre : 2×3 hang power clean + 2×3 jerk balance":"barre : jerk balance 2×3")}`],
+    rows, ph:"Charges × reps + ressenti technique (dip, drive, réception)…"}, opt.extra||{});
+}
+
+// --- Constructeurs de séances
+function mkS(w, sid, num, title, sub, color, blocks, extra){
+  let n=0;
+  if(!(extra && extra.noCool)) blocks.push(COOL());
+  blocks.forEach((b,bi)=>{
+    if(b.type!=="warm" && b.type!=="cool"){ n++; if(!/^Bloc /.test(b.label)) b.label=`Bloc ${n} · ${b.label}`; }
+    const bid = b.type==="warm" ? "warm" : b.type==="cool" ? "cool" : "b"+bi;
+    if(b.type==="list"){ if(!b.keys) b.keys=b.ex.map((e,i)=>`w${w}-${sid}-${bid}-e${i}`); }
+    else if(!b.key) b.key=`w${w}-${sid}-${bid}`;
+  });
+  const s=Object.assign({id:sid, kind:"lift", num, badge:"S"+num, title, sub, color, blocks}, extra||{});
+  if(!s.planTag) s.planTag = "Muscu"+(s.bonus?" · bonus si temps":"");
+  return s;
+}
+function mkC(w, ck, badge, title, tag, color, html, ph, extra){
+  return Object.assign({id:ck, kind:"cond", badge, title, sub:tag, color, planLabel:title, planTag:tag,
+    blocks:[{type:"text", bare:true, color, html, ph, key:`w${w}-cond-${ck}`}]}, extra||{});
+}
+const TITLES = {pushpress:"Séance 1 · Push press", squat:"Séance 2 · Squat", deadlift:"Séance 3 · Soulevé de terre"};
+const LIFT_ORDER = ["pushpress","squat","deadlift"];
+
+// Semaine 1 : courbatures du rugby → pas de lourd, volume à 60 % du TM pour relancer.
+const IREPS = {pushpress:[3,10], squat:[3,8], deadlift:[3,6]};
+function sessI(w, p){
+  const out = LIFT_ORDER.map((lift,i)=>{
+    const tm=TM(lift,w), L=LIFTS[lift], [s,r]=IREPS[lift];
+    return mkS(w, "s"+(i+1), i+1, TITLES[lift], "Volume de reprise, sans lourd · 2 blocs · ~50 min", "var(--force)", [
+      WARM(),
+      {type:"main", c:"force", lift, vid:vidLink(L.name), label:`${L.name} · volume de reprise`,
+       meta:[`TM ${kg(tm)} kg · <span class="pnote">pas de lourd cette semaine : tu récupères du rugby</span>`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5],[50,3]])}`],
+       rows:[{txt:`${s} × ${r} @ ${pct(tm,60)} kg`, sub:"60 % du TM · 3-4 reps en réserve · récup 1'30 · tempo normal"}],
+       after:note("Si une zone fait encore mal (genou, épaule), garde le mouvement mais baisse de 10 % ou passe aux accessoires."),
+       ph:"Charges × reps, zones douloureuses…"},
+      ...ACC_V.A["s"+(i+1)].map(b=>LIST(b,p)),
+    ]);
+  });
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD découverte", "Récup active · ~35 min · bonus", "var(--wod)", [
+    WARM(),
+    jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(55)} kg`, sub:"55 % · on garde le geste, rien de plus"}], jRamp(55)),
+    wod4Block(p),
+    LIST(PREV_KS,p),
+  ], {bonus:true, planTag:"Jerk + WOD · bonus"}));
+  return out;
+}
+function sessV(w, p){
+  const A = p.blk%2===1 ? ACC_V.A : ACC_V.B, dl=p.k===3;
+  const sub = dl ? "Décharge · 2 blocs allégés · ~45 min" : `Rappel lourd + volume · 2 blocs · ~55 min`;
+  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], sub, "var(--force)",
+    [WARM(), mainV(lift,w,p), ...A["s"+(i+1)].map(b=>LIST(b,p))]));
+  const jp=[60,65,70,55][p.k]+(p.blk>=3?5:0), js=[6,6,5,5][p.k];
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD ATHX", "Jerk technique + WOD court à RPE 6-7 · ~45 min · à sauter en premier si la semaine déborde", "var(--wod)", [
+    WARM(),
+    jerkBlock("Jerk · technique", [{txt:`${js} × 2 @ ${jr(jp)} kg`, sub:`${jp} % de ta réf. · récup 1'30 · qualité avant la charge`}], jRamp(jp)),
+    wod4Block(p),
+    LIST(PREV_KS,p),
+  ], {planTag:"Jerk + WOD"}));
+  return out;
+}
+function sessC(w, p){
+  const dl=p.k===3;
+  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], dl?"Décharge · ~40 min":"5/3/1 + FSL · 2 blocs · ~1h", "var(--force)",
+    [WARM(), main531(lift,w,p,!dl), ...ACC_C["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · 5/3/1"}));
+  const cj=[[6,2,65],[6,1,75],[5,1,80],[5,2,60]][p.k];
+  const jRows=[{txt:`${cj[0]} × ${cj[1]} @ ${jr(cj[2])} kg`, sub:`${cj[2]} % de ta réf. S2OH · récup 2'`}];
+  if(p.k===2) jRows.push({txt:"Single lourd du jour", sub:"Monte par 2,5-5 kg jusqu'à RPE 9, sans raté → mets-le dans Profil s'il dépasse ta référence"});
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD ATHX", "Jerk plus lourd + WOD court à RPE 6-7 · ~50 min", "var(--wod)", [
+    WARM(),
+    jerkBlock(dl?"Jerk · technique":"Jerk · technique lourde", jRows, jRamp(cj[2])),
+    wod4Block(p),
+    LIST(PREV_KS,p),
+  ], {planTag:"Jerk + WOD"}));
+  return out;
+}
+function sessT(w, p){
+  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], "Test du TM + 2 blocs allégés · ~45 min", "var(--force)",
+    [WARM(), mainT(lift,w), ...ACC_V.B["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · test TM"}));
+  out.push(mkS(w, "s4", 4, "Séance 4 · Test Endurance + jerk", "3 km + SkiErg jusqu'à 24' · jerk léger · ~55 min", "var(--cardio)", [
+    WARM(),
+    jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(60)} kg`, sub:"60 % · léger, avant le test"}], jRamp(60)),
+    engineBlock(TEST_END.concat([`Test n°${p.blk} — ${p.blk===1?"ton point de départ de la saison":"compare avec la semaine 6"}`]), "~35 min"),
+    LIST(PREV_KS,p),
+  ], {planTag:"Test Endurance"}));
+  return out;
+}
+function sessR(w, p){
+  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], "Reprise légère · ~40 min", "var(--force)",
+    [WARM(), mainR(lift,w), LIST(ACC_V.A["s"+(i+1)][0],p)]));
+  out.push(mkS(w, "s4", 4, "Séance 4 · Moteur facile + jerk", "Aérobie facile + jerk léger · ~45 min", "var(--cardio)", [
+    WARM(),
+    jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(60)} kg`, sub:"60 % · on reprend le geste"}], jRamp(60)),
+    engineBlock(["Ergo facile 25' : 10' SkiErg · 10' rameur · 5' SkiErg","Aérobie facile : tu peux parler"], "25'"),
+    LIST(PREV_KS,p),
+  ]));
+  return out;
+}
+function sessF(w, p){
+  const k=p.k, dl=k===3, out=[];
+  const jRows = [
+    [{txt:`5 × 2 @ ${jr(75)} kg`, sub:"75 % · récup 2'"}],
+    [{txt:`5 × 2 @ ${jr(80)} kg`, sub:"80 % · récup 2'"}],
+    [{txt:`4 × 1 @ ${jr(85)} kg`, sub:"85 % · récup 2'"},{txt:"Single lourd du jour", sub:"Monte par 2,5-5 kg jusqu'à RPE 9, sans raté"}],
+    [{txt:`5 × 2 @ ${jr(65)} kg`, sub:"65 % · décharge"}],
+  ][k];
+  const jTop = [75,80,85,65][k];
+  out.push(mkS(w, "s1", 1, "Séance 1 · Jerk + push press", dl?"Décharge · ~45 min":"Jerk lourd + 5/3/1 push press · ~55 min", "var(--force)", [
+    WARM(),
+    jerkBlock("Jerk", jRows, jRamp(jTop), k===2 ? {extra:{after:`<div class="pmeta"><b>Single lourd</b> → mets-le dans <b>Profil › S2OH · référence</b> s'il dépasse la référence actuelle : tout le bloc spécifique se cale dessus.</div>`}} : {}),
+    main531("pushpress", w, p, false),
+    ...ACC_F.s1.map(b=>LIST(b,p)),
+  ]));
+  out.push(mkS(w, "s2", 2, TITLES.squat, dl?"Décharge · ~40 min":"5/3/1 + FSL · 2 blocs · ~1h", "var(--force)",
+    [WARM(), main531("squat", w, p, true), ...ACC_F.s2.map(b=>LIST(b,p))]));
+  out.push(mkS(w, "s3", 3, TITLES.deadlift, dl?"Décharge · ~40 min":"5/3/1 + FSL · 2 blocs · ~1h", "var(--force)",
+    [WARM(), main531("deadlift", w, p, true), ...ACC_F.s3.map(b=>LIST(b,p))]));
+  out.push(mkS(w, "s4", 4, "Séance 4 · Endurance ATHX + jerk", "Jerk vitesse + course/SkiErg · ~55 min", "var(--cardio)", [
+    WARM(),
+    jerkBlock("Jerk · vitesse", [dl?{txt:`5 × 1 @ ${jr(60)} kg`, sub:"60 % · décharge"}:{txt:`6 × 1 @ ${jr(70)} kg`, sub:"70 % · passe vite sous la barre, réception stable"}], jRamp(dl?60:70)),
+    engineBlock(ENGINE.F[k]),
+    LIST(PREV_KS,p),
+  ], {planTag:"Endurance ATHX"}));
+  out.push(mkS(w, "s5", 5, "Séance 5 · Metcon-X", dl?"Flow technique · ~30 min":"Postes du Metcon-X · ~40 min", "var(--wod)", [
+    WARM("Optionnel : ressenti…"), wodBlock(["chipper","emom","amrap","flow"][k]),
+  ], {planTag:"Metcon-X"}));
+  return out;
+}
+function sessS(w, p){
+  const k=p.k, out=[];
+  const jRows = [
+    [{txt:`6 × 1 @ ${jr(85)} kg`, sub:"85 % · récup 2'"}],
+    [{txt:`5 × 1 @ ${jr(90)} kg`, sub:"90 % · récup 2'30"}],
+    [{txt:`Fenêtre 5' chrono : ${jr(90)} → ${jr(95)} → ${jr(97.5)} kg`, sub:"3 tentatives, ~1'45 entre chaque · la 3e seulement si les 2 premières ont filé"}],
+  ][k];
+  const pp=[[3,3,80],[3,2,85],[2,2,85]][k], tmP=TM("pushpress",w);
+  out.push(mkS(w, "s1", 1, "Séance 1 · Jerk (singles) + push press", "Format compétition · ~55 min", "var(--force)", [
+    WARM(),
+    jerkBlock("Jerk · singles", jRows, jRamp([85,90,90][k])),
+    {type:"main", c:"force", lift:"pushpress", vid:vidLink("Push Press"), label:"Push Press · entretien",
+     meta:[`TM ${kg(tmP)} kg`], rows:[{txt:`${pp[0]} × ${pp[1]} @ ${pct(tmP,pp[2])} kg`, sub:`${pp[2]} % du TM · récup 2'`}], ph:"Charges × reps…"},
+    ...ACC_S.s1.map(b=>LIST(b,p)),
+  ]));
+  out.push(mkS(w, "s2", 2, "Séance 2 · Squat (doubles)", "Format 2RM · fenêtre de 5' en fin de bloc · ~50 min", "var(--force)",
+    [WARM(), mainSpec("squat",w,p), ...ACC_S.s2.map(b=>LIST(b,p))]));
+  out.push(mkS(w, "s3", 3, "Séance 3 · Soulevé (2 triples à 1')", "Format compétition · ~55 min", "var(--force)",
+    [WARM(), mainSpec("deadlift",w,p), ...ACC_S.s3.map(b=>LIST(b,p))]));
+  out.push(mkS(w, "s4", 4, "Séance 4 · Endurance ATHX + jerk", "Course + SkiErg à l'allure de course · ~55 min", "var(--cardio)", [
+    WARM(),
+    jerkBlock("Jerk · vitesse", [{txt:`5 × 1 @ ${jr(75)} kg`, sub:"75 % · rapidité, réception"}], jRamp(75)),
+    engineBlock(ENGINE.S[k]),
+    LIST(PREV_KS,p),
+  ], {planTag:"Endurance ATHX"}));
+  out.push(mkS(w, "s5", 5, "Séance 5 · Metcon-X", "Postes du Metcon-X · ~40 min", "var(--wod)", [
+    WARM("Optionnel : ressenti…"), wodBlock(["split","chipper","emom"][k]),
+  ], {planTag:"Metcon-X"}));
+  return out;
+}
+function simpleMain(c, label, rows, meta, vid){ return {type:"main", c, label, rows, meta:meta||[], vid, lift:label==="Squat"?"squat":label==="Soulevé de terre"?"deadlift":undefined, ph:"Charges × reps, ressenti…"}; }
+function sessSIM(w, p){
+  const T=athxTargets(), es=e1RM("squat",w), ed=e1RM("deadlift",w), f=(t,x)=>kg(r25(t*x/100));
+  return [
+    mkS(w, "s1", 1, "Séance 1 · Rappel force (lun. ou mar.)", "Les 3 mouvements, modéré · ~45 min", "var(--force)", [
+      WARM(),
+      jerkBlock("Jerk", [{txt:`3 × 1 @ ${jr(85)} kg`, sub:"85 % · rapide et précis"}], jRamp(85)),
+      simpleMain("force", "Squat", [{txt:`2 × 2 @ ${pct(es,77.5)} kg`, sub:"77,5 % e1RM · vitesse, sous la charge de samedi"}], [`<b>Montée en charge</b> : ${rampStr(es,[[40,5],[55,3],[65,2]])}`], vidLink("Back Squat")),
+      simpleMain("force", "Soulevé de terre", [{txt:`1 × 3 @ ${pct(ed,75)} kg`, sub:"75 % e1RM · rien de plus, samedi arrive"}], [`<b>Montée en charge</b> : ${rampStr(ed,[[40,5],[55,3],[65,1]])}`], vidLink("Deadlift")),
+    ]),
+    mkS(w, "s2", 2, "Séance 2 · Endurance courte (mer.)", "Allure de course, sans fatigue · ~40 min", "var(--cardio)", [
+      WARM(),
+      engineBlock(["2 tours : 1 km à l'allure de course → 3' SkiErg à l'allure de course · récup 4'","Puis rameur 2 × 15 cal · récup 1'"], "~30 min"),
+      LIST(PREV_KS,p),
+    ], {planTag:"Endurance"}),
+    mkS(w, "s3", 3, "Séance 3 · Répétition générale (sam. 12 juin)", "Les 3 épreuves dans l'ordre, à ~90 % · ~2h30", "var(--wod)", [
+      {type:"text", c:"warm", label:"Échauffement du jour J", chip:"~30 min", html:bullets("Exactement celui de la carte « ATHX Lisbonne » (semaine 34) : chronomètre-le<br>Montées S2OH et squat avant le départ, comme le jour J"), ph:"Timing réel de ton échauffement…"},
+      {type:"main", c:"force", label:"Force · chrono 15' à ~90 %", meta:["Avec le vrai chrono : 0-5' S2OH · 5-10' squat · 10-12' échauffement soulevé · 12' et 14' les 2 triples"],
+       rows:[{txt:`S2OH : ${f(T.jerk,85)} → ${f(T.jerk,90)} kg`, sub:`2 tentatives · objectif du 26 : ${kg(T.goal.s2oh)} kg`},
+             {txt:`Squat : 2 @ ${f(T.squat,85)} → 2 @ ${f(T.squat,90)} kg`, sub:`objectif : ${kg(T.goal.squat)} kg × 2`},
+             {txt:`Soulevé : 3 @ ${f(T.deadlift,90)} → 1' → 3 @ ${f(T.deadlift,90)} kg`, sub:`objectif : ${kg(T.goal.dl)} kg × 3 sur les 2 fenêtres`}], ph:"Charges, timing réel, recharge des disques…"},
+      {type:"text", c:"cardio", label:"Endurance · 24'", html:bullets("3 km de course à l'allure prévue, puis SkiErg jusqu'à 24'<br>~90 % : allure de course, sans le tout-pour-tout des 2 dernières minutes<br>Entre les épreuves, garde l'écart prévu par l'organisation (sinon ~30')"), ph:"Temps du 3 km, distance SkiErg…"},
+      {type:"text", c:"wod", label:"Metcon-X · cap 25'", html:bullets(sbTxt(WODS.chipper.lines).replace(/<br>/g," · ")+"<br>À ~90 % : allure de course, pas de sprint final. Teste ton découpage et tes transitions"+(noSB()?"<br>Trouve un sandbag de 50 kg pour cette répétition si tu peux : le jour J, c'est lui":"")), ph:"Temps, découpage, transitions…"},
+      {type:"text", c:"prev", label:"Bilan", html:bullets("Note ce qui a coincé : matériel, recharge des disques, transitions, nutrition, échauffement trop long ou trop court<br>Petit-déj ~3 h avant, boisson glucidique entre les épreuves : exactement ce que tu feras le 26"), ph:"Ce que je change pour le jour J…"},
+    ], {planTag:"Répétition générale"}),
+  ];
+}
+function sessTAP(w, p){
+  const es=e1RM("squat",w), ed=e1RM("deadlift",w);
+  return [
+    mkS(w, "s1", 1, "Séance 1 · Derniers lourds (lundi)", "Jerk + squat · ~45 min", "var(--force)", [
+      WARM(),
+      jerkBlock("Jerk", [{txt:`2 × 1 @ ${jr(90)} kg`, sub:"90 % · les derniers lourds"},{txt:`2 × 1 @ ${jr(80)} kg`, sub:"80 % · vitesse"}], jRamp(90)),
+      simpleMain("force", "Squat", [{txt:`1 × 2 @ ${pct(es,87.5)} kg`, sub:"87,5 % e1RM"},{txt:`1 × 2 @ ${pct(es,80)} kg`, sub:"80 % · vitesse"}], [`<b>Montée en charge</b> : ${rampStr(es,[[40,5],[55,3],[65,2],[75,1]])}`], vidLink("Back Squat")),
+    ]),
+    mkS(w, "s2", 2, "Séance 2 · Soulevé + haut du corps (mer.)", "Volume divisé par 2 · ~40 min", "var(--force)", [
+      WARM(),
+      simpleMain("force", "Soulevé de terre", [{txt:`3 @ ${pct(ed,80)} → 1' → 3 @ ${pct(ed,80)} kg`, sub:"80 % e1RM · les 2 fenêtres, en léger"}], [`<b>Montée en charge</b> : ${rampStr(ed,[[40,5],[55,3],[65,2],[72.5,1]])}`], vidLink("Deadlift")),
+      LIST({label:"Tirage & dips", c:"hyp", note:"superset · léger", ex:[["Tractions lestées","6"],["Dips lestés","8"]]}, p),
+    ]),
+    mkS(w, "s3", 3, "Séance 3 · Entretien Endurance + Metcon (ven.)", "Court et vif · ~35 min", "var(--cardio)", [
+      WARM(),
+      engineBlock(["Course 1 km à l'allure de course → 3' SkiErg à l'allure de course","Récup 3' puis SkiErg 3 × 1' allure · récup 1'","Rameur 5' facile"], "~20 min"),
+      {type:"text", c:"wod", label:"Transitions Metcon-X", html:bullets("1 tour très léger : 10 cal rameur · 10 G2OH · 10 bench · 10 squats · 10 m carry · 10 burpees, sans chrono<br>Seulement pour répéter les transitions et le placement du matériel"), ph:"Ressenti…"},
+    ], {planTag:"Endurance"}),
+  ];
+}
+function sessCOMP(w, p){
+  const es=e1RM("squat",w), ed=e1RM("deadlift",w);
+  return [
+    mkS(w, "s1", 1, "Séance 1 · Openers (lun. ou mar.)", "Très léger · ~35 min", "var(--force)", [
+      WARM(),
+      jerkBlock("Jerk", [{txt:`3 × 1 @ ${jr(80)} kg`, sub:"80 % · sensation de vitesse"}], jRamp(80)),
+      simpleMain("force", "Squat", [{txt:`2 × 2 @ ${pct(es,72.5)} kg`, sub:"72,5 % e1RM"}], [`<b>Montée en charge</b> : ${rampStr(es,[[40,5],[55,3],[65,1]])}`], vidLink("Back Squat")),
+      simpleMain("force", "Soulevé de terre", [{txt:`1 × 3 @ ${pct(ed,70)} kg`, sub:"70 % e1RM · rien de plus"}], [`<b>Montée en charge</b> : ${rampStr(ed,[[40,5],[55,3]])}`], vidLink("Deadlift")),
+    ]),
+    mkS(w, "s2", 2, "Séance 2 · Activation (mer.)", "~30 min", "var(--cardio)", [
+      engineBlock(["Footing 10' + 3 lignes droites relâchées","SkiErg 5' facile avec 3 × 20'' à l'allure de course","Rameur 3' facile","Mobilité 10' : hanches, chevilles, épaules, haut du dos"], "~30 min", "Activation"),
+    ], {planTag:"Activation"}),
+  ];
+}
+function compPlanHtml(){
+  const T=athxTargets(), G=T.goal, j=T.jerk, s=T.squat, d=T.deadlift, f=(t,x)=>kg(r25(t*x/100));
+  const gap=[];
+  if(j<G.s2oh) gap.push(`S2OH calé sur ta référence actuelle (${kg(j)}) tant qu'elle n'atteint pas ${kg(G.s2oh)} : mets-la à jour après tes singles lourds (sem. 9, 27, 31)`);
+  if(s<G.squat) gap.push(`squat calé sur tes TM (${kg(s)} × 2)`);
+  if(d<G.dl) gap.push(`soulevé calé sur tes TM (${kg(d)} × 3)`);
+  return `<div class="pmeta"><b>Samedi 26 juin · Lisbonne.</b> Force (15') → Endurance (24') → Metcon-X (cap 25'). Score force = S2OH + squat + moyenne des 2 triples.<br><b>Objectifs : S2OH ${kg(G.s2oh)} · squat ${kg(G.squat)} × 2 · soulevé ${kg(G.dl)} × 3 = ${kg(G.s2oh+G.squat+G.dl)} kg.</b></div>`
+    + (gap.length ? note("Le plan ne dépasse jamais ce que tes références montrent : "+gap.join(" · ")+".") : "")
+    + `
+    <table class="gtable"><tr><th>Force</th><th>1re</th><th>2e</th><th>3e</th></tr>
+      <tr><td>S2OH 1RM · 0-5'</td><td>${f(j,92)}</td><td>${kg(j)}</td><td>${kg(j+2.5)}</td></tr>
+      <tr><td>Squat 2RM · 5-10'</td><td>${f(s,92)}</td><td>${kg(s)}</td><td>${kg(s+5)}</td></tr>
+      <tr><td>Soulevé ×3 · 12' et 14'</td><td>${kg(d)}</td><td>${kg(d)}</td><td>—</td></tr>
+    </table>`
+    + note("1re tentative ≈ 92 % : une charge que tu passes même dans un mauvais jour. 3e seulement si la 2e a filé (au squat, seulement s'il reste le temps). Soulevé : même charge sur les 2 fenêtres, +5 kg sur la 2e seulement si la 1re a été facile — un raté coûte la moitié de ta moyenne.")
+    + `<div class="pmeta"><b>Zone force · minute par minute</b></div>` + bullets(`Avant le départ (H-40') : 10' rameur/SkiErg + mobilité, puis S2OH barre ×3 · ${f(j,50)}×3 · ${f(j,65)}×2 · ${f(j,75)}×1 · ${f(j,85)}×1, et squat barre ×5 · ${f(s,50)}×3 · ${f(s,65)}×2 · ${f(s,75)}×1 · ${f(s,82.5)}×1<br>0'00 : S2OH 1re tentative · ~1'45 : 2e · ~3'30 : 3e (jerk depuis le rack, ou push press si c'est ton meilleur geste du moment)<br>5'00 : squat 1re · ~7'15 : 2e · 3e seulement si tu peux partir avant ~9'30<br>10'00-12'00 : échauffement soulevé ${f(d,60)}×2 · ${f(d,75)}×1 · ${f(d,87.5)}×1<br>12'00 : fenêtre 1 → 3 reps · 13'00 : repos · 14'00 : fenêtre 2 → 3 reps (d'affilée ou 3 singles dans la minute)`)
+    + `<div class="pmeta"><b>Endurance · 24'</b></div>` + bullets("3 km de course à ton allure de test (RPE 8, pas un sprint) : chaque minute gagnée = une minute de SkiErg en plus<br>Transition rapide, SkiErg à ton allure moyenne de test, puis tout ce qui reste sur les 2 dernières minutes<br>Score = distance SkiErg")
+    + `<div class="pmeta"><b>Metcon-X · cap 25'</b></div>` + bullets("Rameur 45 cal à RPE 7 : ne te grille pas dès le début<br>G2OH 10-10-10 en alternant les bras · bench 12-10-8 · squats 10-10-10 · carry d'une traite<br>Burpees réguliers (un toutes les 4-5 s), puis tout ce qui reste sur le dernier rameur")
+    + `<div class="pmeta"><b>Nutrition</b></div>` + bullets("Petit-déj testé à la répétition générale, ~3 h avant<br>Entre les épreuves : eau + boisson glucidique, banane ou gel");
+}
+
+// --- Activités hors muscu (rugby, kiné, week-end, compétition)
+function condsFor(w, p){
+  const out=[], we=WEEKEND[w-1], prev=WEEKEND[w-2], season=w<=23;
+  if(prev && prev.type==="match") out.push(mkC(w,"repos","J+1","Lendemain de match","Récup","var(--warm)", `<div class="pmeta">${COND.repos.desc}</div>`, "Ressenti, coups, sommeil…", {planLabel:"Lendemain de match"}));
+  if(season && !(w>=7 && w<=9)) [1,2,3].forEach(i=>{
+    const ck="rugby"+i, r=rugbyContent(ck,w);
+    out.push(mkC(w, ck, "RUG", "Rugby", `Rugby · entraînement ${i}${i===3?" (léger)":""}`, "var(--rugby)", bullets(r.desc), "Ta séance rugby (temps, ressenti…)", {planLabel:`Rugby ${i}${i===3?" (léger)":""}`, planTag:"Rugby"}));
+  });
+  if(p.code!=="COMP"){
+    const kd = p.code==="R" ? "<b>Bilan de fin de saison avec le kiné : genou + épaule.</b> Le bloc force démarre la semaine prochaine seulement avec son feu vert." : "Séance kiné/prévention selon tes blessures du moment (genou, épaule). Contenu que tu gères avec ton kiné.";
+    out.push(mkC(w,"kine_am","KIN",p.code==="R"?"Bilan kiné":COND.kine_am.title,"Prévention","var(--kine)", `<div class="pmeta">${kd}</div>`, "Ce qui a été fait, douleurs…", {planLabel:"Kiné", planTag:"Prévention"}));
+  }
+  if(season && we && we.type==="match"){
+    out.push(mkC(w,"presam","J-1","Repos pré-match","Veille de match","var(--warm)",
+      `<div class="pmeta">Match le lendemain (${we.date} vs ${we.opp}${we.home?" · à domicile":" · à l'extérieur"}) → repos complet, aucune charge (surtout pas le bas du corps).${!we.home?' <span class="pnote">Déplacement à prévoir : pense au trajet et aux repas.</span>':""}</div>`,
+      "Ressenti pré-match, mobilité faite…", {planLabel:"Veille de match", planTag:"Récup"}));
+    out.push(mkC(w,"matchday","MAT",`Match vs ${we.opp}`, we.home?"Rugby · domicile":"Rugby · extérieur","var(--rugby)", `<div class="pmeta">${we.date} · ${we.home?"à domicile":"à l'extérieur"}.</div>`,
+      "Le match (résultat, ressenti, coups pris…)", {planLabel:`Match vs ${we.opp}`, planTag:"Rugby"}));
+  } else if(season && we && we.type==="bye"){
+    const W=WODS[BYE_WOD[w]||"chipper"];
+    out.push(mkC(w,"presam","WOD",`WOD · ${W.title}`,"Week-end sans match · optionnel","var(--wod)",
+      `<div class="pmeta">Pas de match ce week-end → ce WOD si tu veux garder du rythme, sinon repos.<br><b>${W.title} · ${W.chip}</b></div>${bullets(sbTxt(W.lines))}${note(W.note)}${noSB()?note(SB_NOTE):""}`,
+      "Ton temps ou tes tours + ressenti…", {bonus:true, planLabel:"WOD ATHX", planTag:"Week-end · optionnel"}));
+    out.push(mkC(w,"matchday","RUN","Course 3 km (épreuve Endurance)","Week-end sans match · optionnel","var(--cardio)", `<div class="pmeta">${RUNS.season}</div>`,
+      "Ta course (temps, ressenti…)", {bonus:true, planLabel:"Course 3 km", planTag:"Week-end · optionnel"}));
+  }
+  const run = p.code==="R" ? RUNS.R : p.code==="F" ? RUNS.F[p.k] : p.code==="S" ? RUNS.S[p.k] : p.code==="TAP" ? RUNS.TAP : null;
+  if(run) out.push(mkC(w,"run","RUN", run.core?"Course · allure 3 km":"Footing", run.core?"Vitesse pour l'épreuve Endurance":"Optionnel · si le genou va bien","var(--cardio)",
+    `<div class="pmeta">${run.t}${run.core?'<br><span class="pnote">Allure visée = ton temps du dernier 3 km de test ÷ 3 (en min/km).</span>':""}</div>`, "Temps, allures, ressenti…",
+    {bonus:!run.core, planLabel:run.core?"Course · allure 3 km":"Footing", planTag:run.core?"Endurance":"Optionnel"}));
+  if(p.code==="SIM") out.push(mkC(w,"recup","J+1","Lendemain de la répétition","Récup","var(--warm)", `<div class="pmeta">Marche 30', mobilité, rien d'intense. Note à froid ce que tu changes pour le 26 juin.</div>`, "Ressenti…", {planLabel:"Récup", planTag:"Récup"}));
+  if(p.code==="COMP"){
+    out.push(mkC(w,"rest_comp","J-2","Repos jeudi + vendredi","Avant la compétition","var(--warm)",
+      bullets("Sommeil 8 h et plus, hydratation régulière<br>Vendredi : un peu plus de glucides (riz, pâtes, pain), rien de nouveau dans l'assiette<br>Sac : chaussures d'haltéro + running, ceinture, genouillères, magnésie, strap, gourde, boisson glucidique, collations"),
+      "Ressenti, sommeil…", {planLabel:"Repos J-2 / J-1", planTag:"Récup"}));
+    out.push(mkC(w,"athx","J","ATHX Lisbonne","Samedi 26 juin · compétition","var(--wod)", compPlanHtml(), "Tes résultats : charges, temps, classement, ressenti…", {planLabel:"ATHX Lisbonne", planTag:"Compétition"}));
+    out.push(mkC(w,"post","J+1","Lendemain de compétition","Récup","var(--warm)", `<div class="pmeta">Repos, marche, bon repas. Bravo — on fera le bilan ensemble.</div>`, "Bilan…", {bonus:true, planLabel:"Récup", planTag:"Récup"}));
+  }
+  return out;
+}
+
+// Plan complet d'une semaine (mis en cache, recalculé si tu changes tes références dans Profil)
+let PLAN_CACHE = {};
+function weekPlan(w){
+  if(PLAN_CACHE[w]) return PLAN_CACHE[w];
+  const p=phaseOf(w);
+  const sessions = p.code==="I" ? sessI(w,p)
+    : p.code==="V" ? sessV(w,p) : p.code==="C" ? sessC(w,p) : p.code==="T" ? sessT(w,p) : p.code==="R" ? sessR(w,p)
+    : p.code==="F" ? sessF(w,p) : p.code==="S" ? sessS(w,p) : p.code==="SIM" ? sessSIM(w,p) : p.code==="TAP" ? sessTAP(w,p) : sessCOMP(w,p);
+  const conds = condsFor(w,p);
+  return PLAN_CACHE[w] = {phase:p, sessions, conds, all:sessions.concat(conds)};
+}
 
 const VIDEOS = {
   "Back Squat":"https://youtu.be/q07Kvt54D4M","Single Leg Romanian Deadlift":"https://youtu.be/TUQVJR2q-hc",
@@ -588,16 +1293,41 @@ const BMR_BASE = 370;     // constante Katch-McArdle (standard = 370)
 const BMR_COEF = 21.6;    // coefficient de masse maigre
 
 // ---------- STOCKAGE ----------
+// Nov. 2026 : la semaine 1 devient celle du 2 novembre. Une seule fois : les notes des semaines 7 → 40 passent en 1 → 34,
+// celles des semaines 1 → 6 sont archivées (gardées dans le navigateur, plus affichées).
+(function renumber(){
+  try{
+    if(localStorage.getItem("athx_renum_v1")) return;
+    const shift=(src, archKey)=>{
+      const obj=JSON.parse(localStorage.getItem(src)||"{}"), out={}, arch={};
+      Object.keys(obj).forEach(k=>{ const m=k.match(/^w(\d+)-(.*)$/); if(!m){ out[k]=obj[k]; return; } const n=+m[1]; if(n<=6) arch[k]=obj[k]; else out[`w${n-6}-${m[2]}`]=obj[k]; });
+      if(Object.keys(arch).length) localStorage.setItem(archKey, JSON.stringify(arch));
+      localStorage.setItem(src, JSON.stringify(out));
+    };
+    shift("athx_log_v1", "athx_log_archive_v1");
+    shift("athx_sets_v1", "athx_sets_archive_v1");
+    const B=JSON.parse(localStorage.getItem("athx_boards_v6")||"null");
+    if(B){ const nb={}; Object.keys(B).forEach(w=>{ if(+w>6) nb[+w-6]=B[w]; }); localStorage.setItem("athx_boards_v6", JSON.stringify(nb)); }
+    localStorage.setItem("athx_renum_v1","1");
+  }catch(_){}
+})();
 const LS="athx_log_v1", PS="athx_profile_v1", NS="athx_nutri_v1";
 let LOG = JSON.parse(localStorage.getItem(LS) || "{}");
 let PROFILE = JSON.parse(localStorage.getItem(PS) || "{}");
 let NUTRI = JSON.parse(localStorage.getItem(NS) || "{}");
-let week = parseInt(localStorage.getItem("athx_week") || "1");
+let week = calendarWeek(); // on ouvre toujours sur la semaine en cours
 let openSession = {};
 function saveLog(){ localStorage.setItem(LS, JSON.stringify(LOG)); }
 function saveProfile(){ localStorage.setItem(PS, JSON.stringify(PROFILE)); }
 function saveNutri(){ localStorage.setItem(NS, JSON.stringify(NUTRI)); }
-function blockOf(w){ return Math.floor((w-1)/3); }
+// Séries (charge × reps), check du matin, repères ATHX
+const SS="athx_sets_v1", WS="athx_well_v1", BS2="athx_bench_v1";
+function loadJSON(k, d){ try{ return JSON.parse(localStorage.getItem(k)) || d; }catch(_){ return d; } }
+let SETS = loadJSON(SS, {}), WELL = loadJSON(WS, {}), BENCH = loadJSON(BS2, []);
+let SETN = loadJSON("athx_setnames_v1", {}); // nom de l'exercice au moment où tu l'as noté
+function saveSets(){ localStorage.setItem(SS, JSON.stringify(SETS)); localStorage.setItem("athx_setnames_v1", JSON.stringify(SETN)); }
+function saveWell(){ localStorage.setItem(WS, JSON.stringify(WELL)); }
+function saveBench(){ localStorage.setItem(BS2, JSON.stringify(BENCH)); }
 
 // ---------- ONGLETS ----------
 function switchTab(t){
@@ -608,191 +1338,307 @@ function switchTab(t){
   if(t==='profil') renderProfile();
   if(t==='nutri') renderNutrition();
   if(t==='planning') renderPlanning();
+  if(t==='prog') renderProgramme();
+  if(t==='suivi') renderSuivi();
 }
 
 // ---------- PROGRAMME ----------
-function renderWeeks(){
-  const el=document.getElementById("weeks"); el.innerHTML="";
-  for(let w=1; w<=12; w++){
-    const d=document.createElement("div");
-    d.className="wk"+(w===week?" active":""); d.textContent=w;
-    if(Object.keys(LOG).some(k=>k.startsWith("w"+w+"-") && LOG[k].trim())){
-      const dot=document.createElement("span"); dot.className="dot"; d.appendChild(dot);
-    }
-    d.onclick=()=>{ week=w; localStorage.setItem("athx_week",w); renderProgramme(); };
+// Pastilles des 40 semaines (couleur = phase, contour vert = semaine en cours, point = notes saisies).
+function renderWeekChips(elId, onPick){
+  const el=document.getElementById(elId); if(!el) return; el.innerHTML="";
+  const now=calendarWeek(), keys=Object.keys(LOG).filter(k=>LOG[k] && LOG[k].trim()).concat(Object.keys(SETS));
+  for(let w=1; w<=NW; w++){
+    const p=phaseOf(w), d=document.createElement("div");
+    d.className="wk"+(w===week?" active":"")+(w===now?" now":""); d.textContent=w;
+    d.style.setProperty("--phc", p.c); d.title=`${p.name} · ${weekMonday(w)}`;
+    if(keys.some(k=>k.startsWith("w"+w+"-"))){ const dot=document.createElement("span"); dot.className="dot"; d.appendChild(dot); }
+    d.onclick=()=>onPick(w);
     el.appendChild(d);
   }
+  const a=el.querySelector(".wk.active");
+  if(a){ const ra=a.getBoundingClientRect(), re=el.getBoundingClientRect(); el.scrollLeft += (ra.left-re.left) - (re.width-ra.width)/2; }
+}
+
+// Complétion : une séance est « faite » quand tous ses champs sont remplis (l'échauffement est optionnel).
+function sessKeys(s, all){ const out=[]; s.blocks.forEach(b=>{ if(!all && b.optional) return; if(b.type==="list") out.push(...b.keys); else out.push(b.key); }); return out; }
+function isDone(s){ return sessKeys(s,false).every(filled); }
+
+// Notes saisies avec les anciens formats du programme : on retrouve le nom de l'exercice pour les afficher et les exporter.
+const LEGACY_LIFT = {bench:"Bench", squat:"Squat", deadlift:"Soulevé", pushpress:"Push press", jerk:"Jerk", haltero:"Haltéro"};
+const LEGACY_NAMES = {
+  b:   {bench:[["RDL","Fentes"],["Développé militaire","Tractions"]], squat:[["Shrug","Épaule"],["Adducteurs","Abducteurs","Extension mollet"]],
+        deadlift:[["Hip Thrust","Front Squat"],["Dips","Rowing"]], pushpress:[["Leg Extension","Leg Curl"]]},
+  fin: {bench:["Gainage","Ab Wheel"], squat:["Curl biceps","Extension triceps"], deadlift:["Gainage","Relevé de jambes","Renfo cervical"], pushpress:["Curl biceps","Extension triceps"]},
+  v2b: {squat:[["Développé militaire","Tractions"],["Gainage","Relevé de jambes","Renfo cervical"]], pushpress:[["RDL","Fentes bulgares"],["Copenhague","Abducteurs","Extension mollet"]],
+        deadlift:[["Bench Press","Rowing"],["Ab Wheel","Pallof Press","Shrug"]], jerk:[["Front Squat","Hip Thrust"],["Dips","Oiseau","Leg Curl"]]},
+};
+const LEGACY_COND = {repos:"Lendemain de match", cardio_am:"Cardio ATHX", kine_am:"Kiné", presam:"Veille de match / WOD", matchday:"Match / course", rugby1:"Rugby 1", rugby2:"Rugby 2", rugby3:"Rugby 3"};
+function legacyLabel(key){
+  let m=key.match(/^w\d+-(\w+)-(main|warmup|tech)$/);
+  if(m) return `${LEGACY_LIFT[m[1]]||m[1]} — ${m[2]==="main"?"5/3/1":m[2]==="warmup"?"échauffement":"technique"}`;
+  m=key.match(/^w\d+-(\w+)-v3b(\d+)-e(\d+)$/);
+  if(m){ const b=(ACC_V3[m[1]]||[])[+m[2]], e=b&&b.ex[+m[3]]; if(e) return `${LEGACY_LIFT[m[1]]||m[1]} — ${e[0]}`; }
+  m=key.match(/^w\d+-(\w+)-(v2b|b)(\d+)-e(\d+)$/);
+  if(m){ const n=((LEGACY_NAMES[m[2]][m[1]]||[])[+m[3]]||[])[+m[4]]; if(n) return `${LEGACY_LIFT[m[1]]||m[1]} — ${n}`; }
+  m=key.match(/^w\d+-(\w+)-fin-e(\d+)$/);
+  if(m){ const n=(LEGACY_NAMES.fin[m[1]]||[])[+m[2]]; if(n) return `${LEGACY_LIFT[m[1]]||m[1]} — ${n}`; }
+  m=key.match(/^w\d+-cond-(\w+)$/);
+  if(m) return LEGACY_COND[m[1]]||m[1];
+  return key;
+}
+function currentKeys(w){ const set=new Set(); weekPlan(w).all.forEach(s=>sessKeys(s,true).forEach(k=>set.add(k))); return set; }
+function legacyKeys(w){
+  const cur=currentKeys(w), pre=`w${w}-`;
+  return Object.keys(LOG).filter(k=>k.startsWith(pre) && !cur.has(k) && LOG[k] && LOG[k].trim()).sort();
+}
+
+// Carte « la semaine » : phase, objectif, contraintes du calendrier.
+function weekBrief(w, P){
+  const p=P.phase, k=p.k, we=WEEKEND[w-1], prev=WEEKEND[w-2];
+  let head=p.name, title="", focus="";
+  if(p.code==="I"){
+    title="Sans lourd cette semaine";
+    focus="Tu as mal partout après le rugby : on relance en volume à 60 % du TM, 3-4 reps en réserve, sans rappel lourd. Le programme de saison démarre ici : le volume (muscle, robustesse) remplace le 5/3/1 pendant les semaines de rugby. Le bloc volume 1 commence la semaine prochaine.";
+  } else if(p.code==="V"){
+    head=`${p.name} ${p.blk}/4 · ${p.blk<=2?"hypertrophie 10-8-6":"force-hypertrophie 8-6-5"}`;
+    title=`Semaine ${k+1}/4${k===3?" · décharge":""}`;
+    focus=[
+      "Reprise du volume : 3 séries par exercice, 3 reps en réserve. Tu dois sortir de séance avec de l'énergie.",
+      "On monte à 4 séries, 2 reps en réserve. Rappel à 90 % : barre rapide, pas de grind.",
+      "Semaine la plus dure du bloc : 4 séries à 1 rep en réserve, single à 95 % propre.",
+      "Décharge : 2 séries, pas de rappel lourd. C'est elle qui te fait progresser, ne la saute pas.",
+    ][k];
+    if(p.blk===1 && k===0) focus = "Premier rappel lourd de la saison : une seule série à 85 %, barre rapide, puis le volume. " + focus;
+    if(p.blk===3 && k===0) focus = "Les reps baissent (8-6-5), les charges montent : on se rapproche du bloc ATHX. " + focus;
+  } else if(p.code==="C"){
+    title=`Semaine ${k+1}/4 · ${["semaine des 5","semaine des 3","semaine 5/3/1","décharge"][k]}`;
+    focus = k===3 ? "Le rugby reprend, match dimanche : décharge du cycle (40/50/60 %), séances courtes. Tu repars frais pour le bloc volume 2."
+      : "Trêve hivernale, sans rugby : on remet de l'intensité. 5/3/1 avec dernier set en max de reps + FSL, et plus de jambes." + (k===2?" Vise un record de reps sur chaque dernier set, et un single lourd au jerk en séance 4.":"");
+  } else if(p.code==="T"){
+    title=`Test des TM n°${p.blk}`;
+    focus = p.blk===1
+      ? "Juste après la décharge, on vérifie le TM du cycle de trêve : 3 à 5 reps propres. Accessoires allégés, test Endurance en séance 4. Match dimanche : squat et soulevé en début de semaine."
+      : "À la place d'une décharge, on vérifie le TM du dernier bloc de saison : 3 à 5 reps propres. Accessoires allégés. Week-end libre : Metcon-X repère + test Endurance en séance 4, à comparer avec la semaine 6.";
+  } else if(p.code==="R"){
+    title="Récup de la saison";
+    focus="Tout à 60 %, bilan kiné genou + épaule. Le bloc force démarre la semaine prochaine seulement avec le feu vert du kiné.";
+  } else if(p.code==="F"){
+    title=`Semaine ${k+1}/4 · ${["semaine des 5","semaine des 3","semaine 5/3/1","décharge"][k]}`;
+    focus="Plus de rugby : 5 séances + une course. Force en 5/3/1 + FSL, jerk 2 fois (séances 1 et 4), Endurance (course + SkiErg) en séance 4, Metcon-X en séance 5. "
+      + ["","","Single lourd au jerk en séance 1 et test Endurance en séance 4 : mets à jour ta référence S2OH dans Profil.","Décharge avant le bloc spécifique : ne la saute pas."][k];
+  } else if(p.code==="S"){
+    title=`Semaine ${k+1}/3`;
+    focus="Formats de compétition : singles au jerk, doubles au squat, 2 triples à 1' d'intervalle au soulevé (score = moyenne des 2), de 80 à 97,5 %. " + (k===2 ? "Dernière grosse semaine : fenêtres de 5' chronométrées au jerk et au squat, comme le 26 juin." : "Les charges sont calculées sur ton e1RM (TM ÷ 0,9).");
+  } else if(p.code==="SIM"){
+    title="Samedi 12 juin";
+    focus="Les 3 épreuves dans l'ordre (Force, Endurance, Metcon-X) avec le vrai chrono, à ~90 % de tes objectifs : pas de vrai max. On teste aussi l'échauffement, la nutrition et la recharge des disques. Lundi-mercredi léger, jeudi-vendredi repos.";
+  } else if(p.code==="TAP"){
+    title="Volume divisé par 2";
+    focus="Tu gardes l'intensité, tu coupes le volume. Derniers lourds lundi, puis tout devient court et vif. Dors beaucoup.";
+  } else if(p.code==="COMP"){
+    title="Samedi 26 juin";
+    focus="2 séances très légères en début de semaine, repos jeudi et vendredi, compétition samedi. Ton plan de tentatives est dans la carte « ATHX Lisbonne ».";
+  }
+  const cons=[];
+  if(prev && prev.type==="match") cons.push("Début de semaine = lendemain de match : repos.");
+  if(we && we.type==="match") cons.push(`<b>Match ${we.date}</b> vs ${we.opp} (${we.home?"domicile":"extérieur"}) → squat et soulevé au moins 48 h avant, rien de lourd la veille.` + (w===23?" Dernier match de la saison.":""));
+  else if(w<=23 && we && we.type==="bye") cons.push("Pas de match ce week-end : WOD et course en option.");
+  if(w>=7 && w<=9) cons.push("Pas de rugby pendant la trêve : profites-en pour charger.");
+  return `<div class="wph">${head}</div><div class="wtitle">${title}</div>${focus?`<div>${focus}</div>`:""}${cons.length?`<div class="wcons">${cons.map(c=>`<div>${c}</div>`).join("")}</div>`:""}`;
+}
+
+function esc(v){ return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function ta(key, ph){ const v=LOG[key]||""; return `<textarea class="log ${v.trim()?"filled":""}" data-key="${key}" placeholder="${ph||"Ce que j'ai fait…"}">${esc(v)}</textarea>`; }
+function colorOf(c){ return {force:"var(--force)",tech:"var(--tech)",hyp:"var(--hyp)",prev:"var(--kine)",cardio:"var(--cardio)",wod:"var(--wod)",warm:"var(--warm)"}[c]||"var(--warm)"; }
+function renderBlock(b){
+  if(b.bare) return `<div class="part" style="--ac:${b.color}">${b.html}${ta(b.key,b.ph)}</div>`;
+  let h=`<div class="part" style="--ac:${colorOf(b.c)}"><div class="plabel">${b.label}${b.chip?`<span class="pchip">${b.chip}</span>`:""}</div>`;
+  (b.meta||[]).forEach(m=>h+=`<div class="pmeta">${m}</div>`);
+  if(b.note) h+=note(b.note);
+  if(b.bul) h+=bullets(b.bul);
+  if(b.type==="main"){
+    h+=`<div class="ex">`;
+    (b.rows||[]).forEach((r,i)=>{
+      const inner=`<div class="exname">${r.txt}${r.sub?`<div class="extarget">${r.sub}</div>`:""}</div>`;
+      h+= i===0 ? `<div class="exhead">${inner}${b.vid?`<a class="vid" href="${b.vid}" target="_blank" rel="noopener">Vidéo ›</a>`:""}</div>` : `<div class="exrow">${inner}</div>`;
+    });
+    if(b.lift) h+=setsWidget(b.key, LIFT_LABEL[b.lift], rxFromRows(b.rows));
+    h+=ta(b.key, b.lift ? "Notes : ressenti, vitesse, technique…" : b.ph)+`</div>`+(b.after||"");
+  } else if(b.type==="list"){
+    b.ex.forEach((e,i)=>{
+      h+=`<div class="ex"><div class="exhead"><div class="exname">${e[0]}<div class="extarget">${e[1]}${e[2]?` · <span class="pnote">à la place de ${e[2]}</span>`:""}</div></div>
+        <a class="vid" href="${vidLink(e[0])}" target="_blank" rel="noopener">Vidéo ›</a></div>${timedTarget(e[1]) ? ta(b.keys[i],"Ce que j'ai fait (temps, charge, sensations…)") : setsWidget(b.keys[i], e[0], rxFromTarget(e[0], e[1], week)) + ta(b.keys[i],"Notes : ressenti, variante…")}</div>`;
+    });
+  } else {
+    if(b.html) h+=b.html;
+    h+=ta(b.key,b.ph);
+  }
+  return h+`</div>`;
+}
+function sessionCard(s, isOpen, isNext){
+  const card=document.createElement("div");
+  card.className="session"+(isOpen?" open":"")+(isDone(s)?" done":"");
+  card.dataset.id=s.id; card.style.setProperty("--catac", s.color);
+  const dark=s.color==="var(--wod)"?" dark-on-cat":"";
+  let h=`<div class="shead" data-id="${s.id}"><div class="sbadge${dark}">${s.badge}</div>
+    <div class="stitle">${s.title}${isNext?' <span class="nextchip">Prochaine</span>':''}<div class="ssub">${s.sub}</div></div>
+    <div class="donebadge">✓</div><div class="chev">›</div></div><div class="sbody">`;
+  if(isOpen) s.blocks.forEach(b=>h+=renderBlock(b)); // corps rendu seulement quand la carte est ouverte
+  card.innerHTML=h+`</div>`;
+  return card;
+}
+
+function updateWeekProgress(){
+  const P=weekPlan(week), core=P.all.filter(s=>!s.bonus);
+  const done=core.filter(isDone).length, pct=core.length?Math.round(done/core.length*100):0;
+  const fill=document.getElementById("progfill"), txt=document.getElementById("progtxt");
+  if(fill) fill.style.width=pct+"%";
+  if(txt) txt.textContent=pct+"% · "+done+"/"+core.length;
+  document.querySelectorAll("#progContent .session").forEach(card=>{
+    const s=P.all.find(x=>x.id===card.dataset.id); card.classList.toggle("done", s?isDone(s):false);
+  });
 }
 function renderProgramme(){
-  renderWeeks();
-  const bi=blockOf(week), ci=cycleInfo(week);
-  const wkN=["Sem. 1","Sem. 2","Sem. 3","Deload"];
-  document.getElementById("blockline").innerHTML =
-    "Semaine "+week+" / 12 &nbsp;·&nbsp; 5/3/1 : Cycle "+(ci.cyc+1)+" "+wkN[ci.wk]+" &nbsp;·&nbsp; Accessoires : bloc "+(bi+1)+"/4 hypertrophie";
+  renderWeekChips("weeks", w=>{ week=w; renderProgramme(); });
+  const P=weekPlan(week), p=P.phase;
+  document.getElementById("blockline").innerHTML=`Semaine ${week} / ${NW} · ${fmtDay(weekDate(week))} → ${fmtDay(weekDate(week,6))}`;
   const app=document.getElementById("progContent"); app.innerHTML="";
-
-  SCHEDULE.forEach((sc,si)=>{
-    const isOpen=openSession[week]===si;
-    const card=document.createElement("div"); card.className="session"+(isOpen?" open":"");
-    const badge=sc.day.slice(0,3);
-    let html="";
-
-    if(sc.kind==="lift"){
-      const d=S531[sc.lift][week-1];
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
-        <div class="stitle">${sc.title}<div class="ssub">${sc.day} · ${sc.ski?"Push press 5/3/1 · Jerk technique · SkiErg":"5/3/1"}${sc.hyp!=null?" + accessoires":""}</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
-      // Partie 1 — 5/3/1
-      html+=`<div class="part" style="--ac:var(--force)"><div class="plabel">Partie 1 — ${sc.ski?"Push press":sc.title} · 5/3/1</div>`;
-      html+=`<div class="pmeta">${d.label} · échauffement ${d.warm}${d.deload?` · <span class="pnote">décharge : reps prescrites, pas de max</span>`:``}</div>`;
-      const mn=MAINNAME[sc.lift], vn=MAINVID[sc.lift];
-      const yt=VIDEOS[vn]||("https://www.youtube.com/results?search_query="+encodeURIComponent(vn+" technique"));
-      const key=`w${week}-${sc.lift}-main`, val=(LOG[key]||"");
-      html+=`<div class="ex"><div class="exhead">
-        <div class="exname">${d.sets}<div class="extarget">${mn}${d.cible?` · dernier set : cible ${d.cible}`:``}</div></div>
-        <a class="vid" href="${yt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-        <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
-          placeholder="Charges × reps réalisées (surtout le dernier set +)…">${val.replace(/</g,"&lt;")}</textarea></div>`;
-      // Partie 2 — Jerk technique (jour Push press)
-      if(sc.jerk){
-        const jk=`w${week}-jerk-tech`, jv=(LOG[jk]||"");
-        const jyt="https://www.youtube.com/results?search_query="+encodeURIComponent("split jerk dip drive technique");
-        html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Partie 2 — Jerk · technique chargée<a class="pchip" href="${jyt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-          <div class="pset">${JERK_TECH.sets}</div>
-          ${bullets(JERK_TECH.bul)}
-          <textarea class="log ${jv.trim()?"filled":""}" data-key="${jk}"
-            placeholder="Charges × reps + ressenti technique (dip, réception…)">${jv.replace(/</g,"&lt;")}</textarea></div>`;
-      }
-      // Partie 3 — SkiErg (cardio ATHX)
-      if(sc.ski){
-        const benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-        const syt="https://www.youtube.com/results?search_query="+encodeURIComponent("Concept2 SkiErg technique");
-        html+=`<div class="part" style="--ac:var(--tech)"><div class="plabel">Technique — SkiErg<a class="pchip" href="${syt}" target="_blank" rel="noopener">Vidéo ›</a></div>
-          ${bullets("<b>Position haute</b> : bras tendus en haut, léger hinge de hanche, gainage serré<br><b>Tirage</b> : initie avec les <b>lats + abdos</b> (crunch/hinge), pas juste les bras — coudes près des flancs<br><b>Fléchis un peu jambes/hanches</b> → mets le poids du corps dedans<br><b>Retour</b> contrôlé (ratio ~1:2) · <b>damper 5-6</b> · ~32-38 c/min")}</div>`;
-        const sk=`w${week}-ski-endurance`, sv=(LOG[sk]||"");
-        const skiBul = isB
-          ? bullets(`<b>🏁 TEST — SkiErg 15 min, max distance</b> (= ton format de score endurance ATHX)<br>Pars à une allure tenable, régularité, finis fort<br><b>Note tes mètres</b>${prev?` et compare à la sem. ${prev}`:` — c'est ta baseline`}`)
-          : bullets(`<b>4 × 4 min</b> à allure « seuil » tenable sur 15 min (~<b>P2k +6-10</b>, soit ~2:12-2:18/500)<br>Récup 2 min · régulier et relâché<br>But : construire l'allure que tu tiendras sur le score max-distance`);
-        html+=`<div class="part" style="--ac:var(--cardio)"><div class="plabel">Partie 3 — Cardio ATHX · SkiErg${isB?" · 🏁 TEST":""}<span class="pchip">~25 min</span></div>
-          ${skiBul}
-          <div class="pmeta" style="margin-top:0"><span class="pnote">Test 15 min toutes les 4 sem (1 · 4 · 8 · 12) pour suivre tes progrès.</span></div>
-          <textarea class="log ${sv.trim()?"filled":""}" data-key="${sk}"
-            placeholder="${isB?'Distance sur 15 min (m) + ressenti':'Tes 4×4 min (allure /500m, ressenti)'}">${sv.replace(/</g,"&lt;")}</textarea></div>`;
-      }
-      // Accessoires hypertrophie (Parties 2+)
-      if(sc.hyp!=null){
-        BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>{
-          html+=`<div class="part" style="--ac:var(--hyp)"><div class="plabel">${p.label}</div>`;
-          html+=`<div class="pmeta">${p.meta}${p.note?` · <span class="pnote">${p.note}</span>`:""}</div>`;
-          p.ex.forEach((e,ei)=>{
-            const name=e[0], target=e[1], k2=`w${week}-${sc.lift}-a${pi}-e${ei}`, v2=(LOG[k2]||"");
-            const yt2=VIDEOS[name]||("https://www.youtube.com/results?search_query="+encodeURIComponent(name+" exercise technique"));
-            html+=`<div class="ex"><div class="exhead">
-              <div class="exname">${name}<div class="extarget">${target}</div></div>
-              <a class="vid" href="${yt2}" target="_blank" rel="noopener">Vidéo ›</a></div>
-              <textarea class="log ${v2.trim()?"filled":""}" data-key="${k2}"
-                placeholder="Ce que j'ai fait (charges, reps, sensations…)">${v2.replace(/</g,"&lt;")}</textarea></div>`;
-          });
-          html+=`</div>`;
-        });
-      }
-      html+=`</div>`;
-    } else {
-      let title, tag, desc, ph="Ce que j'ai fait (temps, distance, format, sensations…)";
-      if(sc.ck==='metcon'){
-        const c=COND.metcon, benches=[1,4,8,12], isB=benches.includes(week), prev=benches.filter(w=>w<week).pop();
-        title=c.title; tag=isB?'🏁 Benchmark':'Moteur';
-        desc = isB ? (week===1
-            ? `<b>Semaine test — BASELINE.</b> Fais le chipper de référence <b>chronométré</b> et note ton temps : ton point de départ à battre.<br>${c.desc}`
-            : `<b>Semaine test.</b> Refais le <b>même</b> chipper de référence, chronométré. Compare à la <b>sem. ${prev}</b> pour mesurer tes progrès.<br>${c.desc}`)
-          : `<b>Metcon libre / varié.</b> Choisis un <b>autre format</b> que le benchmark (varie durée court/moyen/long et modalité), selon ton ressenti ou ton plan ATHX. Benchmark refait sem. <b>1 · 4 · 8 · 12</b>.`;
-        ph = isB?"Ton TEMPS sur le chipper (+ sensations)…":"Le metcon fait aujourd'hui (format, temps…)";
-      } else if(sc.ck.indexOf('rugby')===0){
-        const r=rugbyContent(sc.ck, week); title=r.title; tag="Rugby · soir"; desc=r.desc; ph="Ta séance rugby (temps, ressenti…)";
-      } else {
-        const c=COND[sc.ck]; title=c.title; tag=c.tag; desc=c.desc;
-      }
-      html+=`<div class="shead" data-s="${si}"><div class="sbadge">${badge}</div>
-        <div class="stitle">${title}<div class="ssub">${sc.day} · ${tag}</div></div>
-        <div class="chev">›</div></div><div class="sbody">`;
-      const key=`w${week}-cond-${sc.ck}`, val=(LOG[key]||"");
-      const ac=(sc.ck.indexOf('rugby')===0||sc.ck==='metcon')?'var(--cardio)':'var(--warm)';
-      const body=(sc.ck.indexOf('rugby')===0)?bullets(desc):`<div class="pmeta">${desc}</div>`;
-      html+=`<div class="part" style="--ac:${ac}">${body}
-        <textarea class="log ${val.trim()?"filled":""}" data-key="${key}"
-          placeholder="${ph}">${val.replace(/</g,"&lt;")}</textarea></div></div>`;
-    }
-    card.innerHTML=html; app.appendChild(card);
+  if(week===calendarWeek()){ const rd=document.createElement("div"); rd.innerHTML=readinessHTML(todayKey()); app.appendChild(rd); }
+  const brief=document.createElement("div"); brief.className="weekcard"; brief.style.setProperty("--phc", p.c);
+  brief.innerHTML=weekBrief(week,P); app.appendChild(brief);
+  const liftCards=[], otherCards=[], doneCards=[];
+  const next=P.sessions.find(s=>!s.bonus && !isDone(s));
+  P.all.forEach(s=>{
+    const card=sessionCard(s, openSession[week]===s.id, s===next);
+    if(isDone(s)) doneCards.push(card); else (s.kind==="lift"?liftCards:otherCards).push(card);
   });
-
+  function section(label, cards){
+    if(!cards.length) return;
+    const h=document.createElement("div"); h.className="seclabel"; h.textContent=label;
+    app.appendChild(h); cards.forEach(c=>app.appendChild(c));
+  }
+  section(p.code==="SIM"||p.code==="TAP"||p.code==="COMP" ? "Muscu · dans l'ordre de la semaine" : "Muscu · dans l'ordre, quand tu peux", liftCards);
+  section("Autres activités de la semaine", otherCards);
+  if(doneCards.length){
+    const det=document.createElement("details"); det.className="doneToggle";
+    if(doneCards.some(c=>c.classList.contains("open"))) det.open=true;
+    det.innerHTML=`<summary>✓ ${doneCards.length} terminée${doneCards.length>1?"s":""}</summary>`;
+    doneCards.forEach(c=>det.appendChild(c));
+    app.appendChild(det);
+  }
+  const old=legacyKeys(week);
+  if(old.length){
+    const det=document.createElement("details"); det.className="doneToggle";
+    det.innerHTML=`<summary>Notes de l'ancien format (${old.length})</summary><div class="legacy">`
+      + old.map(k=>`<div><b>${legacyLabel(k)}</b> : ${esc(LOG[k].trim())}</div>`).join("") + `</div>`;
+    app.appendChild(det);
+  }
   app.querySelectorAll(".shead").forEach(h=>h.onclick=()=>{
-    const si=+h.dataset.s; openSession[week]=(openSession[week]===si)?null:si; renderProgramme(); });
+    const id=h.dataset.id; openSession[week]=(openSession[week]===id)?null:id; renderProgramme(); });
   app.querySelectorAll(".log").forEach(t=>t.addEventListener("input",()=>{
-    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); }));
+    LOG[t.dataset.key]=t.value; saveLog(); t.classList.toggle("filled",!!t.value.trim()); updateWeekProgress(); }));
+  updateWeekProgress();
+  if(document.getElementById("goalsBox").style.display!=="none") renderGoals();
 }
 
+function plain(s){ return String(s).replace(/<[^>]+>/g,"").replace(/&amp;/g,"&"); }
 function exportLog(){
-  let out="ATHX — 5/3/1 + Hypertrophie — Mon journal\n\n";
-  for(let w=1; w<=12; w++){
-    const bi=blockOf(w); let wk="";
-    SCHEDULE.forEach(sc=>{
-      if(sc.kind==="lift"){
-        let ses="";
-        const mk=`w${w}-${sc.lift}-main`;
-        if(LOG[mk]&&LOG[mk].trim()) ses+=`  • ${sc.title} (5/3/1) : ${LOG[mk].trim()}\n`;
-        if(sc.hyp!=null){
-          BLOCKS[bi][sc.hyp].parts.slice(1).forEach((p,pi)=>p.ex.forEach((e,ei)=>{
-            const v=LOG[`w${w}-${sc.lift}-a${pi}-e${ei}`];
-            if(v&&v.trim()) ses+=`  • ${e[0]} : ${v.trim()}\n`; }));
-        }
-        if(sc.jerk){ const v=LOG[`w${w}-jerk-tech`]; if(v&&v.trim()) ses+=`  • Jerk (technique) : ${v.trim()}\n`; }
-        if(sc.ski){ const v=LOG[`w${w}-ski-endurance`]; if(v&&v.trim()) ses+=`  • SkiErg : ${v.trim()}\n`; }
-        if(ses) wk+=` ${sc.day} — ${sc.title}\n${ses}`;
-      } else {
-        const v=LOG[`w${w}-cond-${sc.ck}`];
-        if(v&&v.trim()){ const t = sc.ck.indexOf('rugby')===0 ? rugbyContent(sc.ck,w).title : (COND[sc.ck]?COND[sc.ck].title:sc.ck); wk+=` ${sc.day} — ${t}\n  • ${v.trim()}\n`; }
-      }
+  let out="ATHX Lisbonne (26 juin 2027) — Mon journal d'entraînement\n\n";
+  const val=k=>{ const v=LOG[k]; return (v&&v.trim())?v.trim():""; };
+  for(let w=1; w<=NW; w++){
+    const P=weekPlan(w); let wk="";
+    P.all.forEach(s=>{
+      let ses="";
+      s.blocks.forEach(b=>{
+        const both=k=>[setsTxt(k), val(k)].filter(Boolean).join(" — ");
+        if(b.type==="list") b.ex.forEach((e,i)=>{ const v=both(b.keys[i]); if(v) ses+=`  • ${e[0]} : ${v}\n`; });
+        else { const v=both(b.key); if(v) ses+= b.bare ? `  • ${v}\n` : `  • ${plain(b.label)} : ${v}\n`; }
+      });
+      if(ses) wk+=` ${plain(s.title)}\n${ses}`;
     });
-    if(wk) out+=`=== SEMAINE ${w} ===\n${wk}\n`;
+    const old=legacyKeys(w);
+    if(old.length){ wk+=" Notes de l'ancien format\n"; old.forEach(k=>{ wk+=`  • ${legacyLabel(k)} : ${LOG[k].trim()}\n`; }); }
+    if(wk) out+=`=== SEMAINE ${w} · ${weekMonday(w)} · ${P.phase.name} ===\n${wk}\n`;
   }
-  if(out.trim().endsWith("journal")) out+="(aucune entrée pour l'instant)\n";
+  const days=Object.keys(WELL).filter(k=>Object.keys(WELL[k]).length).sort();
+  if(days.length){
+    out+="=== FORME (check du matin) ===\n";
+    days.forEach(k=>{ const e=WELL[k], p=[];
+      if(e.sleep!=null) p.push("sommeil "+fmtH(e.sleep)); if(e.sq!=null) p.push("qualité "+e.sq+"/5"); if(e.hrv!=null) p.push("VFC "+e.hrv+" ms");
+      if(e.rhr!=null) p.push("FC repos "+e.rhr+" bpm"); if(e.bw!=null) p.push("poids "+kg(e.bw)+" kg"); if(e.sore!=null) p.push("courbatures "+e.sore+"/5"); if(e.energy!=null) p.push("énergie "+e.energy+"/5");
+      out+=`  • ${k} : ${p.join(" · ")}\n`; });
+    out+="\n";
+  }
+  if(BENCH.length){
+    out+="=== REPÈRES ATHX ===\n";
+    BENCH.slice().sort((a,b)=>a.d.localeCompare(b.d)).forEach(b=>{ out+=`  • ${b.d} · ${BENCH_T[b.t].label} : ${benchFmt(b.t,b.v)}\n`; });
+    out+="\n";
+  }
+  if(!/=== /.test(out)) out+="(aucune entrée pour l'instant)\n";
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([out],{type:"text/plain"})); a.download="journal-athx.txt"; a.click();
 }
 function toggleLegend(){ const b=document.getElementById("legendBox"); b.style.display=b.style.display==="none"?"block":"none"; }
-function toggleGoals(){ const b=document.getElementById("goalsBox"); b.style.display=b.style.display==="none"?"block":"none"; }
+function toggleGoals(){ const b=document.getElementById("goalsBox"); const show=b.style.display==="none"; b.style.display=show?"block":"none"; if(show) renderGoals(); }
+function renderGoals(){
+  const T=athxTargets(), rows=[
+    [1,1,"Reprise en volume, sans lourd"],[2,5,"Bloc volume 1 · hypertrophie"],[6,6,"Test des TM n°1 + test Endurance"],[7,10,"Cycle 5/3/1 de trêve + FSL, décharge à la reprise"],
+    [11,14,"Bloc volume 2 · hypertrophie"],[15,18,"Bloc volume 3 · force-hypertrophie"],[19,19,"Test des TM n°2 + Metcon-X + test Endurance"],[20,23,"Bloc volume 4 · fin de saison"],
+    [24,24,"Transition · bilan kiné"],[25,28,"Bloc force ATHX (5 séances/sem.)"],[29,31,"Bloc spécifique (doubles, triples, singles)"],[32,32,"Répétition générale · sam. 12 juin"],
+    [33,33,"Affûtage"],[34,34,"ATHX Lisbonne · sam. 26 juin"]];
+  const cur=week;
+  document.getElementById("goalsBox").innerHTML=`<div class="goals">
+    <div class="ghead">🎯 Jusqu'à l'ATHX Lisbonne — sam. 26 juin 2027</div>
+    <p><b>Le principe</b> : pendant la saison, le rugby passe en premier. La muscu construit du muscle et de la robustesse (blocs volume) et entretient la force (un rappel lourd par séance). Les trêves servent à remettre de l'intensité (5/3/1) et à tester. Après le dernier match (11 avril), 11 semaines 100 % ATHX : force, spécifique, répétition générale, affûtage.</p>
+    <table class="gtable"><tr><th>Semaines</th><th>Dates</th><th>Contenu</th></tr>
+      ${rows.map(r=>`<tr${cur>=r[0]&&cur<=r[1]?' style="color:var(--hyp)"':''}><td>${r[0]===r[1]?r[0]:r[0]+"-"+r[1]}</td><td>${fmtDay(weekDate(r[0]))} → ${fmtDay(weekDate(r[1],6))}</td><td style="text-align:left;font-weight:500">${r[2]}</td></tr>`).join("")}
+    </table>
+    <p><b>Objectifs ATHX</b> (Profil › Objectifs Lisbonne) face aux TM prévus en juin :</p>
+    <table class="gtable"><tr><th>Mouvement</th><th>TM</th><th>e1RM</th><th>Objectif</th></tr>
+      <tr><td>S2OH 1RM (jerk)</td><td>réf. ${kg(jerkRef())}</td><td>—</td><td>${kg(T.goal.s2oh)}</td></tr>
+      <tr><td>Squat 2RM</td><td>${kg(TM("squat",NW))}</td><td>${kg(r25(e1RM("squat",NW)))}</td><td>${kg(T.goal.squat)}</td></tr>
+      <tr><td>Soulevé 3RM ×2 (moyenne)</td><td>${kg(TM("deadlift",NW))}</td><td>${kg(r25(e1RM("deadlift",NW)))}</td><td>${kg(T.goal.dl)}</td></tr>
+      <tr><td><b>Total force</b></td><td></td><td></td><td><b>${kg(T.goal.s2oh+T.goal.squat+T.goal.dl)}</b></td></tr>
+      <tr><td>Push press (TM)</td><td>${kg(TM("pushpress",NW))}</td><td>${kg(r25(e1RM("pushpress",NW)))}</td><td>—</td></tr>
+    </table>
+    <p class="gnote"><b>Ce que ça demande</b> : squat 220 × 2 ≈ un 1RM de 235 (tu es à 210) · soulevé 240 × 3 sur les 2 fenêtres ≈ un 3RM frais de 252,5 (1RM ~278, tu es à 260) · S2OH 160 = ton push press de 140 + la technique du jerk + ~10 kg de force. C'est ambitieux en pleine saison de rugby : les TM y arrivent en juin s'ils montent à chaque bloc (+5 kg squat/soulevé, +2,5 kg push press). Les tests (sem. 6 et 19) et les singles lourds au jerk (sem. 9, 27, 31) diront si on est dans les clous : si un test passe sous 3 reps, retire 10 % dans Profil, tout le programme suit.</p>
+    <p class="gnote"><b>Format ATHX Games 2027</b> : Force 15' (S2OH 1RM en 5', squat 2RM en 5', soulevé : 2 fenêtres d'1' pour un 3RM, moyenne des 2) · Endurance 24' (3 km de course puis SkiErg max distance, score = distance SkiErg) · Metcon-X cap 25' (45 cal rameur, 30 G2OH, 30 DB bench, 30 sandbag squats, 30 m carry, 30 burpees, 45 cal rameur ; score = temps). Endurance et Metcon-X : tes repères viennent des tests (sem. 6, 19, 27) et de la répétition générale.</p>
+    <p class="gnote">Soulevé : la charge des 2 fenêtres vaut ~95 % de ton 3RM frais (prévu en juin : ${kg(T.deadlift3)} kg), parce que la 2e triple arrive après 1' de repos et compte autant que la 1re.</p>
+  </div>`;
+}
 
 // ---------- PLANNING (kanban glissable) ----------
+// Pas de jour imposé : chaque semaine démarre avec tout dans « À placer », tu glisses sur tes jours.
+const POOL="À placer";
 const DAYS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
-const PLAN_ITEMS={
-  squat:{label:"Squat",tag:"Force 5/3/1"},
-  bench:{label:"Développé couché",tag:"Force 5/3/1"},
-  rugby1:{label:"Rugby",tag:"Cardio · soir"},
-  pushpress:{label:"Push press + Jerk + Ski",tag:"Force · technique · cardio"},
-  rugby2:{label:"Rugby",tag:"Cardio · soir"},
-  deadlift:{label:"Soulevé de terre",tag:"Force 5/3/1"},
-  rugby3:{label:"Rugby",tag:"Cardio · soir"},
-  metcon:{label:"WOD ATHX",tag:"Moteur"},
-  ef:{label:"Sortie EF",tag:"Endurance"},
-};
-const PLAN_TO_SCHED={squat:0,bench:1,rugby1:2,deadlift:3,rugby2:4,pushpress:5,rugby3:6,metcon:7,ef:8};
-const DEFAULT_PLAN_IDS={Lundi:["squat"],Mardi:["bench","rugby1"],Mercredi:["deadlift","rugby2"],Jeudi:["pushpress"],Vendredi:["rugby3"],Samedi:["metcon"],Dimanche:["ef"]};
-const BS="athx_boards_v4";
-let BOARDS=JSON.parse(localStorage.getItem(BS)||"{}");
+const COLS=[POOL, ...DAYS];
+// Les cartes du planning suivent les séances de la semaine (elles changent selon la phase).
+function planItems(w){ return weekPlan(w).all.map(x=>({id:x.id, label:x.planLabel||x.title, tag:x.planTag||x.sub})); }
+const BS="athx_boards_v6";
+let BOARDS=loadJSON(BS, {});
 function saveBoards(){ localStorage.setItem(BS, JSON.stringify(BOARDS)); }
-function freshBoard(){ const b={}; DAYS.forEach(d=>b[d]=(DEFAULT_PLAN_IDS[d]||[]).map(id=>({t:'s',id}))); return b; }
-function boardFor(w){ if(!BOARDS[w]) BOARDS[w]=freshBoard(); return BOARDS[w]; }
-
-function renderPlanWeeks(){
-  const el=document.getElementById("planWeeks"); if(!el) return; el.innerHTML="";
-  for(let w=1;w<=12;w++){
-    const d=document.createElement("div");
-    d.className="wk"+(w===week?" active":""); d.textContent=w;
-    d.onclick=()=>{ week=w; localStorage.setItem("athx_week",w); renderPlanning(); };
-    el.appendChild(d);
-  }
+function freshBoard(w){
+  const b={}; COLS.forEach(c=>b[c]=[]);
+  planItems(w).forEach(x=>b[POOL].push({t:'s', id:x.id}));
+  return b;
 }
-function makeCard(it){
+// Garde ton placement, retire les séances qui n'existent plus cette semaine et ajoute les nouvelles dans « À placer ».
+function boardFor(w){
+  if(!BOARDS[w]) BOARDS[w]=freshBoard(w);
+  const b=BOARDS[w], ids=new Set(planItems(w).map(x=>x.id)), seen=new Set();
+  let changed=false;
+  COLS.forEach(c=>{
+    if(!b[c]){ b[c]=[]; changed=true; }
+    const keep=b[c].filter(it=>{ if(it.t!=='s') return true; if(!ids.has(it.id)||seen.has(it.id)) return false; seen.add(it.id); return true; });
+    if(keep.length!==b[c].length){ b[c]=keep; changed=true; }
+  });
+  planItems(w).forEach(x=>{ if(!seen.has(x.id)){ b[POOL].push({t:'s', id:x.id}); changed=true; } });
+  if(changed) saveBoards();
+  return b;
+}
+
+function renderPlanWeeks(){ renderWeekChips("planWeeks", w=>{ week=w; renderPlanning(); }); }
+function makeCard(it, items){
   const card=document.createElement('div');
   card.className='pcard '+(it.t==='s'?'session':'custom')+(it.done?' done':''); card.dataset.key=it.id;
   const chk=document.createElement('span'); chk.className='pcheck'; chk.textContent='✓';
@@ -803,7 +1649,7 @@ function makeCard(it){
   grip.addEventListener('pointerdown', onGripDown);
   card.appendChild(grip);
   if(it.t==='s'){
-    const m=PLAN_ITEMS[it.id]||{label:it.id,tag:''};
+    const m=items[it.id]||{label:it.id,tag:''};
     const lab=document.createElement('div'); lab.className='plabel2'; lab.innerHTML=`${m.label}<div class="ptag">${m.tag}</div>`;
     card.appendChild(lab);
     card.addEventListener('click',(e)=>{ if(e.target.closest('.pgrip'))return; openInProgramme(it.id); });
@@ -821,14 +1667,15 @@ function makeCard(it){
 function renderPlanning(){
   renderPlanWeeks();
   const b=boardFor(week), wrap=document.getElementById("planBoard"); if(!wrap) return; wrap.innerHTML="";
-  DAYS.forEach(day=>{
+  const items=Object.fromEntries(planItems(week).map(x=>[x.id,x]));
+  COLS.forEach(day=>{
     const col=document.createElement("div"); col.className="pday";
     const head=document.createElement("div"); head.className="pdayhead";
-    head.innerHTML= b[day].length? day : `${day} <span style="color:var(--dim2);font-weight:500">· libre</span>`;
+    head.innerHTML= b[day].length? day : `${day} <span style="color:var(--dim2);font-weight:500">· ${day===POOL?"tout est placé":"libre"}</span>`;
     const list=document.createElement("div"); list.className="pdaylist"; list.dataset.day=day;
-    b[day].forEach(it=>list.appendChild(makeCard(it)));
+    b[day].forEach(it=>list.appendChild(makeCard(it, items)));
     const add=document.createElement("button"); add.className="paddbtn"; add.textContent="+ activité"; add.onclick=()=>addCustom(day);
-    col.appendChild(head); col.appendChild(list); col.appendChild(add);
+    col.appendChild(head); col.appendChild(list); if(day!==POOL) col.appendChild(add);
     wrap.appendChild(col);
   });
 }
@@ -837,12 +1684,15 @@ function addCustom(day){
   b[day].push({t:'c',id,text:''}); saveBoards(); renderPlanning();
   setTimeout(()=>{ const i=document.querySelector(`.pcard[data-key="${id}"] input`); if(i) i.focus(); },30);
 }
-function delItem(id){ const b=boardFor(week); for(const d of DAYS){ const i=b[d].findIndex(x=>x.id===id); if(i>=0){ b[d].splice(i,1); break; } } saveBoards(); renderPlanning(); }
-function resetWeekPlan(){ BOARDS[week]=freshBoard(); saveBoards(); renderPlanning(); }
+function delItem(id){ const b=boardFor(week); for(const d of COLS){ const i=b[d].findIndex(x=>x.id===id); if(i>=0){ b[d].splice(i,1); break; } } saveBoards(); renderPlanning(); }
+function resetWeekPlan(){ BOARDS[week]=freshBoard(week); saveBoards(); renderPlanning(); }
 function openInProgramme(id){
-  const idx=PLAN_TO_SCHED[id]; if(idx==null) return;
-  switchTab('prog'); openSession[week]=idx; renderProgramme();
-  setTimeout(()=>{ const c=document.querySelectorAll('#progContent .session')[idx]; if(c) c.scrollIntoView({block:'center'}); },60);
+  openSession[week]=id; switchTab('prog');
+  setTimeout(()=>{
+    const c=document.querySelector(`#progContent .session[data-id="${id}"]`); if(!c) return;
+    const det=c.closest('details'); if(det) det.open=true;
+    c.scrollIntoView({block:'center'});
+  },60);
 }
 // --- drag tactile (pointer events) ---
 let drag=null;
@@ -886,7 +1736,7 @@ function insertBeforeKeyIn(list, y, dragKey){
 }
 function moveItemByKey(key,toDay,beforeKey){
   const b=boardFor(week); let item=null;
-  for(const d of DAYS){ const i=b[d].findIndex(x=>x.id===key); if(i>=0){ item=b[d].splice(i,1)[0]; break; } }
+  for(const d of COLS){ const i=b[d].findIndex(x=>x.id===key); if(i>=0){ item=b[d].splice(i,1)[0]; break; } }
   if(!item) return;
   const arr=b[toDay];
   if(beforeKey){ const idx=arr.findIndex(x=>x.id===beforeKey); (idx>=0)?arr.splice(idx,0,item):arr.push(item); }
@@ -895,7 +1745,7 @@ function moveItemByKey(key,toDay,beforeKey){
 }
 
 // ---------- PROFIL ----------
-const PF=["p_weight","p_bf","p_act"];
+const PF=["p_weight","p_bf","p_act","p_jerk","p_adj_squat","p_adj_pushpress","p_adj_deadlift","p_goal_s2oh","p_goal_squat","p_goal_dl"];
 function numEl(id){ const el=document.getElementById(id); if(!el) return null; const v=parseFloat((el.value||"").toString().replace(",",".")); return isFinite(v)?v:null; }
 function computeMeta(){
   const w=numEl("p_weight"), bf=numEl("p_bf"), act=numEl("p_act")||1.375;
@@ -907,7 +1757,45 @@ function loadProfile(){
   PF.forEach(id=>{ const el=document.getElementById(id); if(PROFILE[id]!=null && PROFILE[id]!=="") el.value=PROFILE[id]; });
   if(!PROFILE.p_act){ PROFILE.p_act="1.375"; } document.getElementById("p_act").value=PROFILE.p_act;
 }
+function renderRefs(){
+  const el=document.getElementById("refsBox"); if(!el) return;
+  const w=week, T=athxTargets(), G=T.goal;
+  el.innerHTML=`Semaine ${w} : TM squat <b>${kg(TM("squat",w))}</b> · push press <b>${kg(TM("pushpress",w))}</b> · soulevé <b>${kg(TM("deadlift",w))}</b> kg<br>`
+    + `Objectifs : S2OH ${kg(G.s2oh)} · squat ${kg(G.squat)} ×2 · soulevé ${kg(G.dl)} ×3 (×2) · total ${kg(G.s2oh+G.squat+G.dl)} · TM prévus en juin : squat ${kg(TM("squat",NW))}, soulevé ${kg(TM("deadlift",NW))}<br>`
+    + `Test raté (moins de 3 reps au TM) : retire 10 % du TM sur ce mouvement.`;
+}
+function exoInProgram(){
+  const set=new Set();
+  [ACC_V.A, ACC_V.B, ACC_C, ACC_F, ACC_S].forEach(t=>Object.values(t).forEach(bl=>bl.forEach(b=>b.ex.forEach(e=>set.add(e[0])))));
+  PREV_KS.ex.forEach(e=>set.add(e[0])); ["Tractions lestées","Dips lestés"].forEach(n=>set.add(n));
+  return set;
+}
+function renderExo(){
+  const box=document.getElementById("exoBox"); if(!box) return;
+  const prog=exoInProgram(), total=Object.keys(CATALOG).length, on=Object.keys(CATALOG).filter(exoOK).length;
+  let h=`<div class="legend" style="margin:0 0 10px">Coche ce que tu peux faire dans ta salle (${on}/${total} cochés). Un exercice <b>du programme</b> décoché est remplacé partout par sa 1re alternative cochée, avec les mêmes séries et reps. </div>`;
+  EXO_GROUPS.forEach(gr=>{
+    const names=gr.items.map(x=>x[0]), n=names.filter(exoOK).length;
+    h+=`<details class="exogrp"><summary>${gr.g}<span>${n}/${names.length}</span></summary>`;
+    names.forEach(nm=>{
+      const inP=prog.has(nm), x=inP && !exoOK(nm) ? subEx(nm, new Set()) : null;
+      let info = inP ? (x ? (x.orig ? `remplacé par ${esc(x.name)}` : "aucune alternative cochée : gardé tel quel") : "dans le programme") : "";
+      if(nm==="Sandbag ~50 kg") info = exoOK(nm) ? "Metcon-X et WOD" : "remplacé par squats Zercher + carry aux haltères";
+      h+=`<label class="exorow"><input type="checkbox" data-exo="${esc(nm)}" ${exoOK(nm)?"checked":""}><span>${esc(nm)}${info?`<small class="${x||(nm==="Sandbag ~50 kg"&&!exoOK(nm))?"exosub":""}">${info}</small>`:""}</span><a class="vid" href="${vidLink(nm)}" target="_blank" rel="noopener">Vidéo ›</a></label>`;
+    });
+    h+=`</details>`;
+  });
+  const opened=[...box.querySelectorAll("details.exogrp")].map(d=>d.open);
+  box.innerHTML=h;
+  box.querySelectorAll("details.exogrp").forEach((d,i)=>{ if(opened[i]) d.open=true; });
+  box.querySelectorAll("input[data-exo]").forEach(cb=>cb.onchange=()=>{
+    if(cb.checked) EXO_OFF.delete(cb.dataset.exo); else EXO_OFF.add(cb.dataset.exo);
+    saveExo(); PLAN_CACHE={}; EXI=null; renderExo();
+  });
+}
+function openExo(){ switchTab("profil"); setTimeout(()=>{ const a=document.getElementById("exoAnchor"); if(a) a.scrollIntoView({block:"start"}); },30); }
 function renderProfile(){
+  renderRefs(); renderExo();
   const m=computeMeta(), meta=document.getElementById("metaBox");
   if(m.tdee==null){
     meta.innerHTML=`<div class="results empty"><div style="font-size:15px">Renseigne ton poids et ton taux de masse grasse pour voir ton métabolisme.</div></div>`;
@@ -924,7 +1812,7 @@ function renderProfile(){
 function bindProfile(){
   PF.forEach(id=>{
     const el=document.getElementById(id);
-    const h=()=>{ PROFILE[id]=el.value; saveProfile(); renderProfile(); };
+    const h=()=>{ PROFILE[id]=el.value; saveProfile(); if(id.indexOf("p_adj_")===0||id.indexOf("p_goal_")===0||id==="p_jerk") PLAN_CACHE={}; renderProfile(); };
     el.addEventListener("input",h); el.addEventListener("change",h);
   });
 }
@@ -990,7 +1878,464 @@ function renderNutrition(){
    </div>`;
 }
 
+// ---------- SÉRIES (charge × reps par exercice) ----------
+// SETS[clé] = [[kg, reps], …] : même clé que la note texte de l'exercice. Sert au tonnage, à l'e1RM et aux graphiques.
+function filled(k){ return (LOG[k] && LOG[k].trim()) || (SETS[k] && SETS[k].some(x=>x[1]>0)); }
+function nfmt(x){ return (Math.round(x*10)/10).toLocaleString('fr-FR'); }
+function e1(kgv, r){ return !(r>0) || !kgv ? 0 : r===1 ? kgv : kgv*(1+r/30); }
+function setStats(arr){
+  let ton=0, reps=0, best=0, top=0, n=0;
+  (arr||[]).forEach(([k,r])=>{ if(!(r>0)) return; n++; reps+=r; ton+=(k||0)*r; if(r<=12) best=Math.max(best, e1(k||0,r)); top=Math.max(top, k||0); });
+  return {n, reps, ton, best, top};
+}
+function sumText(arr){
+  const st=setStats(arr);
+  return st.n ? `${st.n} série${st.n>1?"s":""} · ${st.reps} reps · ${nfmt(st.ton)} kg soulevés${st.best?` · e1RM ${nfmt(Math.round(st.best*2)/2)} kg`:""}` : "";
+}
+function setsTxt(k){
+  const a=(SETS[k]||[]).filter(x=>x[1]>0); if(!a.length) return "";
+  const g=[]; a.forEach(x=>{ const l=g[g.length-1]; if(l && l.k===x[0] && l.r===x[1]) l.c++; else g.push({k:x[0], r:x[1], c:1}); });
+  return g.map(x=>x.c>1 ? `${x.c}×${x.r} @ ${x.k==null?"?":kg(x.k)}` : `${x.k==null?"?":kg(x.k)}×${x.r}`).join(" · ");
+}
+function timedTarget(t){ return /''|"|\d\s?m\b|\bcal\b|min\b/.test(String(t)); }
+function numFr(s){ return parseFloat(String(s).replace(",",".")); }
+// Prescription → séries pré-remplies (« Comme prévu ») à partir du texte des lignes de la séance.
+function parseRx(txt){
+  let t=plain(txt).replace(/^Fenêtre 5' chrono : /,"").trim(); const out=[];
+  let m=t.match(/^(\d+) × (\d+) @ ([\d,]+) kg$/); if(m){ for(let i=0;i<+m[1];i++) out.push([numFr(m[3]),+m[2]]); return out; }
+  m=t.match(/^([\d,]+) kg × (\d+)/); if(m) return [[numFr(m[1]),+m[2]]];
+  if(/^[\d,]+ ×\d+\+?( · [\d,]+ ×\d+\+?)*$/.test(t)){ t.split("·").forEach(x=>{ const q=x.trim().match(/^([\d,]+) ×(\d+)/); if(q) out.push([numFr(q[1]),+q[2]]); }); return out; }
+  if(t.includes("→")){
+    let mult=1; const mm=t.match(/^(\d+) × (.*)$/); if(mm){ mult=+mm[1]; t=mm[2]; }
+    const seq=[];
+    t.replace(/ kg$/,"").split("→").map(x=>x.trim()).forEach(x=>{
+      if(/^\d+'$/.test(x)) return;
+      const q=x.match(/^(\d+) @ ([\d,]+)$/); if(q){ seq.push([numFr(q[2]),+q[1]]); return; }
+      if(/^[\d,]+$/.test(x)) seq.push([numFr(x),1]);
+    });
+    for(let i=0;i<mult;i++) out.push(...seq);
+  }
+  return out;
+}
+function rxFromRows(rows){ const out=[]; (rows||[]).forEach(r=>out.push(...parseRx(r.txt))); return out; }
+// Accessoires : « 4×8-10 » → 4 séries de 8, à la charge de ta dernière séance sur cet exercice.
+function rxFromTarget(name, target, w){
+  const m=String(target).match(/^(\d+)×(\d+)/); if(!m) return [];
+  const last=lastLoad(name, w);
+  return Array.from({length:+m[1]}, ()=>[last, +m[2]]);
+}
+
+// Index des exercices : clé → semaine, nom, mouvement, groupe de tonnage.
+const LIFT_LABEL = {squat:"Squat", deadlift:"Soulevé de terre", pushpress:"Push press", jerk:"Jerk (S2OH)", cj:"Clean & jerk"};
+const GRP_OF = {squat:"squat", deadlift:"deadlift", pushpress:"ovh", jerk:"ovh", cj:"ovh"};
+let EXI=null;
+function exIndex(){
+  if(EXI) return EXI; EXI={};
+  for(let w=1; w<=NW; w++) weekPlan(w).sessions.forEach(s=>s.blocks.forEach(b=>{
+    if(b.type==="main" && b.lift) EXI[b.key]={w, name:LIFT_LABEL[b.lift], lift:b.lift, grp:GRP_OF[b.lift]};
+    if(b.type==="list") b.ex.forEach((e,i)=>{ if(!timedTarget(e[1])) EXI[b.keys[i]]={w, name:SETN[b.keys[i]]||e[0], grp:"acc"}; });
+  }));
+  return EXI;
+}
+function weekOfKey(k){ const m=k.match(/^w(\d+)-/); return m?+m[1]:0; }
+function lastLoad(name, w){
+  const idx=exIndex(); let bw=0, kgv=null;
+  Object.keys(SETS).forEach(k=>{ const m=idx[k]; if(!m || m.name!==name || m.w>=w || m.w<bw) return; const st=setStats(SETS[k]); if(st.top>0){ bw=m.w; kgv=st.top; } });
+  return kgv;
+}
+function setsWidget(key, name, rx){
+  const arr=SETS[key]||[];
+  let h=`<div class="sets" data-key="${key}" data-name="${esc(name)}" data-rx='${JSON.stringify(rx||[])}'>`;
+  if(arr.length) h+=`<div class="sethd"><span></span><span>kg</span><span>reps</span><span></span></div>`
+    + arr.map((x,i)=>`<div class="setrow" data-i="${i}"><span class="sn">${i+1}</span><input class="skg" inputmode="decimal" value="${x[0]==null?"":kg(x[0])}" placeholder="kg" aria-label="Charge, série ${i+1}"><input class="sr" inputmode="numeric" value="${x[1]||""}" placeholder="reps" aria-label="Reps, série ${i+1}"><button class="sdel" aria-label="Supprimer la série ${i+1}">×</button></div>`).join("");
+  h+=`<div class="setbtns"><button class="sadd">+ Série</button>${!arr.length && rx && rx.length ? `<button class="srx">✓ Comme prévu · ${rx.length} série${rx.length>1?"s":""}</button>` : ""}</div>`;
+  return h+`<div class="setsum">${sumText(arr)}</div></div>`;
+}
+function bindSets(root){
+  root.addEventListener("input", e=>{
+    const inp=e.target; if(!inp.matches || !inp.matches(".skg,.sr")) return;
+    const box=inp.closest(".sets"), key=box.dataset.key, i=+inp.closest(".setrow").dataset.i, arr=SETS[key]; if(!arr||!arr[i]) return;
+    const v=numFr(inp.value);
+    if(inp.classList.contains("skg")) arr[i][0]=isFinite(v)?v:null; else arr[i][1]=isFinite(v)?Math.max(0,Math.round(v)):0;
+    SETN[key]=box.dataset.name; saveSets(); box.querySelector(".setsum").textContent=sumText(arr); updateWeekProgress();
+  });
+  root.addEventListener("click", e=>{
+    const btn=e.target.closest && e.target.closest(".sadd,.sdel,.srx"); if(!btn) return;
+    const box=btn.closest(".sets"), key=box.dataset.key; let arr=SETS[key]||[], focus=-1;
+    if(btn.classList.contains("sadd")){ const l=arr[arr.length-1]; arr.push(l?[l[0],l[1]]:[null,0]); focus=arr.length-1; }
+    else if(btn.classList.contains("sdel")) arr.splice(+btn.closest(".setrow").dataset.i,1);
+    else arr=JSON.parse(box.dataset.rx).map(x=>[x[0],x[1]]);
+    if(arr.length){ SETS[key]=arr; SETN[key]=box.dataset.name; } else { delete SETS[key]; delete SETN[key]; }
+    saveSets();
+    const tmp=document.createElement("div"); tmp.innerHTML=setsWidget(key, box.dataset.name, JSON.parse(box.dataset.rx));
+    const nb=tmp.firstElementChild; box.replaceWith(nb);
+    if(focus>=0){ const f=nb.querySelectorAll(".skg")[focus]; if(f) f.focus(); }
+    updateWeekProgress();
+  });
+}
+
+// ---------- FORME (check du matin) & REPÈRES ----------
+function dayKey(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function keyDate(k){ const [y,m,d]=k.split("-").map(Number); return new Date(y,m-1,d); }
+function addDays(k, n){ const x=keyDate(k); x.setDate(x.getDate()+n); return dayKey(x); }
+function todayKey(){ return dayKey(new Date()); }
+function dayLabel(k, long){ return keyDate(k).toLocaleDateString('fr-FR', long?{weekday:'long', day:'numeric', month:'long'}:{day:'numeric', month:'short'}); }
+function parseHours(s){
+  s=String(s||"").trim().toLowerCase(); if(!s) return null;
+  let m=s.match(/^(\d{1,2})\s*[h:]\s*(\d{0,2})$/); if(m) return +m[1] + (m[2]?+m[2]/60:0);
+  const v=numFr(s); return isFinite(v)?v:null;
+}
+function fmtH(h){ const t=Math.round(h*60); return `${Math.floor(t/60)} h ${String(t%60).padStart(2,"0")}`; }
+function wv(k, f){ const e=WELL[k]; const v=e && e[f]; return (v==null || v==="") ? null : +v; }
+function prevStats(k, f, days){
+  const a=[]; for(let i=1;i<=days;i++){ const v=wv(addDays(k,-i), f); if(v!=null) a.push(v); }
+  if(!a.length) return null;
+  const m=a.reduce((x,y)=>x+y,0)/a.length, sd=Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/a.length);
+  return {m, sd, n:a.length};
+}
+// Feu vert / prudence / allège : VFC face à ta normale, sommeil, FC de repos, courbatures, énergie.
+function readiness(k){
+  const e=WELL[k]; if(!e || !["sleep","hrv","rhr","sore","energy","sq"].some(f=>wv(k,f)!=null)) return null;
+  const flags=[], ok=[];
+  const h=wv(k,"hrv"), s30=prevStats(k,"hrv",30), s7=prevStats(k,"hrv",7);
+  if(h!=null){
+    if(s30 && s30.n>=7){ const sd=Math.max(s30.sd, s30.m*0.05); if(h < s30.m-sd) flags.push(`VFC basse : ${h} ms (ta normale ${Math.round(s30.m-sd)}-${Math.round(s30.m+sd)})`); else ok.push(`VFC dans ta normale (${h} ms)`); }
+    else if(s7 && s7.n>=3){ if(h < s7.m*0.9) flags.push(`VFC basse : ${h} ms (moyenne ${Math.round(s7.m)})`); else ok.push(`VFC correcte (${h} ms)`); }
+    else ok.push("VFC notée : ta référence se construit sur 7 jours");
+  }
+  const sl=wv(k,"sleep"); if(sl!=null){ if(sl<6) flags.push(`nuit courte (${fmtH(sl)})`); else ok.push(`${fmtH(sl)} de sommeil`); }
+  const sq=wv(k,"sq"); if(sq!=null && sq<=2) flags.push("sommeil de mauvaise qualité");
+  const rhr=wv(k,"rhr"), r7=prevStats(k,"rhr",7); if(rhr!=null && r7 && r7.n>=3 && rhr>=r7.m+5) flags.push(`FC de repos haute (+${Math.round(rhr-r7.m)} bpm)`);
+  const so=wv(k,"sore"); if(so!=null && so>=4) flags.push("courbatures fortes");
+  const en=wv(k,"energy"); if(en!=null && en<=2) flags.push("énergie basse");
+  const lvl = flags.length===0 ? "good" : flags.length===1 ? "warn" : "bad";
+  const R = {
+    good:{icon:"✓", title:"Feu vert", advice:"Séance comme prévue."},
+    warn:{icon:"!", title:"Prudence", advice:"Fais la séance prévue, mais rien au-dessus de RPE 8 : garde le rappel à la charge et retire 1 série de volume si ça traîne."},
+    bad: {icon:"✕", title:"Allège aujourd'hui", advice:"Pas de rappel lourd : seulement le volume à 60 % et les accessoires, ou 20' d'ergo facile + mobilité. Veille de match : repos."},
+  }[lvl];
+  return Object.assign({lvl, flags, ok}, R);
+}
+function readinessHTML(k){
+  const r=readiness(k);
+  if(!r) return `<button class="wellcta" onclick="openWell()"><span class="ricon rnone">☀︎</span><span><b>Check du matin</b><br>Sommeil, VFC, courbatures : 30 secondes pour savoir si tu charges ou si tu allèges.</span></button>`;
+  return `<div class="ready ${r.lvl}"><span class="ricon" aria-hidden="true">${r.icon}</span><div><b>${r.title}</b> · <span>${dayLabel(k,true)}</span><div>${r.advice}</div>`
+    + `<div class="rflags">${r.flags.concat(r.ok).map(x=>esc(x)).join(" · ")}</div></div></div>`;
+}
+function openWell(){ SUIVI.tab="forme"; SUIVI.day=todayKey(); switchTab("suivi"); }
+
+const BENCH_T = {
+  run3k: {label:"3 km de course", kind:"time", better:"low", ph:"13:30"},
+  ski:   {label:"SkiErg après le 3 km (Endurance)", kind:"m", better:"high", ph:"2600"},
+  metcon:{label:"Metcon-X", kind:"time", better:"low", ph:"19:45"},
+  row45: {label:"Rameur 45 cal", kind:"time", better:"low", ph:"2:35"},
+  amrap12:{label:"WOD repère · AMRAP 12' (séance 4)", kind:"amrap", per:40, better:"high", ph:"4+12"},
+};
+// AMRAP : « 4+12 » = 4 tours + 12 reps (40 reps par tour), stocké en reps totales.
+function parseAmrap(s, per){ s=String(s||"").trim(); const m=s.match(/^(\d+)\s*\+\s*(\d+)$/); if(m) return (+m[1])*per + (+m[2]); const v=numFr(s); return isFinite(v)?Math.round(v*per):null; }
+function parseTime(s){ s=String(s||"").trim(); const m=s.match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/); if(m) return (+(m[1]||0))*3600 + (+m[2])*60 + (+m[3]); const v=numFr(s); return isFinite(v)?v*60:null; }
+function fmtTime(sec){ sec=Math.round(sec); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(s).padStart(2,"0"); }
+function benchFmt(t, v){ const T=BENCH_T[t]; return T.kind==="time" ? fmtTime(v) : T.kind==="amrap" ? `${Math.floor(v/T.per)} tours + ${Math.round(v%T.per)}` : nfmt(v)+" m"; }
+
+// ---------- GRAPHIQUES (SVG : marques fines, survol, tableau des données) ----------
+function niceTicks(lo, hi, n){
+  if(hi===lo){ hi=lo+1; lo=Math.max(0, lo-1); }
+  const raw=(hi-lo)/n, mag=Math.pow(10, Math.floor(Math.log10(raw))), f=raw/mag;
+  const step=(f<1.5?1:f<3?2:f<7?5:10)*mag, a=Math.floor(lo/step)*step, b=Math.ceil(hi/step)*step, t=[];
+  for(let v=a; v<=b+step/2; v+=step) t.push(+v.toFixed(6));
+  return t;
+}
+function timeTicks(lo, hi){
+  const st=[5,10,15,20,30,60,120,300,600,900,1800].find(x=>(hi-lo)/x<=4) || 3600;
+  const a=Math.floor(lo/st)*st, b=Math.ceil(hi/st)*st, t=[]; for(let v=a; v<=b; v+=st) t.push(v); if(t.length<2) t.push(a+st); return t;
+}
+function barPath(x, y, w, h, round, color, i){
+  const r=round ? Math.min(4, h, w/2) : 0;
+  return `<path class="vbar" data-i="${i}" fill="${color}" d="M${x},${y+h}L${x},${y+r}${r?`Q${x},${y} ${x+r},${y}`:""}L${x+w-r},${y}${r?`Q${x+w},${y} ${x+w},${y+r}`:""}L${x+w},${y+h}Z"/>`;
+}
+// cfg : {type:'line'|'bar', x:[], xFull:[], series:[{name, color, values, dots}], stacked, yFmt, yTick, zero, refs:[{y,label}], band:{lo,hi}, h, label, empty}
+function chart(host, cfg){
+  const S=cfg.series, n=cfg.x.length, line=cfg.type!=="bar";
+  let vals=[];
+  if(!line && cfg.stacked){ for(let i=0;i<n;i++){ let t=0; S.forEach(s=>t+=s.values[i]||0); if(t>0) vals.push(t); } }
+  else S.forEach(s=>s.values.forEach(v=>{ if(v!=null && (line || v>0)) vals.push(v); }));
+  if(!n || !vals.length){ host.innerHTML=`<div class="vempty">${cfg.empty||"Pas encore de données."}</div>`; return; }
+  (cfg.refs||[]).forEach(r=>vals.push(r.y)); if(cfg.band) vals.push(cfg.band.lo, cfg.band.hi);
+  const W=Math.max(260, host.clientWidth||320), H=cfg.h||170, padL=42, padR=line?48:10, padT=14, padB=24, pw=W-padL-padR, ph=H-padT-padB;
+  let lo=Math.min(...vals), hi=Math.max(...vals);
+  if(cfg.zero || !line) lo=0; else { const pad=(hi-lo)*0.15 || Math.abs(hi)*0.05 || 1; lo-=pad; hi+=pad; }
+  const ticks=cfg.timeTicks ? timeTicks(lo, hi) : niceTicks(lo, hi, 4); lo=ticks[0]; hi=ticks[ticks.length-1];
+  const X=i=> line ? padL+(n===1 ? pw/2 : pw*i/(n-1)) : padL+pw*(i+0.5)/n;
+  const Y=v=> padT+ph*(1-(v-lo)/(hi-lo));
+  const yt=cfg.yTick||cfg.yFmt;
+  let g="";
+  ticks.forEach(t=>{ g+=`<line class="vgrid" x1="${padL}" x2="${W-padR}" y1="${Y(t)}" y2="${Y(t)}"/><text class="vtick" x="${padL-6}" y="${Y(t)+3.5}" text-anchor="end">${esc(yt(t))}</text>`; });
+  if(cfg.band) g+=`<rect class="vband" x="${padL}" y="${Y(cfg.band.hi)}" width="${pw}" height="${Math.max(0, Y(cfg.band.lo)-Y(cfg.band.hi))}"/>`;
+  const step=Math.max(1, Math.ceil(n/5));
+  for(let i=0;i<n;i+=step) g+=`<text class="vtick" x="${X(i)}" y="${H-6}" text-anchor="middle">${esc(cfg.x[i])}</text>`;
+  if(!line){
+    const bw=Math.min(24, pw/n*0.7);
+    for(let i=0;i<n;i++){
+      const segs=S.map(s=>s.values[i]||0), top=segs.reduce((a,v,j)=>v>0?j:a, -1); let base=0;
+      segs.forEach((v,j)=>{ if(!(v>0)) return; const y1=Y(base+v), gap=base>0?2:0, h=Y(base)-y1-gap; if(h>0) g+=barPath(X(i)-bw/2, y1, bw, h, j===top, S[j].color, i); base+=v; });
+    }
+  } else {
+    S.forEach((s,si)=>{
+      let d="", pen=false;
+      s.values.forEach((v,i)=>{ if(v==null){ pen=false; return; } d+=(pen?"L":"M")+X(i).toFixed(1)+","+Y(v).toFixed(1); pen=true; });
+      if(d) g+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      s.values.forEach((v,i)=>{ if(v==null) return; const iso=(i===0||s.values[i-1]==null)&&(i===n-1||s.values[i+1]==null); if(s.dots||iso) g+=`<circle class="vring" cx="${X(i)}" cy="${Y(v)}" r="${iso?4:3}" fill="${s.color}"/>`; });
+      let li=-1; s.values.forEach((v,i)=>{ if(v!=null) li=i; });
+      if(li>=0 && !s.noEnd){ g+=`<circle class="vring" cx="${X(li)}" cy="${Y(s.values[li])}" r="4" fill="${s.color}"/>`; if(si===0) g+=`<text class="vend" x="${X(li)+8}" y="${Y(s.values[li])+4}">${esc(cfg.yFmt(s.values[li]))}</text>`; }
+    });
+  }
+  (cfg.refs||[]).forEach(r=>{ g+=`<line class="vref" x1="${padL}" x2="${W-padR}" y1="${Y(r.y)}" y2="${Y(r.y)}"/><text class="vreflbl" x="${padL+4}" y="${Y(r.y)-4}">${esc(r.label)}</text>`; });
+  g+=`<line class="vbase" x1="${padL}" x2="${W-padR}" y1="${Y(lo)}" y2="${Y(lo)}"/><line class="vcross" x1="0" x2="0" y1="${padT}" y2="${padT+ph}" style="display:none"/>`;
+  let leg="";
+  if(S.length>1) leg=`<div class="vleg">${S.map(s=>`<span><i class="${line?"":"rect"}" style="background:${s.color}"></i>${esc(s.name)}</span>`).join("")}${cfg.band?`<span><i class="rect vbandkey"></i>${esc(cfg.band.label||"zone normale")}</span>`:""}</div>`;
+  const xs=cfg.xFull||cfg.x;
+  const rowsT=[]; for(let i=0;i<n;i++){ if(S.some(s=>s.values[i]!=null && (line||s.values[i]>0))) rowsT.push(`<tr><td>${esc(xs[i])}</td>${S.map(s=>`<td>${s.values[i]==null?"—":esc(cfg.yFmt(s.values[i]))}</td>`).join("")}</tr>`); }
+  const table=`<details class="vtable"><summary>Voir les données</summary><table><tr><th></th>${S.map(s=>`<th>${esc(s.name)}</th>`).join("")}</tr>${rowsT.join("")}</table></details>`;
+  host.innerHTML=`<div class="vwrap" tabindex="0" role="img" aria-label="${esc(cfg.label||"")}"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg><div class="vtip" style="display:none"></div></div>${leg}${table}`;
+  const wrap=host.querySelector(".vwrap"), svg=wrap.querySelector("svg"), tip=wrap.querySelector(".vtip"), cross=svg.querySelector(".vcross");
+  let cur=-1;
+  function show(i){
+    if(i<0){ tip.style.display="none"; cross.style.display="none"; svg.querySelectorAll(".vbar").forEach(b=>b.classList.remove("dim")); cur=-1; return; }
+    cur=i; tip.textContent="";
+    const hd=document.createElement("div"); hd.className="vtipx"; hd.textContent=xs[i]; tip.appendChild(hd);
+    const rows=S.filter(s=>s.values[i]!=null && (line || s.values[i]>0));
+    if(!rows.length){ const e=document.createElement("div"); e.className="vtipn"; e.textContent="Pas de donnée"; tip.appendChild(e); }
+    rows.forEach(s=>{ const r=document.createElement("div"); r.className="vtiprow"; const kk=document.createElement("span"); kk.className="vkey"; kk.style.background=s.color; const b=document.createElement("b"); b.textContent=cfg.yFmt(s.values[i]); const nm=document.createElement("span"); nm.className="vtipn"; nm.textContent=s.name; r.append(kk,b,nm); tip.appendChild(r); });
+    if(!line && cfg.stacked && rows.length>1){ const r=document.createElement("div"); r.className="vtiprow vtot"; const b=document.createElement("b"); b.textContent=cfg.yFmt(rows.reduce((a,s)=>a+s.values[i],0)); const nm=document.createElement("span"); nm.className="vtipn"; nm.textContent="total"; r.append(b,nm); tip.appendChild(r); }
+    tip.style.display="block";
+    const x=X(i), tw=tip.offsetWidth; let left=x+12; if(left+tw>W) left=Math.max(0, x-12-tw); tip.style.left=left+"px";
+    if(line){ cross.setAttribute("x1",x); cross.setAttribute("x2",x); cross.style.display=""; }
+    else svg.querySelectorAll(".vbar").forEach(b=>b.classList.toggle("dim", +b.dataset.i!==i));
+  }
+  const at=e=>{ const r=svg.getBoundingClientRect(), px=e.clientX-r.left; const i=line ? Math.round((px-padL)/pw*(n-1)) : Math.floor((px-padL)/pw*n); return Math.max(0, Math.min(n-1, n===1?0:i)); };
+  svg.addEventListener("pointermove", e=>show(at(e)));
+  svg.addEventListener("pointerdown", e=>show(at(e)));
+  svg.addEventListener("pointerleave", e=>{ if(e.pointerType==="mouse") show(-1); });
+  const lastAny=()=>{ let l=n-1; for(let i=n-1;i>=0;i--){ if(S.some(s=>s.values[i]!=null)){ l=i; break; } } return l; };
+  wrap.addEventListener("keydown", e=>{ if(e.key==="ArrowRight"){ show(Math.min(n-1, cur<0?lastAny():cur+1)); e.preventDefault(); } else if(e.key==="ArrowLeft"){ show(Math.max(0, cur<0?lastAny():cur-1)); e.preventDefault(); } else if(e.key==="Escape") show(-1); });
+  wrap.addEventListener("focus", ()=>show(lastAny()));
+  wrap.addEventListener("blur", ()=>show(-1));
+}
+function vcard(title, sub, id){ return `<div class="vcard"><div class="vtitle">${title}</div>${sub?`<div class="vsub">${sub}</div>`:""}<div class="vhost" id="${id}"></div></div>`; }
+function tile(label, value, unit, delta){ return `<div class="tile"><div class="tl">${label}</div><div class="tv">${value}${unit?` <small>${unit}</small>`:""}</div>${delta?`<div class="td">${delta}</div>`:""}</div>`; }
+function filt(group, opts, cur){ return `<div class="filt" role="group">${opts.map(([v,l])=>`<button data-f="${group}" data-v="${v}" class="${String(cur)===String(v)?"on":""}">${l}</button>`).join("")}</div>`; }
+
+// ---------- ONGLET SUIVI ----------
+let SUIVI = {tab:"forme", day:null, days:30, weeks:12, lift:"squat", acc:null};
+try{ const sv=JSON.parse(localStorage.getItem("athx_suivi_ui")||"{}"); ["tab","days","weeks","lift"].forEach(k=>{ if(sv[k]!=null) SUIVI[k]=sv[k]; }); }catch(_){}
+function saveSuiviUI(){ try{ localStorage.setItem("athx_suivi_ui", JSON.stringify({tab:SUIVI.tab, days:SUIVI.days, weeks:SUIVI.weeks, lift:SUIVI.lift})); }catch(_){} }
+function renderSuivi(){
+  document.querySelectorAll("#suiviTabs button").forEach(b=>b.classList.toggle("on", b.dataset.s===SUIVI.tab));
+  const el=document.getElementById("suiviContent");
+  if(SUIVI.tab==="forme") renderForme(el);
+  else if(SUIVI.tab==="force") renderForce(el);
+  else if(SUIVI.tab==="volume") renderVolume(el);
+  else renderReperes(el);
+}
+function bindSuivi(){
+  document.querySelectorAll("#suiviTabs button").forEach(b=>b.onclick=()=>{ SUIVI.tab=b.dataset.s; saveSuiviUI(); renderSuivi(); });
+  const el=document.getElementById("suiviContent");
+  el.addEventListener("click", e=>{
+    const f=e.target.closest && e.target.closest("[data-f]"); if(!f) return;
+    const g=f.dataset.f, v=f.dataset.v;
+    if(g==="days") SUIVI.days=+v; else if(g==="weeks") SUIVI.weeks=v==="all"?"all":+v; else if(g==="lift") SUIVI.lift=v;
+    saveSuiviUI(); renderSuivi();
+  });
+  let rt=null; window.addEventListener("resize", ()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(document.getElementById("view-suivi").classList.contains("active")) renderSuivi(); },150); });
+}
+
+// --- Forme
+const WELL_F = [
+  {f:"sleep", label:"Sommeil", hint:"ex. 7h30 ou 7,5", unit:"h", type:"hours"},
+  {f:"sq", label:"Qualité du sommeil", hint:"1 très mauvaise → 5 excellente", type:"scale"},
+  {f:"hrv", label:"VFC", hint:"rMSSD au réveil (montre, appli)", unit:"ms", type:"num"},
+  {f:"rhr", label:"FC de repos", hint:"au réveil", unit:"bpm", type:"num"},
+  {f:"bw", label:"Poids", hint:"à jeun", unit:"kg", type:"num"},
+  {f:"sore", label:"Courbatures", hint:"1 aucune → 5 partout", type:"scale"},
+  {f:"energy", label:"Énergie", hint:"1 vidé → 5 au top", type:"scale"},
+];
+function renderForme(el){
+  const k=SUIVI.day||todayKey(); SUIVI.day=k;
+  const e=WELL[k]||{};
+  let form=`<div class="daynav"><button data-dn="-1" aria-label="Jour précédent">‹</button><div><b>${k===todayKey()?"Aujourd'hui":esc(dayLabel(k,true))}</b>${k===todayKey()?`<div class="dsub">${esc(dayLabel(k,true))}</div>`:""}</div><button data-dn="1" aria-label="Jour suivant" ${k>=todayKey()?"disabled":""}>›</button></div><div class="card">`;
+  WELL_F.forEach(x=>{
+    if(x.type==="scale"){
+      form+=`<div class="row" style="display:block"><label>${x.label}<span class="hint">${x.hint}</span></label><div class="chips5" data-wf="${x.f}">${[1,2,3,4,5].map(v=>`<button class="${+e[x.f]===v?"on":""}" data-v="${v}">${v}</button>`).join("")}</div></div>`;
+    } else {
+      const val = e[x.f]==null ? "" : (x.type==="hours" ? fmtH(+e[x.f]).replace(" h ","h") : kg(e[x.f]));
+      form+=`<div class="row"><label>${x.label}<span class="hint">${x.hint}</span></label><div class="fieldwrap"><input data-wf="${x.f}" data-t="${x.type}" inputmode="decimal" value="${val}" placeholder="—"><span class="unit">${x.unit}</span></div></div>`;
+    }
+  });
+  form+=`</div>`;
+  el.innerHTML=`<div id="wellReady"></div>${form}<div class="seclabel">Tendances</div>${filt("days",[[14,"14 jours"],[30,"30 jours"],[90,"90 jours"]],SUIVI.days)}<div id="wellViz"></div>`;
+  el.querySelectorAll("[data-dn]").forEach(b=>b.onclick=()=>{ const nk=addDays(k, +b.dataset.dn); if(nk<=todayKey()){ SUIVI.day=nk; renderSuivi(); } });
+  el.querySelectorAll("input[data-wf]").forEach(inp=>inp.addEventListener("input",()=>{
+    const v = inp.dataset.t==="hours" ? parseHours(inp.value) : numFr(inp.value);
+    const rec=WELL[k]||(WELL[k]={}); if(v==null || !isFinite(v)) delete rec[inp.dataset.wf]; else rec[inp.dataset.wf]=Math.round(v*100)/100;
+    saveWell(); renderWellViz();
+  }));
+  el.querySelectorAll(".chips5").forEach(c=>c.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const rec=WELL[k]||(WELL[k]={}), f=c.dataset.wf, v=+b.dataset.v;
+    if(rec[f]===v) delete rec[f]; else rec[f]=v;
+    c.querySelectorAll("button").forEach(x=>x.classList.toggle("on", rec[f]===+x.dataset.v));
+    saveWell(); renderWellViz();
+  }));
+  renderWellViz();
+}
+function renderWellViz(){
+  const k=SUIVI.day||todayKey(), ready=document.getElementById("wellReady"), viz=document.getElementById("wellViz"); if(!viz) return;
+  ready.innerHTML = readiness(k) ? readinessHTML(k) : `<div class="ready none"><span class="ricon rnone" aria-hidden="true">☀︎</span><div><b>Check du matin</b><div>Remplis au réveil : sommeil, VFC, FC de repos, courbatures, énergie. Tu obtiens un feu vert, une prudence ou un « allège » pour la séance du jour.</div></div></div>`;
+  const end=todayKey(), N=SUIVI.days, days=[]; for(let i=N-1;i>=0;i--) days.push(addDays(end,-i));
+  const ser=f=>days.map(d=>wv(d,f));
+  const avg=(a)=>{ const v=a.filter(x=>x!=null); return v.length ? v.reduce((x,y)=>x+y,0)/v.length : null; };
+  const last7=f=>avg(days.slice(-7).map(d=>wv(d,f))), base30=f=>{ const s=prevStats(addDays(end,1),f,30); return s?s.m:null; };
+  const sl7=last7("sleep"), hv7=last7("hrv"), hv30=base30("hrv"), rh7=last7("rhr"), rh30=base30("rhr");
+  let lastBw=null; for(let i=0;i<120;i++){ const v=wv(addDays(end,-i),"bw"); if(v!=null){ lastBw=v; break; } }
+  const dlt=(a,b,u,goodUp)=> a!=null && b!=null && Math.abs(a-b)>=0.5 ? `${a>b?"▲":"▼"} ${nfmt(Math.abs(a-b))} ${u} vs 30 j` : (a!=null&&b!=null?"stable vs 30 j":"");
+  let h=`<div class="tiles">`
+    + tile("Sommeil · moyenne 7 j", sl7!=null?fmtH(sl7):"—", "", sl7!=null?(sl7>=8?"objectif 8 h atteint":`objectif 8 h : il manque ${fmtH(8-sl7)}`):"")
+    + tile("VFC · moyenne 7 j", hv7!=null?nfmt(Math.round(hv7)):"—", hv7!=null?"ms":"", dlt(hv7,hv30,"ms"))
+    + tile("FC de repos · 7 j", rh7!=null?nfmt(Math.round(rh7)):"—", rh7!=null?"bpm":"", dlt(rh7,rh30,"bpm"))
+    + tile("Poids", lastBw!=null?kg(lastBw):"—", lastBw!=null?"kg":"", "")
+    + `</div>`;
+  h+=vcard("Sommeil", "Heures par nuit · repère à 8 h", "chSleep") + vcard("VFC", "Au réveil, en ms · la zone grise = ta normale sur 30 jours", "chHrv")
+    + vcard("FC de repos", "Au réveil, en bpm · une hausse de 5 bpm ou plus = fatigue", "chRhr") + vcard("Poids", "À jeun, en kg", "chBw")
+    + vcard("Courbatures et énergie", "Échelle de 1 à 5", "chFeel");
+  viz.innerHTML=h;
+  const xl=days.map(d=>dayLabel(d)), xf=days.map(d=>dayLabel(d,true));
+  chart(document.getElementById("chSleep"), {type:"bar", x:xl, xFull:xf, series:[{name:"Sommeil", color:"var(--s1)", values:ser("sleep")}], yFmt:v=>fmtH(v), yTick:v=>v+" h", refs:[{y:8, label:"8 h"}], label:"Sommeil par nuit", empty:"Note tes heures de sommeil chaque matin."});
+  const hrv=ser("hrv"), roll=days.map((d,i)=>{ const v=[]; for(let j=0;j<7;j++){ const x=wv(addDays(d,-j),"hrv"); if(x!=null) v.push(x); } return v.length>=3 ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : null; });
+  const s30=prevStats(addDays(end,1),"hrv",30);
+  chart(document.getElementById("chHrv"), {type:"line", x:xl, xFull:xf, series:[{name:"VFC du jour", color:"var(--s1)", values:hrv, dots:true}, {name:"Moyenne 7 jours", color:"var(--s2)", values:roll, noEnd:true}],
+    yFmt:v=>Math.round(v)+" ms", band: s30&&s30.n>=7 ? {lo:s30.m-Math.max(s30.sd,s30.m*0.05), hi:s30.m+Math.max(s30.sd,s30.m*0.05), label:"ta normale"} : null, label:"VFC", empty:"Note ta VFC au réveil (rMSSD de ta montre ou de ton appli)."});
+  chart(document.getElementById("chRhr"), {type:"line", x:xl, xFull:xf, series:[{name:"FC de repos", color:"var(--s1)", values:ser("rhr"), dots:true}], yFmt:v=>Math.round(v)+" bpm", yTick:v=>String(v), label:"FC de repos", empty:"Note ta FC de repos au réveil."});
+  chart(document.getElementById("chBw"), {type:"line", x:xl, xFull:xf, series:[{name:"Poids", color:"var(--s1)", values:ser("bw"), dots:true}], yFmt:v=>kg(Math.round(v*10)/10)+" kg", yTick:v=>kg(v), label:"Poids", empty:"Note ton poids à jeun de temps en temps."});
+  chart(document.getElementById("chFeel"), {type:"line", x:xl, xFull:xf, series:[{name:"Courbatures", color:"var(--s2)", values:ser("sore"), dots:true}, {name:"Énergie", color:"var(--s1)", values:ser("energy"), dots:true, noEnd:true}], yFmt:v=>String(v), zero:true, label:"Courbatures et énergie", empty:"Note tes courbatures et ton énergie (1 à 5)."});
+}
+
+// --- Force & volume
+// Semaines de décharge, de reprise ou d'affûtage : charges volontairement légères → e1RM non représentatif.
+function e1Informative(w){ const p=phaseOf(w); if(["I","R","TAP","COMP"].includes(p.code)) return false; if(["V","C","F"].includes(p.code) && p.k===3) return false; return true; }
+function weekAgg(){
+  const idx=exIndex(), A={};
+  Object.keys(SETS).forEach(k=>{
+    const m=idx[k]; if(!m) return; const st=setStats(SETS[k]); if(!st.n) return;
+    const a=A[m.w]||(A[m.w]={ton:{squat:0,deadlift:0,ovh:0,acc:0}, sets:0, reps:0, e1:{}, top:{}, ex:{}});
+    a.ton[m.grp]+=st.ton; a.sets+=st.n; a.reps+=st.reps;
+    if(m.lift){ if(e1Informative(m.w)) a.e1[m.lift]=Math.max(a.e1[m.lift]||0, st.best); a.top[m.lift]=Math.max(a.top[m.lift]||0, st.top); }
+    else { const x=a.ex[m.name]||(a.ex[m.name]={e1:0, top:0, ton:0}); x.e1=Math.max(x.e1, st.best); x.top=Math.max(x.top, st.top); x.ton+=st.ton; }
+  });
+  return A;
+}
+function weekRange(A){
+  const logged=Object.keys(A).map(Number), now=calendarWeek(), last=Math.max(now, ...logged, 1);
+  const first = SUIVI.weeks==="all" ? Math.min(1, ...logged) : Math.max(1, last-SUIVI.weeks+1);
+  const ws=[]; for(let w=first; w<=last; w++) ws.push(w); return ws;
+}
+function goalE1(lift){ const G=goals(); return lift==="squat" ? G.squat*(1+2/30) : lift==="deadlift" ? (G.dl/0.95)*(1+3/30) : lift==="jerk" ? G.s2oh : null; }
+function renderForce(el){
+  const A=weekAgg(), ws=weekRange(A), L=SUIVI.lift, G=goals();
+  const e1s=ws.map(w=>A[w]&&A[w].e1[L] ? Math.round(A[w].e1[L]*2)/2 : null), tops=ws.map(w=>A[w]&&A[w].top[L] ? A[w].top[L] : null);
+  let best=0, bestW=null; Object.keys(A).forEach(w=>{ const v=A[w].e1[L]||0; if(v>best){ best=v; bestW=+w; } });
+  let cur=null; const now=calendarWeek(); for(let w=now; w>=now-3; w--){ if(A[w]&&A[w].e1[L]) cur=Math.max(cur||0, A[w].e1[L]); }
+  const ge=goalE1(L);
+  const goalTxt = L==="squat" ? `${kg(G.squat)} × 2` : L==="deadlift" ? `${kg(G.dl)} × 3 (×2)` : L==="jerk" ? `${kg(G.s2oh)}` : "";
+  let h=filt("lift",[["squat","Squat"],["deadlift","Soulevé"],["pushpress","Push press"],["jerk","Jerk"]],L) + filt("weeks",[[12,"12 semaines"],["all","Toute la saison"]],SUIVI.weeks);
+  h+=`<div class="tiles">`
+    + tile("e1RM · 4 dernières semaines", cur?nfmt(Math.round(cur*2)/2):"—", cur?"kg":"", cur&&ge?`objectif : ${nfmt(Math.round(ge))} kg (${goalTxt})`:"")
+    + tile("Record e1RM", best?nfmt(Math.round(best*2)/2):"—", best?"kg":"", bestW?`semaine ${bestW}`:"")
+    + (ge ? tile("Il reste à prendre", cur?(ge-cur>0?nfmt(Math.round(ge-cur)):"0"):"—", cur?"kg":"", cur?(ge-cur>0?`d'ici le 26 juin (${Math.max(1,NW-now)} semaines)`:"objectif atteint en e1RM"):"") : "")
+    + `</div>`;
+  h+=vcard(`${LIFT_LABEL[L]} · e1RM et charge max`, "Par semaine · e1RM = charge × (1 + reps/30), sur ta meilleure série de 12 reps ou moins. Les semaines de décharge et de reprise ne comptent pas dans l'e1RM (charges légères exprès).", "chE1");
+  // records par nombre de reps
+  const idx=exIndex(), rec={};
+  Object.keys(SETS).forEach(k=>{ const m=idx[k]; if(!m||m.lift!==L) return; SETS[k].forEach(([kgv,r])=>{ if(!(r>0)||!kgv) return; [1,2,3,5,8,10].forEach(t=>{ if(r>=t && (!rec[t] || kgv>rec[t].kg)) rec[t]={kg:kgv, w:m.w}; }); }); });
+  const rk=[1,2,3,5,8,10].filter(t=>rec[t]);
+  h+=`<div class="vcard"><div class="vtitle">Records · ${LIFT_LABEL[L]}</div><div class="vsub">Charge la plus lourde pour au moins N reps</div>`
+    + (rk.length ? `<table class="gtable"><tr><th>Reps</th><th>Charge</th><th>Semaine</th></tr>${rk.map(t=>`<tr><td>${t} rep${t>1?"s":""}</td><td>${kg(rec[t].kg)} kg</td><td>${rec[t].w}</td></tr>`).join("")}</table>` : `<div class="vempty">Tes records apparaîtront dès que tu notes tes séries.</div>`) + `</div>`;
+  // accessoires
+  const accNames=[...new Set(Object.values(A).flatMap(a=>Object.keys(a.ex)))].sort((a,b)=>a.localeCompare(b,'fr'));
+  if(!SUIVI.acc || !accNames.includes(SUIVI.acc)) SUIVI.acc=accNames[0]||null;
+  h+=`<div class="seclabel">Accessoires</div>`;
+  if(accNames.length){
+    h+=`<div class="card" style="padding:10px 12px; margin-bottom:12px"><select class="act" id="accSel" aria-label="Exercice">${accNames.map(n=>`<option ${n===SUIVI.acc?"selected":""}>${esc(n)}</option>`).join("")}</select></div>` + vcard("Charge max et e1RM", "Par semaine", "chAcc");
+  } else h+=`<div class="vcard"><div class="vempty">Note tes séries d'accessoires (bouton « + Série ») pour suivre leur progression.</div></div>`;
+  el.innerHTML=h;
+  const xl=ws.map(w=>"S"+w), xf=ws.map(w=>`Semaine ${w} · ${weekMonday(w)}`);
+  chart(document.getElementById("chE1"), {type:"line", x:xl, xFull:xf, series:[{name:"e1RM estimé", color:"var(--s1)", values:e1s, dots:true}, {name:"Charge max", color:"var(--s2)", values:tops, dots:true, noEnd:true}],
+    yFmt:v=>kg(v)+" kg", yTick:v=>String(v), refs: ge ? [{y:Math.round(ge), label:`Objectif Lisbonne · ${goalTxt}`}] : [], label:`${LIFT_LABEL[L]} : e1RM par semaine`, empty:"Note tes séries (charge × reps) dans le programme : la courbe se construit toute seule."});
+  if(accNames.length){
+    const sel=document.getElementById("accSel"); sel.onchange=()=>{ SUIVI.acc=sel.value; renderSuivi(); };
+    const a=SUIVI.acc;
+    chart(document.getElementById("chAcc"), {type:"line", x:xl, xFull:xf, series:[{name:"e1RM estimé", color:"var(--s1)", values:ws.map(w=>A[w]&&A[w].ex[a]&&A[w].ex[a].e1?Math.round(A[w].ex[a].e1*2)/2:null), dots:true}, {name:"Charge max", color:"var(--s2)", values:ws.map(w=>A[w]&&A[w].ex[a]&&A[w].ex[a].top?A[w].ex[a].top:null), dots:true, noEnd:true}],
+      yFmt:v=>kg(v)+" kg", yTick:v=>String(v), label:a});
+  }
+}
+function renderVolume(el){
+  const A=weekAgg(), ws=weekRange(A), now=calendarWeek();
+  const tot=w=>A[w] ? A[w].ton.squat+A[w].ton.deadlift+A[w].ton.ovh+A[w].ton.acc : 0;
+  const tw=tot(now), tp=tot(now-1);
+  const delta = tw&&tp ? `${tw>=tp?"▲":"▼"} ${Math.abs(Math.round((tw-tp)/tp*100))} % vs semaine ${now-1}` : (tp?`semaine ${now-1} : ${nfmt(Math.round(tp))} kg`:"");
+  const done=ws.map(w=>{ if(w>now) return null; const P=weekPlan(w), core=P.all.filter(s=>!s.bonus); return core.length ? Math.round(core.filter(s=>sessKeys(s,true).some(filled)).length/core.length*100) : null; });
+  let h=filt("weeks",[[12,"12 semaines"],["all","Toute la saison"]],SUIVI.weeks)
+    + `<div class="tiles">` + tile(`Tonnage · semaine ${now}`, tw?nfmt(Math.round(tw/100)/10):"—", tw?"t":"", delta)
+    + tile("Séries · reps", A[now]?`${A[now].sets} · ${A[now].reps}`:"—", "", "cette semaine") + `</div>`
+    + vcard("Tonnage par semaine", "Charge × reps, toutes séries notées", "chTon")
+    + vcard("Régularité", "Part des séances et activités de la semaine où tu as noté quelque chose (hors bonus)", "chDone");
+  el.innerHTML=h;
+  const xl=ws.map(w=>"S"+w), xf=ws.map(w=>`Semaine ${w} · ${weekMonday(w)}`), tkg=v=>nfmt(Math.round(v))+" kg";
+  chart(document.getElementById("chTon"), {type:"bar", stacked:true, x:xl, xFull:xf, series:[
+    {name:"Squat", color:"var(--s1)", values:ws.map(w=>A[w]?A[w].ton.squat:0)},
+    {name:"Soulevé", color:"var(--s2)", values:ws.map(w=>A[w]?A[w].ton.deadlift:0)},
+    {name:"Push press & jerk", color:"var(--s3)", values:ws.map(w=>A[w]?A[w].ton.ovh:0)},
+    {name:"Accessoires", color:"var(--s4)", values:ws.map(w=>A[w]?A[w].ton.acc:0)}],
+    yFmt:tkg, yTick:v=>v>=1000?(v/1000).toLocaleString('fr-FR')+" t":String(v), label:"Tonnage par semaine", empty:"Note tes séries dans le programme : le tonnage se calcule tout seul."});
+  chart(document.getElementById("chDone"), {type:"bar", x:xl, xFull:xf, series:[{name:"Fait", color:"var(--s1)", values:done}], yFmt:v=>v+" %", zero:true, refs:[{y:100, label:"100 %"}], label:"Régularité par semaine", empty:"Note tes séances dans le programme pour suivre ta régularité."});
+}
+
+// --- Repères ATHX
+function renderReperes(el){
+  let h=`<div class="card" style="padding:14px 16px 6px"><div class="vtitle" style="margin-bottom:8px">Nouveau repère</div>
+    <select class="act" id="bType">${Object.entries(BENCH_T).map(([k,t])=>`<option value="${k}">${t.label}</option>`).join("")}</select>
+    <div class="row"><label>Date</label><div class="fieldwrap"><input id="bDate" type="date" value="${todayKey()}" style="width:150px"></div></div>
+    <div class="row"><label id="bValLbl">Résultat</label><div class="fieldwrap"><input id="bVal" inputmode="decimal" placeholder="13:30" style="width:110px"><span class="unit" id="bUnit"></span></div></div>
+    <div class="tools" style="justify-content:flex-start; margin:4px 0 10px"><button id="bAdd">Ajouter</button></div></div>`;
+  Object.entries(BENCH_T).forEach(([k,t])=>{
+    const list=BENCH.filter(b=>b.t===k).sort((a,b)=>a.d.localeCompare(b.d));
+    if(!list.length) return;
+    const best=list.reduce((a,b)=> (t.better==="low" ? b.v<a.v : b.v>a.v) ? b : a);
+    const last=list[list.length-1], first=list[0];
+    const diff = list.length>1 ? (t.kind==="time" ? `${last.v<=first.v?"▼":"▲"} ${fmtTime(Math.abs(last.v-first.v))} depuis le ${dayLabel(first.d)}` : `${last.v>=first.v?"▲":"▼"} ${nfmt(Math.abs(last.v-first.v))} ${t.kind==="amrap"?"reps":"m"} depuis le ${dayLabel(first.d)}`) : "";
+    h+=`<div class="vcard"><div class="vtitle">${t.label}</div><div class="vsub">${t.better==="low"?"Plus bas = mieux":"Plus haut = mieux"} · record ${benchFmt(k,best.v)} (${dayLabel(best.d)})${diff?" · "+diff:""}</div><div class="vhost" id="chB_${k}"></div>
+      <div class="blist">${list.slice().reverse().map(b=>`<div class="bitem"><span>${dayLabel(b.d)}</span><b>${benchFmt(k,b.v)}</b><button data-bdel="${b.id}" aria-label="Supprimer">×</button></div>`).join("")}</div></div>`;
+  });
+  if(!BENCH.length) h+=`<div class="vcard"><div class="vempty">Ajoute tes résultats de tests (3 km, SkiErg de l'épreuve Endurance, Metcon-X, rameur 45 cal, WOD repère de la séance 4) : chaque épreuve aura sa courbe.</div></div>`;
+  el.innerHTML=h;
+  const tSel=document.getElementById("bType"), val=document.getElementById("bVal"), unit=document.getElementById("bUnit");
+  const upd=()=>{ const t=BENCH_T[tSel.value]; val.placeholder=t.ph; unit.textContent=t.kind==="time"?"min:s":t.kind==="amrap"?"tours+reps":"m"; document.getElementById("bValLbl").textContent=t.kind==="time"?"Temps":t.kind==="amrap"?"Score":"Distance"; };
+  tSel.onchange=upd; upd();
+  document.getElementById("bAdd").onclick=()=>{
+    const t=BENCH_T[tSel.value], v = t.kind==="time" ? parseTime(val.value) : t.kind==="amrap" ? parseAmrap(val.value, t.per) : numFr(val.value), d=document.getElementById("bDate").value||todayKey();
+    if(v==null || !isFinite(v) || v<=0){ val.focus(); val.style.borderColor="var(--crit)"; return; }
+    BENCH.push({id:"b"+Date.now(), t:tSel.value, d, v}); saveBench(); renderSuivi();
+  };
+  el.querySelectorAll("[data-bdel]").forEach(b=>b.onclick=()=>{ BENCH=BENCH.filter(x=>x.id!==b.dataset.bdel); saveBench(); renderSuivi(); });
+  Object.entries(BENCH_T).forEach(([k,t])=>{
+    const host=document.getElementById("chB_"+k); if(!host) return;
+    const list=BENCH.filter(b=>b.t===k).sort((a,b)=>a.d.localeCompare(b.d));
+    chart(host, {type:"line", x:list.map(b=>dayLabel(b.d)), xFull:list.map(b=>dayLabel(b.d,true)), series:[{name:t.label, color:"var(--s1)", values:list.map(b=>b.v), dots:true}],
+      yFmt:v=>benchFmt(k,v), yTick:v=>t.kind==="time"?fmtTime(v):t.kind==="amrap"?kg(Math.round(v/t.per*10)/10)+" t":String(v), timeTicks:t.kind==="time", label:t.label, h:150});
+  });
+}
+
 // ---------- INIT ----------
+bindSets(document.getElementById("progContent"));
+bindSuivi();
 renderProgramme();
 loadProfile(); bindProfile(); renderProfile();
 loadNutri(); bindNutri(); renderNutrition();
