@@ -19,6 +19,7 @@
     /* graphiques : palette catégorielle validée (fond clair) + couleurs d'état */
     --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
     --good:#0ca30c; --warnc:#fab219; --crit:#d03b3b;
+    --wodtxt:#8a6d00; /* titres des blocs WOD : jaune foncé lisible sur blanc */
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -27,6 +28,7 @@
       --ink:#f5f5f7; --oninval:#000000;
       --nav:rgba(20,20,22,.8);
       --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+      --wodtxt:#ffd60a;
     }
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -89,6 +91,7 @@
   .doneToggle[open]>summary:before{transform:rotate(90deg)}
   .part{--ac:var(--warm); margin:14px 0; border-left:3px solid var(--ac); padding:2px 0 2px 13px}
   .part:first-child{margin-top:4px}
+  .part[style*="var(--wod)"] .plabel{color:var(--wodtxt)}
   .plabel{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:800; color:var(--ac); letter-spacing:.04em; text-transform:uppercase}
   .pchip{flex:0 0 auto; font-size:11px; font-weight:600; color:var(--dim); background:var(--field); padding:3px 9px; border-radius:20px; text-transform:none; letter-spacing:0; text-decoration:none}
   .pmeta{font-size:13px; color:var(--dim); margin:6px 0 8px; line-height:1.5}
@@ -315,7 +318,7 @@
       <b>« 2 en réserve »</b> : tu t'arrêtes quand il te resterait 2 reps. Les séries d'accessoires montent sur le bloc : 3 → 4 → 4 → 2 (décharge).<br>
       <b>TM</b> (training max) ≈ 90 % de ton max. Il monte à chaque bloc (+5 kg squat et soulevé, +2,5 kg push press). <b>e1RM</b> = TM ÷ 0,9. Après un test, corrige-le dans Profil › Mes références : tout le programme suit.<br>
       <b>S2OH</b> (shoulder to overhead, style libre) : tu le fais en jerk depuis le rack. Les % partent de ta référence S2OH (Profil) : 140 = ton push press actuel, mets ton jerk dès qu'il le dépasse. Objectif : 160.<br>
-      <b>Épreuves ATHX</b> : Force (S2OH, squat 2RM, soulevé 2 × 3), Endurance (3 km de course puis SkiErg jusqu'à 24'), Metcon-X (cap 25'). La séance 4 prépare l'Endurance, la 5 (au printemps) le Metcon-X.<br>
+      <b>Épreuves ATHX</b> : Force (S2OH, squat 2RM, soulevé 2 × 3), Endurance (3 km de course puis SkiErg jusqu'à 24'), Metcon-X (cap 25'). La séance 4 : jerk + un WOD ATHX court et progressif pendant la saison (RPE 6-7), puis l'Endurance au printemps ; la séance 5 (au printemps) prépare le Metcon-X.<br>
       <b>Décharge</b> : moins de séries, pas de lourd. Ne la saute pas : c'est là que tu progresses.<br>
       <b>Couleurs des séances</b> : <span style="color:var(--force)">● muscu</span> · <span style="color:var(--cardio)">● moteur ATHX</span> · <span style="color:var(--wod)">● WOD / compétition</span> · <span style="color:var(--rugby)">● rugby</span> · <span style="color:var(--kine)">● kiné</span> · <span style="color:var(--warm)">● repos/récup</span>.<br>
       <b>Couleurs des blocs</b> : <span style="color:var(--force)">● force</span> · <span style="color:var(--tech)">● jerk / haltéro</span> · <span style="color:var(--hyp)">● hypertrophie</span> · <span style="color:var(--kine)">● prévention</span> · <span style="color:var(--cardio)">● moteur</span> · <span style="color:var(--warm)">● échauffement</span>.<br>
@@ -791,6 +794,9 @@ function LIST(b, p){
   const ex=b.ex.map(e=>{ const x=subEx(e[0], used); used.add(x.name); return [x.name, b.fixed ? e[1] : accTarget(e[1], b.c, p), x.orig]; });
   return {type:"list", label:b.label, c:b.c, note:b.note, ex};
 }
+// Retour au calme en fin de séance : marche inclinée (optionnelle, ne bloque pas le « fait »).
+const COOL_BUL = "Tapis incliné à 10-12 %, 5 à 5,5 km/h, 8 à 10 minutes<br>Allure où tu peux parler (zone 2), respiration par le nez<br>Lâche les barres du tapis : bras libres, buste droit<br>Pressé ? 5 minutes suffisent";
+function COOL(){ return {type:"cool", c:"prev", label:"Retour au calme · marche inclinée", chip:"~8-10 min", bul:COOL_BUL, ph:"Optionnel : durée, pente, vitesse…", optional:true}; }
 function WARM(ph){ return {type:"warm", c:"warm", label:"Échauffement", chip:"~10 min", bul:WARMUP_BUL, ph:ph||"Optionnel : ressenti, douleurs à surveiller…", optional:true}; }
 
 // --- Les 3 épreuves ATHX Games 2027 (catégorie ATHX hommes) :
@@ -800,18 +806,6 @@ const TEST_END = ["<b>Test Endurance ATHX</b> : 3 km de course puis SkiErg max d
   "Course à RPE 8 (pas un sprint), transition rapide, SkiErg régulier puis tout ce qui reste sur les 2 dernières minutes",
   "Note le temps du 3 km et la distance SkiErg (= ton score). Genou douloureux : remplace par 15' de SkiErg max distance"];
 const ENGINE = {
-  V12:[ ["SkiErg 5 × 2' · récup 1'","Rameur 5 × 2' · récup 1'","Allure régulière, RPE 7 : tu pourrais en faire 2 de plus"],
-        ["SkiErg 4 × 3' · récup 1'","Rameur 4 × 3' · récup 1'","Même allure que la semaine dernière sur des fractions plus longues"],
-        ["SkiErg 3 × 4' · récup 1'30","Rameur 3 × 4' · récup 1'30","Même allure /500 m sur toutes les fractions"],
-        ["15' alterné facile : 5' SkiErg · 5' rameur · 5' SkiErg","Technique uniquement, respiration nasale"] ],
-  V34:[ ["SkiErg 8 × 250 m · récup 1'","Rameur 6 × 250 m · récup 1'","Allure : 3-4 s/500 m plus vite que ton allure SkiErg du dernier test"],
-        ["SkiErg 5 × 500 m · récup 1'30","Rameur 4 × 500 m · récup 1'30","Allure SkiErg du test moins 2-3 s/500 m, régulière"],
-        ["<b>Rameur 45 cal chrono</b> (= 1er et dernier poste du Metcon-X)","Récup 4' puis SkiErg 6 × 1' rapide · récup 1'"],
-        ["15' alterné facile (technique)"] ],
-  C:  [ ["SkiErg 5 × 500 m · récup 1'30","Allure SkiErg du test moins 3 s/500 m","Rameur 10' régulier"],
-        ["2 tours : 1,5 km de course à l'allure visée → 5' SkiErg à l'allure visée","Récup 4' entre les tours : l'épreuve Endurance en morceaux"],
-        ["<b>Rameur 45 cal chrono</b> (repère Metcon-X)","Récup 4' puis SkiErg 6 × 1' rapide · récup 1'"],
-        ["15' alterné facile (technique) : le rugby reprend"] ],
   F:  [ ["3 tours : 1 km de course à l'allure visée → 3' SkiErg à l'allure visée","Récup 3' entre les tours · transition course → SkiErg en moins de 20''"],
         ["2 tours : 1,5 km de course → 5' SkiErg à l'allure visée · récup 4'","Puis rameur 2 × 20 cal rapide · récup 1' (pour le Metcon-X)"],
         TEST_END.concat(["Test n°3 : compare avec les semaines 6 et 19"]),
@@ -820,6 +814,30 @@ const ENGINE = {
         ["SkiErg 4 × 3' à l'allure visée · récup 1'30","Course 4 × 500 m un peu plus vite que l'allure visée · récup 1'30"],
         ["Brick court : 1,5 km à l'allure de course → 6' SkiErg à l'allure de course","Tu dois finir en contrôle : c'est ton allure du 26 juin"] ],
 };
+// WOD ATHX court de la séance 4 (saison + trêve), progressif bloc après bloc, toujours à RPE 6-7.
+// Semaine 1 du bloc : EMOM · 2 : tours réguliers · 3 : WOD repère identique (AMRAP 12') · 4 : flow de décharge. La trêve prend le niveau du bloc 3.
+const W4 = {
+  emom: {V1:{min:12,a:12,b:8,c:6}, V2:{min:16,a:13,b:10,c:7}, V3:{min:16,a:14,b:10,c:8}, V4:{min:20,a:15,b:12,c:8}},
+  tours:{V1:{n:3,r:15,g:10,s:8,rest:"1'30"}, V2:{n:3,r:15,g:12,s:10,rest:"1'30"}, V3:{n:4,r:15,g:12,s:10,rest:"1'"}, V4:{n:4,r:18,g:15,s:12,rest:"1'"}},
+};
+function wod4Block(p){
+  const lv = p.code==="C" ? "V3" : p.code==="V" ? "V"+p.blk : "V1", k = p.code==="I" ? 3 : p.k;
+  let title, chip, lines, nt;
+  if(k===0){ const x=W4.emom[lv]; title=`EMOM ${x.min}' · ${x.min/4} tours`; chip=x.min+"'";
+    lines=`Minute 1 : ${x.a} cal rameur<br>Minute 2 : ${x.b} DB G2OH 20 kg (alterne les bras)<br>Minute 3 : ${x.a} cal SkiErg<br>Minute 4 : ${x.c} burpees over bench`;
+    nt="Il doit te rester 20 à 25'' de repos chaque minute ; sinon retire 2 reps à ce poste."; }
+  else if(k===1){ const x=W4.tours[lv]; title=`${x.n} tours à allure régulière`; chip=`~${x.n*4+3}'`;
+    lines=`${x.r} cal rameur<br>${x.g} DB bench press 2 × 20 kg<br>${x.s} sandbag squats 50 kg<br>20 m sandbag carry 50 kg<br>Récup ${x.rest} entre les tours`;
+    nt="Note le temps de chaque tour : le dernier ne doit pas être plus lent que le premier."; }
+  else if(k===2){ title="WOD repère · AMRAP 12'"; chip="12'";
+    lines="10 cal SkiErg<br>10 DB G2OH 20 kg (alterne les bras)<br>10 sandbag squats 50 kg<br>10 burpees over bench";
+    nt="Le même à chaque bloc (sem. 4, 9, 13, 17, 22). Note tes tours + reps dans Suivi › Repères : à effort égal, c'est le chiffre qui montre ton cardio monter."; }
+  else { title="Flow 10' · sans chrono"; chip="10'";
+    lines="3 tours : 10 cal rameur · 8 DB G2OH · 8 DB bench · 6 burpees";
+    nt="Respiration nasale, mouvements propres : tu dois finir mieux qu'au début."; }
+  return {type:"text", c:"wod", label:`WOD ATHX · ${title}`, chip, ph:"Tours, temps, ressenti (RPE)…",
+    html:bullets(sbTxt(lines)) + note("RPE 6-7 : tu dois pouvoir dire une phrase. Pas de cartouche : si ça monte trop, ralentis l'ergo, jamais la technique. "+nt) + (noSB() && k<3 ? note(SB_NOTE) : "")};
+}
 const ENGINE_NOTE = "Allure visée = celle de ton dernier test Endurance (course et SkiErg). Le score de l'épreuve, c'est la distance SkiErg ; le rameur sert au Metcon-X. Damper SkiErg 5-6, rameur 4-5.";
 function engineBlock(lines, chip, label){
   const lb = label || (/course|footing/i.test(lines.join(" ")) ? "Endurance ATHX · course + SkiErg" : "Moteur ATHX · SkiErg + rameur");
@@ -941,9 +959,10 @@ function jerkBlock(label, rows, rampPcts, opt){
 // --- Constructeurs de séances
 function mkS(w, sid, num, title, sub, color, blocks, extra){
   let n=0;
+  if(!(extra && extra.noCool)) blocks.push(COOL());
   blocks.forEach((b,bi)=>{
-    if(b.type!=="warm"){ n++; if(!/^Bloc /.test(b.label)) b.label=`Bloc ${n} · ${b.label}`; }
-    const bid = b.type==="warm" ? "warm" : "b"+bi;
+    if(b.type!=="warm" && b.type!=="cool"){ n++; if(!/^Bloc /.test(b.label)) b.label=`Bloc ${n} · ${b.label}`; }
+    const bid = b.type==="warm" ? "warm" : b.type==="cool" ? "cool" : "b"+bi;
     if(b.type==="list"){ if(!b.keys) b.keys=b.ex.map((e,i)=>`w${w}-${sid}-${bid}-e${i}`); }
     else if(!b.key) b.key=`w${w}-${sid}-${bid}`;
   });
@@ -973,12 +992,12 @@ function sessI(w, p){
       ...ACC_V.A["s"+(i+1)].map(b=>LIST(b,p)),
     ]);
   });
-  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + ergo léger", "Récup active · ~40 min · bonus", "var(--cardio)", [
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD découverte", "Récup active · ~35 min · bonus", "var(--wod)", [
     WARM(),
     jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(55)} kg`, sub:"55 % · on garde le geste, rien de plus"}], jRamp(55)),
-    engineBlock(["15' alterné facile : 5' SkiErg · 5' rameur · 5' SkiErg","Respiration nasale : ça doit te faire du bien"], "15'"),
+    wod4Block(p),
     LIST(PREV_KS,p),
-  ], {bonus:true, planTag:"Jerk + ergo · bonus"}));
+  ], {bonus:true, planTag:"Jerk + WOD · bonus"}));
   return out;
 }
 function sessV(w, p){
@@ -987,12 +1006,12 @@ function sessV(w, p){
   const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], sub, "var(--force)",
     [WARM(), mainV(lift,w,p), ...A["s"+(i+1)].map(b=>LIST(b,p))]));
   const jp=[60,65,70,55][p.k]+(p.blk>=3?5:0), js=[6,6,5,5][p.k];
-  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + moteur ATHX", "Jerk technique + SkiErg/rameur · ~55 min · à sauter en premier si la semaine déborde", "var(--cardio)", [
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD ATHX", "Jerk technique + WOD court à RPE 6-7 · ~45 min · à sauter en premier si la semaine déborde", "var(--wod)", [
     WARM(),
     jerkBlock("Jerk · technique", [{txt:`${js} × 2 @ ${jr(jp)} kg`, sub:`${jp} % de ta réf. · récup 1'30 · qualité avant la charge`}], jRamp(jp)),
-    engineBlock(ENGINE[p.blk>=3?"V34":"V12"][p.k]),
+    wod4Block(p),
     LIST(PREV_KS,p),
-  ], {planTag:"Jerk + ergo"}));
+  ], {planTag:"Jerk + WOD"}));
   return out;
 }
 function sessC(w, p){
@@ -1002,12 +1021,12 @@ function sessC(w, p){
   const cj=[[6,2,65],[6,1,75],[5,1,80],[5,2,60]][p.k];
   const jRows=[{txt:`${cj[0]} × ${cj[1]} @ ${jr(cj[2])} kg`, sub:`${cj[2]} % de ta réf. S2OH · récup 2'`}];
   if(p.k===2) jRows.push({txt:"Single lourd du jour", sub:"Monte par 2,5-5 kg jusqu'à RPE 9, sans raté → mets-le dans Profil s'il dépasse ta référence"});
-  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + moteur ATHX", "Jerk plus lourd + SkiErg/rameur (ou course) · ~55 min", "var(--cardio)", [
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD ATHX", "Jerk plus lourd + WOD court à RPE 6-7 · ~50 min", "var(--wod)", [
     WARM(),
     jerkBlock(dl?"Jerk · technique":"Jerk · technique lourde", jRows, jRamp(cj[2])),
-    engineBlock(ENGINE.C[p.k]),
+    wod4Block(p),
     LIST(PREV_KS,p),
-  ], {planTag:"Jerk + ergo"}));
+  ], {planTag:"Jerk + WOD"}));
   return out;
 }
 function sessT(w, p){
@@ -2010,10 +2029,13 @@ const BENCH_T = {
   ski:   {label:"SkiErg après le 3 km (Endurance)", kind:"m", better:"high", ph:"2600"},
   metcon:{label:"Metcon-X", kind:"time", better:"low", ph:"19:45"},
   row45: {label:"Rameur 45 cal", kind:"time", better:"low", ph:"2:35"},
+  amrap12:{label:"WOD repère · AMRAP 12' (séance 4)", kind:"amrap", per:40, better:"high", ph:"4+12"},
 };
+// AMRAP : « 4+12 » = 4 tours + 12 reps (40 reps par tour), stocké en reps totales.
+function parseAmrap(s, per){ s=String(s||"").trim(); const m=s.match(/^(\d+)\s*\+\s*(\d+)$/); if(m) return (+m[1])*per + (+m[2]); const v=numFr(s); return isFinite(v)?Math.round(v*per):null; }
 function parseTime(s){ s=String(s||"").trim(); const m=s.match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/); if(m) return (+(m[1]||0))*3600 + (+m[2])*60 + (+m[3]); const v=numFr(s); return isFinite(v)?v*60:null; }
 function fmtTime(sec){ sec=Math.round(sec); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(s).padStart(2,"0"); }
-function benchFmt(t, v){ return BENCH_T[t].kind==="time" ? fmtTime(v) : nfmt(v)+" m"; }
+function benchFmt(t, v){ const T=BENCH_T[t]; return T.kind==="time" ? fmtTime(v) : T.kind==="amrap" ? `${Math.floor(v/T.per)} tours + ${Math.round(v%T.per)}` : nfmt(v)+" m"; }
 
 // ---------- GRAPHIQUES (SVG : marques fines, survol, tableau des données) ----------
 function niceTicks(lo, hi, n){
@@ -2288,17 +2310,17 @@ function renderReperes(el){
     if(!list.length) return;
     const best=list.reduce((a,b)=> (t.better==="low" ? b.v<a.v : b.v>a.v) ? b : a);
     const last=list[list.length-1], first=list[0];
-    const diff = list.length>1 ? (t.kind==="time" ? `${last.v<=first.v?"▼":"▲"} ${fmtTime(Math.abs(last.v-first.v))} depuis le ${dayLabel(first.d)}` : `${last.v>=first.v?"▲":"▼"} ${nfmt(Math.abs(last.v-first.v))} m depuis le ${dayLabel(first.d)}`) : "";
+    const diff = list.length>1 ? (t.kind==="time" ? `${last.v<=first.v?"▼":"▲"} ${fmtTime(Math.abs(last.v-first.v))} depuis le ${dayLabel(first.d)}` : `${last.v>=first.v?"▲":"▼"} ${nfmt(Math.abs(last.v-first.v))} ${t.kind==="amrap"?"reps":"m"} depuis le ${dayLabel(first.d)}`) : "";
     h+=`<div class="vcard"><div class="vtitle">${t.label}</div><div class="vsub">${t.better==="low"?"Plus bas = mieux":"Plus haut = mieux"} · record ${benchFmt(k,best.v)} (${dayLabel(best.d)})${diff?" · "+diff:""}</div><div class="vhost" id="chB_${k}"></div>
       <div class="blist">${list.slice().reverse().map(b=>`<div class="bitem"><span>${dayLabel(b.d)}</span><b>${benchFmt(k,b.v)}</b><button data-bdel="${b.id}" aria-label="Supprimer">×</button></div>`).join("")}</div></div>`;
   });
-  if(!BENCH.length) h+=`<div class="vcard"><div class="vempty">Ajoute tes résultats de tests (3 km, SkiErg de l'épreuve Endurance, Metcon-X, rameur 45 cal) : chaque épreuve aura sa courbe.</div></div>`;
+  if(!BENCH.length) h+=`<div class="vcard"><div class="vempty">Ajoute tes résultats de tests (3 km, SkiErg de l'épreuve Endurance, Metcon-X, rameur 45 cal, WOD repère de la séance 4) : chaque épreuve aura sa courbe.</div></div>`;
   el.innerHTML=h;
   const tSel=document.getElementById("bType"), val=document.getElementById("bVal"), unit=document.getElementById("bUnit");
-  const upd=()=>{ const t=BENCH_T[tSel.value]; val.placeholder=t.ph; unit.textContent=t.kind==="time"?"min:s":"m"; document.getElementById("bValLbl").textContent=t.kind==="time"?"Temps":"Distance"; };
+  const upd=()=>{ const t=BENCH_T[tSel.value]; val.placeholder=t.ph; unit.textContent=t.kind==="time"?"min:s":t.kind==="amrap"?"tours+reps":"m"; document.getElementById("bValLbl").textContent=t.kind==="time"?"Temps":t.kind==="amrap"?"Score":"Distance"; };
   tSel.onchange=upd; upd();
   document.getElementById("bAdd").onclick=()=>{
-    const t=BENCH_T[tSel.value], v = t.kind==="time" ? parseTime(val.value) : numFr(val.value), d=document.getElementById("bDate").value||todayKey();
+    const t=BENCH_T[tSel.value], v = t.kind==="time" ? parseTime(val.value) : t.kind==="amrap" ? parseAmrap(val.value, t.per) : numFr(val.value), d=document.getElementById("bDate").value||todayKey();
     if(v==null || !isFinite(v) || v<=0){ val.focus(); val.style.borderColor="var(--crit)"; return; }
     BENCH.push({id:"b"+Date.now(), t:tSel.value, d, v}); saveBench(); renderSuivi();
   };
@@ -2307,7 +2329,7 @@ function renderReperes(el){
     const host=document.getElementById("chB_"+k); if(!host) return;
     const list=BENCH.filter(b=>b.t===k).sort((a,b)=>a.d.localeCompare(b.d));
     chart(host, {type:"line", x:list.map(b=>dayLabel(b.d)), xFull:list.map(b=>dayLabel(b.d,true)), series:[{name:t.label, color:"var(--s1)", values:list.map(b=>b.v), dots:true}],
-      yFmt:v=>benchFmt(k,v), yTick:v=>t.kind==="time"?fmtTime(v):String(v), timeTicks:t.kind==="time", label:t.label, h:150});
+      yFmt:v=>benchFmt(k,v), yTick:v=>t.kind==="time"?fmtTime(v):t.kind==="amrap"?kg(Math.round(v/t.per*10)/10)+" t":String(v), timeTicks:t.kind==="time", label:t.label, h:150});
   });
 }
 
