@@ -206,13 +206,13 @@
   </div>
   <div id="legendBox" style="display:none">
     <div class="legend">
-      <b>Séances numérotées, sans jour fixe</b> : fais-les dans l'ordre (1 → 2 → 3 → 4, puis 5 au printemps) quand ton planning le permet. 1h max : échauffement 10 min, puis les blocs dans l'ordre. Le % de la semaine ne compte pas les bonus (séance 4 en saison, WOD et course du week-end).<br>
+      <b>Séances numérotées, sans jour fixe</b> : fais-les dans l'ordre (1 → 2 → 3 → 4, puis 5 au printemps) quand ton planning le permet. 1h max : échauffement 10 min, puis les blocs dans l'ordre. Le % de la semaine ne compte pas les bonus (WOD et course du week-end, footings).<br>
       <b>Règles rugby</b> : squat et soulevé au moins 48 h avant un match, rien de lourd la veille. Lendemain de match : repos.<br>
       <b>Rappel lourd</b> (blocs volume) : 1 série à 85, 90 puis 95 % du TM, barre rapide, jamais au max. Puis le volume à 65-80 % du TM.<br>
       <b>5/3/1</b> (trêve, bloc force) : le dernier set « + » se fait en max de reps propres, 1 rep en réserve. <b>FSL</b> = séries en plus à la charge de la 1re série.<br>
       <b>« 2 en réserve »</b> : tu t'arrêtes quand il te resterait 2 reps. Les séries d'accessoires montent sur le bloc : 3 → 4 → 4 → 2 (décharge).<br>
       <b>TM</b> (training max) ≈ 90 % de ton max. Il monte à chaque bloc (+5 kg squat et soulevé, +2,5 kg push press). <b>e1RM</b> = TM ÷ 0,9. Après un test, corrige-le dans Profil › Mes références : tout le programme suit.<br>
-      <b>S2OH</b> (shoulder to overhead, style libre) : tu le fais en jerk depuis le rack. Les % partent de ta référence S2OH (Profil) : 140 = ton push press actuel, mets ton jerk dès qu'il le dépasse.<br>
+      <b>S2OH</b> (shoulder to overhead, style libre) : tu le fais en jerk depuis le rack. Les % partent de ta référence S2OH (Profil) : 140 = ton push press actuel, mets ton jerk dès qu'il le dépasse. Objectif : 160.<br>
       <b>Épreuves ATHX</b> : Force (S2OH, squat 2RM, soulevé 2 × 3), Endurance (3 km de course puis SkiErg jusqu'à 24'), Metcon-X (cap 25'). La séance 4 prépare l'Endurance, la 5 (au printemps) le Metcon-X.<br>
       <b>Décharge</b> : moins de séries, pas de lourd. Ne la saute pas : c'est là que tu progresses.<br>
       <b>Couleurs des séances</b> : <span style="color:var(--force)">● muscu</span> · <span style="color:var(--cardio)">● moteur ATHX</span> · <span style="color:var(--wod)">● WOD / compétition</span> · <span style="color:var(--rugby)">● rugby</span> · <span style="color:var(--kine)">● kiné</span> · <span style="color:var(--warm)">● repos/récup</span>.<br>
@@ -308,16 +308,31 @@
       <div class="fieldwrap"><input id="p_jerk" type="number" inputmode="decimal" placeholder="140"><span class="unit">kg</span></div>
     </div>
     <div class="row">
-      <label>Ajustement TM squat<span class="hint">+ ou − kg, dès la semaine 9</span></label>
+      <label>Ajustement TM squat<span class="hint">+ ou − kg, dès la semaine 7</span></label>
       <div class="fieldwrap"><input id="p_adj_squat" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
     </div>
     <div class="row">
-      <label>Ajustement TM push press<span class="hint">+ ou − kg, dès la semaine 9</span></label>
+      <label>Ajustement TM push press<span class="hint">+ ou − kg, dès la semaine 7</span></label>
       <div class="fieldwrap"><input id="p_adj_pushpress" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
     </div>
     <div class="row">
-      <label>Ajustement TM soulevé<span class="hint">+ ou − kg, dès la semaine 9</span></label>
+      <label>Ajustement TM soulevé<span class="hint">+ ou − kg, dès la semaine 7</span></label>
       <div class="fieldwrap"><input id="p_adj_deadlift" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
+    </div>
+  </div>
+  <div class="seclabel">Objectifs Lisbonne</div>
+  <div class="card">
+    <div class="row">
+      <label>S2OH 1RM<span class="hint">Jerk depuis le rack</span></label>
+      <div class="fieldwrap"><input id="p_goal_s2oh" type="number" inputmode="decimal" placeholder="160"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Squat 2RM<span class="hint">2 reps dans la fenêtre de 5'</span></label>
+      <div class="fieldwrap"><input id="p_goal_squat" type="number" inputmode="decimal" placeholder="220"><span class="unit">kg</span></div>
+    </div>
+    <div class="row">
+      <label>Soulevé · triple<span class="hint">Sur les 2 fenêtres d'1' (score = moyenne)</span></label>
+      <div class="fieldwrap"><input id="p_goal_dl" type="number" inputmode="decimal" placeholder="240"><span class="unit">kg</span></div>
     </div>
   </div>
   <div class="formula" id="refsBox" style="margin:-6px 0 18px"></div>
@@ -365,6 +380,7 @@ function calendarWeek(){
 const PH = {
   H:   {name:"Cycle 5/3/1 en cours",  c:"var(--warm)"},
   OFF: {name:"Semaine de récup",      c:"var(--warm)"},
+  I:   {name:"Reprise en volume",     c:"var(--hyp)"},
   V:   {name:"Bloc volume",           c:"var(--hyp)"},
   C:   {name:"Cycle 5/3/1 de trêve",  c:"var(--force)"},
   T:   {name:"Test des TM",           c:"var(--tech)"},
@@ -377,8 +393,8 @@ const PH = {
 };
 // [1re semaine, dernière semaine, phase, n° de bloc]
 const PHASE_TABLE = [
-  [1,4,"H"],[5,5,"OFF"],[6,8,"H"],
-  [9,12,"V",1],[13,15,"C"],[16,16,"T",1],[17,20,"V",2],[21,24,"V",3],[25,25,"T",2],[26,29,"V",4],
+  [1,4,"H"],[5,5,"OFF"],[6,6,"H"],[7,7,"I"],
+  [8,11,"V",1],[12,12,"T",1],[13,16,"C"],[17,20,"V",2],[21,24,"V",3],[25,25,"T",2],[26,29,"V",4],
   [30,30,"R"],[31,34,"F"],[35,37,"S"],[38,38,"SIM"],[39,39,"TAP"],[40,40,"COMP"],
 ];
 function phaseOf(w){
@@ -532,17 +548,24 @@ const LIFTS = {
   deadlift: {tm:220,   inc:5,   name:"Deadlift",   short:"Soulevé"},
 };
 // Nombre de hausses de TM depuis le départ. Le soulevé garde un cycle de retard (repris au cycle 1 en sem. 4).
-// Les semaines de test vérifient le TM du bloc suivant.
-const TM_STEPS = {V1:2, C:3, T1:4, V2:4, V3:5, T2:6, V4:6, ATHX:6};
-function tmKey(w){ const p=phaseOf(w); if(p.code==="V") return "V"+p.blk; if(p.code==="T") return "T"+p.blk; if(p.code==="C") return "C"; return "ATHX"; }
+// Les semaines de test vérifient le TM du bloc suivant. Le bloc force ATHX est un nouveau cycle : +1 hausse.
+const TM_STEPS = {V1:2, T1:3, C:3, V2:4, V3:5, T2:6, V4:6, ATHX:7};
+function tmKey(w){ const p=phaseOf(w); if(p.code==="I") return "V1"; if(p.code==="V") return "V"+p.blk; if(p.code==="T") return "T"+p.blk; if(p.code==="C") return "C"; return "ATHX"; }
 function profNum(id){ const v=parseFloat(String(PROFILE[id]==null?"":PROFILE[id]).replace(",",".")); return isFinite(v)?v:null; }
 function adj(lift){ return profNum("p_adj_"+lift)||0; }
 function TM(lift, w){ const L=LIFTS[lift]; const n=TM_STEPS[tmKey(w)]-(lift==="deadlift"?1:0); return L.tm + L.inc*n + adj(lift); }
 function e1RM(lift, w){ return TM(lift, w)/0.9; }
 function jerkRef(){ const v=profNum("p_jerk"); return v&&v>0 ? v : 140; }
 // Objectifs ATHX (S2OH 1RM, squat 2RM, soulevé 3RM ×2) — Epley : 2RM ≈ e1RM × 30/32, 3RM ≈ e1RM × 30/33.
-// deadlift = charge des 2 fenêtres (≈ 95 % du 3RM frais, car la 2e triple arrive après 1' de repos et compte autant).
-function athxTargets(){ const d3=e1RM("deadlift",NW)*30/33; return {jerk:r25(jerkRef()), squat:r25(e1RM("squat",NW)*30/32), deadlift3:r25(d3), deadlift:r25(d3*0.95)}; }
+// Objectifs fixés (Profil, par défaut 160 / 220 × 2 / 240 × 3 sur les 2 fenêtres).
+// proj = ce que tes références montrent (réf. S2OH, TM de fin de programme) · le plan de tentatives prend le plus bas des deux.
+// Soulevé : charge des 2 fenêtres ≈ 95 % du 3RM frais (la 2e triple arrive après 1' de repos et compte autant).
+function goals(){ return {s2oh:profNum("p_goal_s2oh")||160, squat:profNum("p_goal_squat")||220, dl:profNum("p_goal_dl")||240}; }
+function athxTargets(){
+  const G=goals(), d3=e1RM("deadlift",NW)*30/33;
+  const proj={jerk:r25(jerkRef()), squat:r25(e1RM("squat",NW)*30/32), deadlift3:r25(d3), deadlift:r25(d3*0.95)};
+  return {goal:G, proj, jerk:Math.min(G.s2oh,proj.jerk), squat:Math.min(G.squat,proj.squat), deadlift:Math.min(G.dl,proj.deadlift), deadlift3:proj.deadlift3};
+}
 
 const WAVES = [
   {p:[65,75,85], r:["5","5","5+"]}, {p:[70,80,90], r:["3","3","3+"]},
@@ -632,6 +655,8 @@ const PREV_KS = {label:"Genou & épaule", c:"prev", note:"circuit · 2 tours · 
 function accTarget(reps, kind, p){
   const c=p.code, k=p.k;
   if(c==="T"||c==="R"||c==="SIM"||c==="TAP"||c==="COMP") return `2×${reps} · facile`;
+  if(c==="I") return kind==="prev" ? `2×${reps}` : `3×${reps} · 4 en réserve`;
+  if(c==="C"&&k===3) return `2×${reps} · facile`;
   if(kind==="prev") return `${(c==="V"||c==="F")&&k===3?2:3}×${reps}`;
   if(c==="V"||c==="F") return `${[3,4,4,2][k]}×${reps} · ${["3 en réserve","2 en réserve","1 en réserve","facile"][k]}`;
   if(c==="S") return `${[3,3,2][k]}×${reps} · 2 en réserve`;
@@ -659,10 +684,11 @@ const ENGINE = {
         ["15' alterné facile (technique)"] ],
   C:  [ ["SkiErg 5 × 500 m · récup 1'30","Allure SkiErg du test moins 3 s/500 m","Rameur 10' régulier"],
         ["2 tours : 1,5 km de course à l'allure visée → 5' SkiErg à l'allure visée","Récup 4' entre les tours : l'épreuve Endurance en morceaux"],
-        ["<b>Rameur 45 cal chrono</b> (repère Metcon-X)","Récup 4' puis SkiErg 6 × 1' rapide · récup 1'"] ],
+        ["<b>Rameur 45 cal chrono</b> (repère Metcon-X)","Récup 4' puis SkiErg 6 × 1' rapide · récup 1'"],
+        ["15' alterné facile (technique) : le rugby reprend"] ],
   F:  [ ["3 tours : 1 km de course à l'allure visée → 3' SkiErg à l'allure visée","Récup 3' entre les tours · transition course → SkiErg en moins de 20''"],
         ["2 tours : 1,5 km de course → 5' SkiErg à l'allure visée · récup 4'","Puis rameur 2 × 20 cal rapide · récup 1' (pour le Metcon-X)"],
-        TEST_END.concat(["Test n°3 : compare avec les semaines 16 et 25"]),
+        TEST_END.concat(["Test n°3 : compare avec les semaines 12 et 25"]),
         ["20' facile : 10' footing + 10' SkiErg (technique)"] ],
   S:  [ ["Course 2 km à l'allure visée → SkiErg 8' à l'allure visée, sans pause","Récup 5' puis rameur 3 × 15 cal rapide · récup 1'"],
         ["SkiErg 4 × 3' à l'allure visée · récup 1'30","Course 4 × 500 m un peu plus vite que l'allure visée · récup 1'30"],
@@ -768,10 +794,10 @@ function mainSpec(lift, w, p){
     x.rows.forEach(r=>rows.push({txt:`${r[0]} × ${r[1]} @ ${pct(e,r[2])} kg`, sub:`${kg(r[2])} % de ton e1RM · ${r[3]}`}));
   } else {
     const ld=x.comp ? kg(T.deadlift) : pct(e,x.p);
-    rows.push({txt:`${x.pairs>1?x.pairs+" × ":""}3 @ ${ld} → 1' → 3 @ ${ld} kg`, sub:`${x.comp?"ta charge de compétition (~86 % e1RM)":kg(x.p)+" % e1RM"} · 2 triples à 1' d'intervalle = les 2 fenêtres de compétition${x.pairs>1?" · récup 4' entre les paires":""}`});
+    rows.push({txt:`${x.pairs>1?x.pairs+" × ":""}3 @ ${ld} → 1' → 3 @ ${ld} kg`, sub:`${x.comp?"ta charge de compétition":kg(x.p)+" % e1RM"} · 2 triples à 1' d'intervalle = les 2 fenêtres de compétition${x.pairs>1?" · récup 4' entre les paires":""}`});
   }
   return {type:"main", c:"force", vid:vidLink(L.name), label:`${L.name} · ${sq?"doubles":"triples à 1'"}`,
-    meta:[`e1RM ${kg(r25(e))} kg (TM ÷ 0,9) · objectif : <b>${sq?`${kg(T.squat)} kg × 2`:`${kg(T.deadlift)} kg × 3 sur les 2 fenêtres`}</b>`, `<b>Montée en charge</b> : ${rampStr(e,rp)}`],
+    meta:[`e1RM ${kg(r25(e))} kg (TM ÷ 0,9) · objectif : <b>${sq?`${kg(T.goal.squat)} kg × 2`:`${kg(T.goal.dl)} kg × 3 sur les 2 fenêtres`}</b>`, `<b>Montée en charge</b> : ${rampStr(e,rp)}`],
     rows, ph:"Charges × reps, vitesse, RPE…",
     after:note(sq ? "Si la 1re double est lente (RPE > 8,5), reste à cette charge."
       : "Règlement : 3 reps d'affilée ou 3 singles dans la minute. Si le grip ou le dos lâche, passe en singles (pose, reset, repars). Le score est la moyenne des 2 triples : la 2e compte autant que la 1re.")};
@@ -831,27 +857,53 @@ function sessHist(w){
 }
 function accKey(w, lift, bi, ei){ return `w${w}-${lift}-v3b${bi}-e${ei}`; }
 
+// Semaine 7 : courbatures du rugby → pas de lourd, volume à 60 % du TM pour relancer.
+const IREPS = {pushpress:[3,10], squat:[3,8], deadlift:[3,6]};
+function sessI(w, p){
+  const out = LIFT_ORDER.map((lift,i)=>{
+    const tm=TM(lift,w), L=LIFTS[lift], [s,r]=IREPS[lift];
+    return mkS(w, "s"+(i+1), i+1, TITLES[lift], "Volume de reprise, sans lourd · 2 blocs · ~50 min", "var(--force)", [
+      WARM(),
+      {type:"main", c:"force", vid:vidLink(L.name), label:`${L.name} · volume de reprise`,
+       meta:[`TM ${kg(tm)} kg · <span class="pnote">pas de lourd cette semaine : tu récupères du rugby</span>`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5],[50,3]])}`],
+       rows:[{txt:`${s} × ${r} @ ${pct(tm,60)} kg`, sub:"60 % du TM · 3-4 reps en réserve · récup 1'30 · tempo normal"}],
+       after:note("Si une zone fait encore mal (genou, épaule), garde le mouvement mais baisse de 10 % ou passe aux accessoires."),
+       ph:"Charges × reps, zones douloureuses…"},
+      ...ACC_V.A["s"+(i+1)].map(b=>LIST(b,p)),
+    ]);
+  });
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + ergo léger", "Récup active · ~40 min · bonus", "var(--cardio)", [
+    WARM(),
+    jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(55)} kg`, sub:"55 % · on garde le geste, rien de plus"}], jRamp(55)),
+    engineBlock(["15' alterné facile : 5' SkiErg · 5' rameur · 5' SkiErg","Respiration nasale : ça doit te faire du bien"], "15'"),
+    LIST(PREV_KS,p),
+  ], {bonus:true, planTag:"Jerk + ergo · bonus"}));
+  return out;
+}
 function sessV(w, p){
   const A = p.blk%2===1 ? ACC_V.A : ACC_V.B, dl=p.k===3;
   const sub = dl ? "Décharge · 2 blocs allégés · ~45 min" : `Rappel lourd + volume · 2 blocs · ~55 min`;
   const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], sub, "var(--force)",
     [WARM(), mainV(lift,w,p), ...A["s"+(i+1)].map(b=>LIST(b,p))]));
   const jp=[60,65,70,55][p.k]+(p.blk>=3?5:0), js=[6,6,5,5][p.k];
-  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + moteur ATHX", "Jerk technique + SkiErg/rameur · ~55 min · bonus si tu as un créneau", "var(--cardio)", [
+  out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + moteur ATHX", "Jerk technique + SkiErg/rameur · ~55 min · à sauter en premier si la semaine déborde", "var(--cardio)", [
     WARM(),
     jerkBlock("Jerk · technique", [{txt:`${js} × 2 @ ${jr(jp)} kg`, sub:`${jp} % de ta réf. · récup 1'30 · qualité avant la charge`}], jRamp(jp)),
     engineBlock(ENGINE[p.blk>=3?"V34":"V12"][p.k]),
     LIST(PREV_KS,p),
-  ], {bonus:true, planTag:"Jerk + ergo · bonus"}));
+  ], {planTag:"Jerk + ergo"}));
   return out;
 }
 function sessC(w, p){
-  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], "5/3/1 + FSL · 2 blocs · ~1h", "var(--force)",
-    [WARM(), main531(lift,w,p,true), ...ACC_C["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · 5/3/1"}));
-  const cj=[[6,2,65],[6,1,75],[5,1,80]][p.k];
+  const dl=p.k===3;
+  const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], dl?"Décharge · ~40 min":"5/3/1 + FSL · 2 blocs · ~1h", "var(--force)",
+    [WARM(), main531(lift,w,p,!dl), ...ACC_C["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · 5/3/1"}));
+  const cj=[[6,2,65],[6,1,75],[5,1,80],[5,2,60]][p.k];
+  const jRows=[{txt:`${cj[0]} × ${cj[1]} @ ${jr(cj[2])} kg`, sub:`${cj[2]} % de ta réf. S2OH · récup 2'`}];
+  if(p.k===2) jRows.push({txt:"Single lourd du jour", sub:"Monte par 2,5-5 kg jusqu'à RPE 9, sans raté → mets-le dans Profil s'il dépasse ta référence"});
   out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + moteur ATHX", "Jerk plus lourd + SkiErg/rameur (ou course) · ~55 min", "var(--cardio)", [
     WARM(),
-    jerkBlock("Jerk · technique lourde", [{txt:`${cj[0]} × ${cj[1]} @ ${jr(cj[2])} kg`, sub:`${cj[2]} % de ta réf. S2OH · récup 2'`}], jRamp(cj[2])),
+    jerkBlock(dl?"Jerk · technique":"Jerk · technique lourde", jRows, jRamp(cj[2])),
     engineBlock(ENGINE.C[p.k]),
     LIST(PREV_KS,p),
   ], {planTag:"Jerk + ergo"}));
@@ -863,7 +915,7 @@ function sessT(w, p){
   out.push(mkS(w, "s4", 4, "Séance 4 · Test Endurance + jerk", "3 km + SkiErg jusqu'à 24' · jerk léger · ~55 min", "var(--cardio)", [
     WARM(),
     jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(60)} kg`, sub:"60 % · léger, avant le test"}], jRamp(60)),
-    engineBlock(TEST_END.concat([`Test n°${p.blk} — ${p.blk===1?"ton point de départ de la saison":"compare avec la semaine 16"}`]), "~35 min"),
+    engineBlock(TEST_END.concat([`Test n°${p.blk} — ${p.blk===1?"ton point de départ de la saison":"compare avec la semaine 12"}`]), "~35 min"),
     LIST(PREV_KS,p),
   ], {planTag:"Test Endurance"}));
   return out;
@@ -946,8 +998,8 @@ function sessSIM(w, p){
     mkS(w, "s1", 1, "Séance 1 · Rappel force (lun. ou mar.)", "Les 3 mouvements, modéré · ~45 min", "var(--force)", [
       WARM(),
       jerkBlock("Jerk", [{txt:`3 × 1 @ ${jr(85)} kg`, sub:"85 % · rapide et précis"}], jRamp(85)),
-      simpleMain("force", "Squat", [{txt:`2 × 2 @ ${pct(es,85)} kg`, sub:"85 % e1RM · récup 2'30"}], [`<b>Montée en charge</b> : ${rampStr(es,[[40,5],[55,3],[65,2],[75,1]])}`], vidLink("Back Squat")),
-      simpleMain("force", "Soulevé de terre", [{txt:`3 @ ${pct(ed,80)} → 1' → 3 @ ${pct(ed,80)} kg`, sub:"80 % e1RM · les 2 fenêtres, en modéré"}], [`<b>Montée en charge</b> : ${rampStr(ed,[[40,5],[55,3],[65,2],[72.5,1]])}`], vidLink("Deadlift")),
+      simpleMain("force", "Squat", [{txt:`2 × 2 @ ${pct(es,77.5)} kg`, sub:"77,5 % e1RM · vitesse, sous la charge de samedi"}], [`<b>Montée en charge</b> : ${rampStr(es,[[40,5],[55,3],[65,2]])}`], vidLink("Back Squat")),
+      simpleMain("force", "Soulevé de terre", [{txt:`1 × 3 @ ${pct(ed,75)} kg`, sub:"75 % e1RM · rien de plus, samedi arrive"}], [`<b>Montée en charge</b> : ${rampStr(ed,[[40,5],[55,3],[65,1]])}`], vidLink("Deadlift")),
     ]),
     mkS(w, "s2", 2, "Séance 2 · Endurance courte (mer.)", "Allure de course, sans fatigue · ~40 min", "var(--cardio)", [
       WARM(),
@@ -957,9 +1009,9 @@ function sessSIM(w, p){
     mkS(w, "s3", 3, "Séance 3 · Répétition générale (sam. 12 juin)", "Les 3 épreuves dans l'ordre, à ~90 % · ~2h30", "var(--wod)", [
       {type:"text", c:"warm", label:"Échauffement du jour J", chip:"~30 min", html:bullets("Exactement celui de la carte « ATHX Lisbonne » (semaine 40) : chronomètre-le<br>Montées S2OH et squat avant le départ, comme le jour J"), ph:"Timing réel de ton échauffement…"},
       {type:"main", c:"force", label:"Force · chrono 15' à ~90 %", meta:["Avec le vrai chrono : 0-5' S2OH · 5-10' squat · 10-12' échauffement soulevé · 12' et 14' les 2 triples"],
-       rows:[{txt:`S2OH : ${f(T.jerk,85)} → ${f(T.jerk,90)} kg`, sub:`2 tentatives · objectif du 26 : ${kg(T.jerk)} kg`},
-             {txt:`Squat : 2 @ ${f(T.squat,85)} → 2 @ ${f(T.squat,90)} kg`, sub:`objectif : ${kg(T.squat)} kg × 2`},
-             {txt:`Soulevé : 3 @ ${f(T.deadlift,90)} → 1' → 3 @ ${f(T.deadlift,90)} kg`, sub:`objectif : ${kg(T.deadlift)} kg × 3 sur les 2 fenêtres`}], ph:"Charges, timing réel, recharge des disques…"},
+       rows:[{txt:`S2OH : ${f(T.jerk,85)} → ${f(T.jerk,90)} kg`, sub:`2 tentatives · objectif du 26 : ${kg(T.goal.s2oh)} kg`},
+             {txt:`Squat : 2 @ ${f(T.squat,85)} → 2 @ ${f(T.squat,90)} kg`, sub:`objectif : ${kg(T.goal.squat)} kg × 2`},
+             {txt:`Soulevé : 3 @ ${f(T.deadlift,90)} → 1' → 3 @ ${f(T.deadlift,90)} kg`, sub:`objectif : ${kg(T.goal.dl)} kg × 3 sur les 2 fenêtres`}], ph:"Charges, timing réel, recharge des disques…"},
       {type:"text", c:"cardio", label:"Endurance · 24'", html:bullets("3 km de course à l'allure prévue, puis SkiErg jusqu'à 24'<br>~90 % : allure de course, sans le tout-pour-tout des 2 dernières minutes<br>Entre les épreuves, garde l'écart prévu par l'organisation (sinon ~30')"), ph:"Temps du 3 km, distance SkiErg…"},
       {type:"text", c:"wod", label:"Metcon-X · cap 25'", html:bullets(WODS.chipper.lines.replace(/<br>/g," · ")+"<br>À ~90 % : allure de course, pas de sprint final. Teste ton découpage et tes transitions"), ph:"Temps, découpage, transitions…"},
       {type:"text", c:"prev", label:"Bilan", html:bullets("Note ce qui a coincé : matériel, recharge des disques, transitions, nutrition, échauffement trop long ou trop court<br>Petit-déj ~3 h avant, boisson glucidique entre les épreuves : exactement ce que tu feras le 26"), ph:"Ce que je change pour le jour J…"},
@@ -1001,8 +1053,14 @@ function sessCOMP(w, p){
   ];
 }
 function compPlanHtml(){
-  const T=athxTargets(), j=T.jerk, s=T.squat, d=T.deadlift, f=(t,x)=>kg(r25(t*x/100));
-  return `<div class="pmeta"><b>Samedi 26 juin · Lisbonne.</b> Force (15') → Endurance (24') → Metcon-X (cap 25'), dans l'ordre des visuels officiels (à vérifier sur le planning du jour). Score force = S2OH + squat + moyenne des 2 triples : visé <b>${kg(j+s+d)} kg</b>.</div>
+  const T=athxTargets(), G=T.goal, j=T.jerk, s=T.squat, d=T.deadlift, f=(t,x)=>kg(r25(t*x/100));
+  const gap=[];
+  if(j<G.s2oh) gap.push(`S2OH calé sur ta référence actuelle (${kg(j)}) tant qu'elle n'atteint pas ${kg(G.s2oh)} : mets-la à jour après tes singles lourds (sem. 15, 33, 37)`);
+  if(s<G.squat) gap.push(`squat calé sur tes TM (${kg(s)} × 2)`);
+  if(d<G.dl) gap.push(`soulevé calé sur tes TM (${kg(d)} × 3)`);
+  return `<div class="pmeta"><b>Samedi 26 juin · Lisbonne.</b> Force (15') → Endurance (24') → Metcon-X (cap 25'). Score force = S2OH + squat + moyenne des 2 triples.<br><b>Objectifs : S2OH ${kg(G.s2oh)} · squat ${kg(G.squat)} × 2 · soulevé ${kg(G.dl)} × 3 = ${kg(G.s2oh+G.squat+G.dl)} kg.</b></div>`
+    + (gap.length ? note("Le plan ne dépasse jamais ce que tes références montrent : "+gap.join(" · ")+".") : "")
+    + `
     <table class="gtable"><tr><th>Force</th><th>1re</th><th>2e</th><th>3e</th></tr>
       <tr><td>S2OH 1RM · 0-5'</td><td>${f(j,92)}</td><td>${kg(j)}</td><td>${kg(j+2.5)}</td></tr>
       <tr><td>Squat 2RM · 5-10'</td><td>${f(s,92)}</td><td>${kg(s)}</td><td>${kg(s+5)}</td></tr>
@@ -1019,13 +1077,13 @@ function compPlanHtml(){
 function condsFor(w, p){
   const out=[], we=WEEKEND[w-1], prev=WEEKEND[w-2], season=w<=29;
   if(prev && prev.type==="match") out.push(mkC(w,"repos","J+1","Lendemain de match","Récup","var(--warm)", `<div class="pmeta">${COND.repos.desc}</div>`, "Ressenti, coups, sommeil…", {planLabel:"Lendemain de match"}));
-  if(season && w!==14 && w!==15) [1,2,3].forEach(i=>{
+  if(season && !(w>=13 && w<=15)) [1,2,3].forEach(i=>{
     const ck="rugby"+i, r=rugbyContent(ck,w);
     out.push(mkC(w, ck, "RUG", "Rugby", `Rugby · entraînement ${i}${i===3?" (léger)":""}`, "var(--rugby)", bullets(r.desc), "Ta séance rugby (temps, ressenti…)", {planLabel:`Rugby ${i}${i===3?" (léger)":""}`, planTag:"Rugby"}));
   });
-  if(w<=8) out.push(mkC(w,"cardio_am","CAR",COND.cardio_am.title,COND.cardio_am.tag,"var(--cardio)", `<div class="pmeta">${COND.cardio_am.desc}</div>`, "Ce que j'ai fait (temps, distance, format, sensations…)", {planLabel:"Cardio ATHX", planTag:"Technique ergo"}));
+  if(w<=6) out.push(mkC(w,"cardio_am","CAR",COND.cardio_am.title,COND.cardio_am.tag,"var(--cardio)", `<div class="pmeta">${COND.cardio_am.desc}</div>`, "Ce que j'ai fait (temps, distance, format, sensations…)", {planLabel:"Cardio ATHX", planTag:"Technique ergo"}));
   if(p.code!=="COMP"){
-    const kd = p.code==="R" ? "<b>Bilan de fin de saison avec le kiné : genou + épaule.</b> Le bloc force démarre la semaine prochaine seulement avec son feu vert." : (w<=8 ? COND.kine_am.desc : "Séance kiné/prévention selon tes blessures du moment (genou, épaule). Contenu que tu gères avec ton kiné.");
+    const kd = p.code==="R" ? "<b>Bilan de fin de saison avec le kiné : genou + épaule.</b> Le bloc force démarre la semaine prochaine seulement avec son feu vert." : (w<=6 ? COND.kine_am.desc : "Séance kiné/prévention selon tes blessures du moment (genou, épaule). Contenu que tu gères avec ton kiné.");
     out.push(mkC(w,"kine_am","KIN",p.code==="R"?"Bilan kiné":COND.kine_am.title,"Prévention","var(--kine)", `<div class="pmeta">${kd}</div>`, "Ce qui a été fait, douleurs…", {planLabel:"Kiné", planTag:"Prévention"}));
   }
   if(season && we && we.type==="match"){
@@ -1062,7 +1120,7 @@ let PLAN_CACHE = {};
 function weekPlan(w){
   if(PLAN_CACHE[w]) return PLAN_CACHE[w];
   const p=phaseOf(w);
-  const sessions = p.code==="H"||p.code==="OFF" ? sessHist(w)
+  const sessions = p.code==="H"||p.code==="OFF" ? sessHist(w) : p.code==="I" ? sessI(w,p)
     : p.code==="V" ? sessV(w,p) : p.code==="C" ? sessC(w,p) : p.code==="T" ? sessT(w,p) : p.code==="R" ? sessR(w,p)
     : p.code==="F" ? sessF(w,p) : p.code==="S" ? sessS(w,p) : p.code==="SIM" ? sessSIM(w,p) : p.code==="TAP" ? sessTAP(w,p) : sessCOMP(w,p);
   const conds = condsFor(w,p);
@@ -1196,11 +1254,12 @@ function weekBrief(w, P){
   if(p.code==="H"){
     const a=stepLbl("squat"), b=stepLbl("deadlift");
     title = a===b ? `5/3/1 · ${a}` : `Push press & squat ${a} · soulevé ${b}`;
-    focus = w===7 ? "Semaine 5/3/1 : dernier set + à 3-5 reps propres, jamais à l'échec."
-          : w===8 ? "Décharge des 3 mouvements avant le nouveau programme : reps prescrites, accessoires allégés. La semaine prochaine, on passe au bloc volume de saison."
-          : "";
+    focus = "";
   } else if(p.code==="OFF"){
     title="Semaine sautée"; focus="Récup après le match d'Annecy (genou, épaule). Le cycle reprend la semaine 6 là où tu t'étais arrêté : rien n'est perdu.";
+  } else if(p.code==="I"){
+    title="Sans lourd cette semaine";
+    focus="Tu as mal partout après le rugby : on relance en volume à 60 % du TM, 3-4 reps en réserve, sans rappel lourd. Le programme de saison démarre ici : le volume (muscle, robustesse) remplace le 5/3/1 pendant les semaines de rugby. Le bloc volume 1 commence la semaine prochaine.";
   } else if(p.code==="V"){
     head=`${p.name} ${p.blk}/4 · ${p.blk<=2?"hypertrophie 10-8-6":"force-hypertrophie 8-6-5"}`;
     title=`Semaine ${k+1}/4${k===3?" · décharge":""}`;
@@ -1210,16 +1269,17 @@ function weekBrief(w, P){
       "Semaine la plus dure du bloc : 4 séries à 1 rep en réserve, single à 95 % propre.",
       "Décharge : 2 séries, pas de rappel lourd. C'est elle qui te fait progresser, ne la saute pas.",
     ][k];
-    if(w===9) focus = "Nouveau programme de saison : le volume (muscle, robustesse) remplace le 5/3/1 pendant les semaines de rugby, et un rappel lourd par séance entretient ta force. " + focus;
+    if(p.blk===1 && k===0) focus = "Premier rappel lourd de la saison : une seule série à 85 %, barre rapide, puis le volume. " + focus;
     if(p.blk===3 && k===0) focus = "Les reps baissent (8-6-5), les charges montent : on se rapproche du bloc ATHX. " + focus;
   } else if(p.code==="C"){
-    title=`Semaine ${k+1}/3 · ${["semaine des 5","semaine des 3","semaine 5/3/1"][k]}`;
-    focus="Trêve hivernale : on remet de l'intensité. 5/3/1 avec dernier set en max de reps + FSL, et séance 4 incluse." + (k===2?" Vise un record de reps sur chaque dernier set.":"");
+    title=`Semaine ${k+1}/4 · ${["semaine des 5","semaine des 3","semaine 5/3/1","décharge"][k]}`;
+    focus = k===3 ? "Le rugby reprend, match dimanche : décharge du cycle (40/50/60 %), séances courtes. Tu repars frais pour le bloc volume 2."
+      : "Trêve hivernale, sans rugby : on remet de l'intensité. 5/3/1 avec dernier set en max de reps + FSL, et plus de jambes." + (k===2?" Vise un record de reps sur chaque dernier set, et un single lourd au jerk en séance 4.":"");
   } else if(p.code==="T"){
     title=`Test des TM n°${p.blk}`;
-    focus="À la place d'une décharge, on vérifie le TM du prochain bloc : 3 à 5 reps propres. Accessoires allégés. " + (p.blk===1
-      ? "Rugby qui reprend et match dimanche : squat et soulevé en début de semaine."
-      : "Week-end libre : Metcon-X repère + test Endurance en séance 4, à comparer avec la semaine 16.");
+    focus = p.blk===1
+      ? "Juste après la décharge, on vérifie le TM du cycle de trêve : 3 à 5 reps propres. Accessoires allégés, test Endurance en séance 4. Match dimanche : squat et soulevé en début de semaine."
+      : "À la place d'une décharge, on vérifie le TM du dernier bloc de saison : 3 à 5 reps propres. Accessoires allégés. Week-end libre : Metcon-X repère + test Endurance en séance 4, à comparer avec la semaine 12.";
   } else if(p.code==="R"){
     title="Récup de la saison";
     focus="Tout à 60 %, bilan kiné genou + épaule. Le bloc force démarre la semaine prochaine seulement avec le feu vert du kiné.";
@@ -1244,7 +1304,7 @@ function weekBrief(w, P){
   if(prev && prev.type==="match") cons.push("Début de semaine = lendemain de match : repos.");
   if(we && we.type==="match") cons.push(`<b>Match ${we.date}</b> vs ${we.opp} (${we.home?"domicile":"extérieur"}) → squat et soulevé au moins 48 h avant, rien de lourd la veille.` + (w===29?" Dernier match de la saison.":""));
   else if(w<=29 && we && we.type==="bye") cons.push("Pas de match ce week-end : WOD et course en option.");
-  if(w===14||w===15) cons.push("Pas de rugby (trêve de Noël, à confirmer avec le club) : profites-en pour charger.");
+  if(w>=13 && w<=15) cons.push("Pas de rugby pendant la trêve : profites-en pour charger.");
   return `<div class="wph">${head}</div><div class="wtitle">${title}</div>${focus?`<div>${focus}</div>`:""}${cons.length?`<div class="wcons">${cons.map(c=>`<div>${c}</div>`).join("")}</div>`:""}`;
 }
 
@@ -1366,7 +1426,7 @@ function toggleLegend(){ const b=document.getElementById("legendBox"); b.style.d
 function toggleGoals(){ const b=document.getElementById("goalsBox"); const show=b.style.display==="none"; b.style.display=show?"block":"none"; if(show) renderGoals(); }
 function renderGoals(){
   const T=athxTargets(), rows=[
-    [1,8,"Cycles 5/3/1 en cours (sem. 5 sautée)"],[9,12,"Bloc volume 1 · hypertrophie"],[13,15,"Cycle 5/3/1 de trêve + FSL"],[16,16,"Test des TM n°1 + test Endurance"],
+    [1,6,"Cycles 5/3/1 (sem. 5 sautée)"],[7,7,"Reprise en volume, sans lourd"],[8,11,"Bloc volume 1 · hypertrophie"],[12,12,"Test des TM n°1 + test Endurance"],[13,16,"Cycle 5/3/1 de trêve + FSL, décharge à la reprise"],
     [17,20,"Bloc volume 2 · hypertrophie"],[21,24,"Bloc volume 3 · force-hypertrophie"],[25,25,"Test des TM n°2 + Metcon-X + test Endurance"],[26,29,"Bloc volume 4 · fin de saison"],
     [30,30,"Transition · bilan kiné"],[31,34,"Bloc force ATHX (5 séances/sem.)"],[35,37,"Bloc spécifique (doubles, triples, singles)"],[38,38,"Répétition générale · sam. 12 juin"],
     [39,39,"Affûtage"],[40,40,"ATHX Lisbonne · sam. 26 juin"]];
@@ -1377,17 +1437,17 @@ function renderGoals(){
     <table class="gtable"><tr><th>Semaines</th><th>Dates</th><th>Contenu</th></tr>
       ${rows.map(r=>`<tr${cur>=r[0]&&cur<=r[1]?' style="color:var(--hyp)"':''}><td>${r[0]===r[1]?r[0]:r[0]+"-"+r[1]}</td><td>${fmtDay(weekDate(r[0]))} → ${fmtDay(weekDate(r[1],6))}</td><td style="text-align:left;font-weight:500">${r[2]}</td></tr>`).join("")}
     </table>
-    <p><b>Objectifs ATHX</b> (calculés sur tes TM de fin de saison, mis à jour avec Profil › Mes références) :</p>
+    <p><b>Objectifs ATHX</b> (Profil › Objectifs Lisbonne) face aux TM prévus en juin :</p>
     <table class="gtable"><tr><th>Mouvement</th><th>TM</th><th>e1RM</th><th>Objectif</th></tr>
-      <tr><td>S2OH 1RM (jerk)</td><td>—</td><td>${kg(jerkRef())}</td><td>${kg(T.jerk)}</td></tr>
-      <tr><td>Squat 2RM</td><td>${kg(TM("squat",NW))}</td><td>${kg(r25(e1RM("squat",NW)))}</td><td>${kg(T.squat)}</td></tr>
-      <tr><td>Soulevé 3RM ×2 (moyenne)</td><td>${kg(TM("deadlift",NW))}</td><td>${kg(r25(e1RM("deadlift",NW)))}</td><td>${kg(T.deadlift)}</td></tr>
-      <tr><td><b>Total force</b></td><td></td><td></td><td><b>${kg(T.jerk+T.squat+T.deadlift)}</b></td></tr>
+      <tr><td>S2OH 1RM (jerk)</td><td>réf. ${kg(jerkRef())}</td><td>—</td><td>${kg(T.goal.s2oh)}</td></tr>
+      <tr><td>Squat 2RM</td><td>${kg(TM("squat",NW))}</td><td>${kg(r25(e1RM("squat",NW)))}</td><td>${kg(T.goal.squat)}</td></tr>
+      <tr><td>Soulevé 3RM ×2 (moyenne)</td><td>${kg(TM("deadlift",NW))}</td><td>${kg(r25(e1RM("deadlift",NW)))}</td><td>${kg(T.goal.dl)}</td></tr>
+      <tr><td><b>Total force</b></td><td></td><td></td><td><b>${kg(T.goal.s2oh+T.goal.squat+T.goal.dl)}</b></td></tr>
       <tr><td>Push press (TM)</td><td>${kg(TM("pushpress",NW))}</td><td>${kg(r25(e1RM("pushpress",NW)))}</td><td>—</td></tr>
     </table>
-    <p class="gnote">Ces objectifs supposent que les TM montent à chaque bloc (+5 kg squat/soulevé, +2,5 kg push press). Les tests des semaines 16 et 25 et le single lourd au jerk (sem. 33) les recalent : si un test passe sous 3 reps, retire 10 % dans Profil, tout le programme suit.</p>
-    <p class="gnote"><b>Format ATHX Games 2027</b> : Force 15' (S2OH 1RM en 5', squat 2RM en 5', soulevé : 2 fenêtres d'1' pour un 3RM, moyenne des 2) · Endurance 24' (3 km de course puis SkiErg max distance, score = distance SkiErg) · Metcon-X cap 25' (45 cal rameur, 30 G2OH, 30 DB bench, 30 sandbag squats, 30 m carry, 30 burpees, 45 cal rameur ; score = temps). Endurance et Metcon-X : tes repères viennent des tests (sem. 16, 25, 33) et de la répétition générale.</p>
-    <p class="gnote">Soulevé : la charge visée est ~95 % de ton 3RM frais (${kg(T.deadlift3)} kg), parce que la 2e triple arrive après 1' de repos et compte autant que la 1re.</p>
+    <p class="gnote"><b>Ce que ça demande</b> : squat 220 × 2 ≈ un 1RM de 235 (tu es à 210) · soulevé 240 × 3 sur les 2 fenêtres ≈ un 3RM frais de 252,5 (1RM ~278, tu es à 260) · S2OH 160 = ton push press de 140 + la technique du jerk + ~10 kg de force. C'est ambitieux en pleine saison de rugby : les TM y arrivent en juin s'ils montent à chaque bloc (+5 kg squat/soulevé, +2,5 kg push press). Les tests (sem. 12 et 25) et les singles lourds au jerk (sem. 15, 33, 37) diront si on est dans les clous : si un test passe sous 3 reps, retire 10 % dans Profil, tout le programme suit.</p>
+    <p class="gnote"><b>Format ATHX Games 2027</b> : Force 15' (S2OH 1RM en 5', squat 2RM en 5', soulevé : 2 fenêtres d'1' pour un 3RM, moyenne des 2) · Endurance 24' (3 km de course puis SkiErg max distance, score = distance SkiErg) · Metcon-X cap 25' (45 cal rameur, 30 G2OH, 30 DB bench, 30 sandbag squats, 30 m carry, 30 burpees, 45 cal rameur ; score = temps). Endurance et Metcon-X : tes repères viennent des tests (sem. 12, 25, 33) et de la répétition générale.</p>
+    <p class="gnote">Soulevé : la charge des 2 fenêtres vaut ~95 % de ton 3RM frais (prévu en juin : ${kg(T.deadlift3)} kg), parce que la 2e triple arrive après 1' de repos et compte autant que la 1re.</p>
   </div>`;
 }
 
@@ -1539,7 +1599,7 @@ function moveItemByKey(key,toDay,beforeKey){
 }
 
 // ---------- PROFIL ----------
-const PF=["p_weight","p_bf","p_act","p_jerk","p_adj_squat","p_adj_pushpress","p_adj_deadlift"];
+const PF=["p_weight","p_bf","p_act","p_jerk","p_adj_squat","p_adj_pushpress","p_adj_deadlift","p_goal_s2oh","p_goal_squat","p_goal_dl"];
 function numEl(id){ const el=document.getElementById(id); if(!el) return null; const v=parseFloat((el.value||"").toString().replace(",",".")); return isFinite(v)?v:null; }
 function computeMeta(){
   const w=numEl("p_weight"), bf=numEl("p_bf"), act=numEl("p_act")||1.375;
@@ -1553,9 +1613,9 @@ function loadProfile(){
 }
 function renderRefs(){
   const el=document.getElementById("refsBox"); if(!el) return;
-  const w=Math.max(9, week), T=athxTargets();
+  const w=Math.max(7, week), T=athxTargets(), G=T.goal;
   el.innerHTML=`Semaine ${w} : TM squat <b>${kg(TM("squat",w))}</b> · push press <b>${kg(TM("pushpress",w))}</b> · soulevé <b>${kg(TM("deadlift",w))}</b> kg<br>`
-    + `Objectifs Lisbonne : S2OH ${kg(T.jerk)} · squat ${kg(T.squat)} ×2 · soulevé ${kg(T.deadlift)} ×3 ×2 · total ${kg(T.jerk+T.squat+T.deadlift)}<br>`
+    + `Objectifs : S2OH ${kg(G.s2oh)} · squat ${kg(G.squat)} ×2 · soulevé ${kg(G.dl)} ×3 (×2) · total ${kg(G.s2oh+G.squat+G.dl)} · TM prévus en juin : squat ${kg(TM("squat",NW))}, soulevé ${kg(TM("deadlift",NW))}<br>`
     + `Test raté (moins de 3 reps au TM) : retire 10 % du TM sur ce mouvement.`;
 }
 function renderProfile(){
@@ -1576,7 +1636,7 @@ function renderProfile(){
 function bindProfile(){
   PF.forEach(id=>{
     const el=document.getElementById(id);
-    const h=()=>{ PROFILE[id]=el.value; saveProfile(); if(id.indexOf("p_adj_")===0||id==="p_jerk") PLAN_CACHE={}; renderProfile(); };
+    const h=()=>{ PROFILE[id]=el.value; saveProfile(); if(id.indexOf("p_adj_")===0||id.indexOf("p_goal_")===0||id==="p_jerk") PLAN_CACHE={}; renderProfile(); };
     el.addEventListener("input",h); el.addEventListener("change",h);
   });
 }
