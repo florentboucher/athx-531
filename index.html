@@ -647,7 +647,7 @@ Object.assign(VID_ALIAS, {
   "Squeeze ballon entre les genoux":"adductor squeeze ball", "Chaise contre le mur (wall sit)":"wall sit", "Leg extension isométrique":"isometric leg extension",
   "Tibialis raise contre un mur":"wall tibialis raise", "Marche sur les talons":"heel walk", "Rollout barre (disques)":"barbell rollout", "Planche avec reach":"plank reach",
   "Crunch poulie":"Cable Crunch", "Pallof press élastique":"band pallof press", "Planche latérale genoux":"side plank from knees",
-  "Cervicales à la main (isométrique)":"neck isometrics", "Farmer carry haltères":"dumbbell farmer carry", "Suitcase carry (un côté)":"suitcase carry",
+  "Cervicales à la main (isométrique)":"neck isometrics", "Sandbag ~50 kg":"sandbag bear hug squat", "Farmer carry haltères":"dumbbell farmer carry", "Suitcase carry (un côté)":"suitcase carry",
 });
 function vidLink(name){ const k=VID_ALIAS[name]||name; return VIDEOS[k] || ("https://www.youtube.com/results?search_query="+encodeURIComponent(k+" technique")); }
 const JERK_VID = "https://www.youtube.com/results?search_query="+encodeURIComponent("split jerk technique");
@@ -767,11 +767,21 @@ const EXO_GROUPS = [
     ["Renforcement cervical", ["Cervicales à la main (isométrique)"]],
     ["Farmer carry lourd", ["Farmer carry haltères","Suitcase carry (un côté)"]],
     ["Rollout barre (disques)"],["Planche avec reach"],["Crunch poulie"],["Pallof press élastique"],["Planche latérale genoux"],["Cervicales à la main (isométrique)"],["Farmer carry haltères"],["Suitcase carry (un côté)"]]},
+  {g:"Matériel ATHX", items:[["Sandbag ~50 kg"]]},
 ];
 const CATALOG = {}; EXO_GROUPS.forEach(gr=>gr.items.forEach(([n,alt])=>{ CATALOG[n]={g:gr.g, alt:alt||[]}; }));
-const EXO_DEFAULT_OFF = ["Pompes aux anneaux lestées"];
-let EXO_OFF = new Set(loadJSON("athx_exo_off_v1", EXO_DEFAULT_OFF));
-function saveExo(){ localStorage.setItem("athx_exo_off_v1", JSON.stringify([...EXO_OFF])); }
+// Par défaut : le matériel de ta salle (réponses de nov. 2026) — pas d'anneaux, pas de sangle, pas de tib bar, pas de sandbag.
+const EXO_DEFAULT_OFF = ["Pompes aux anneaux lestées","Spanish squat isométrique — genou","Tibialis raise — chevilles","Sandbag ~50 kg"];
+let EXO_OFF = new Set(loadJSON("athx_exo_off_v2", null) || [...new Set(loadJSON("athx_exo_off_v1", []).concat(EXO_DEFAULT_OFF))]);
+function saveExo(){ localStorage.setItem("athx_exo_off_v2", JSON.stringify([...EXO_OFF])); }
+// Sans sandbag : squats Zercher (barre dans le creux des coudes, proche du bear hug) et carry avec 2 haltères de 25 kg.
+function noSB(){ return !exoOK("Sandbag ~50 kg"); }
+function sbTxt(t){
+  if(!noSB()) return t;
+  return t.replace(/sandbag squats?(\s*·)?\s*50 kg/gi, "squats Zercher 50 kg").replace(/sandbag squats?/gi, "squats Zercher")
+          .replace(/(\d+ m) sandbag carry(\s*·)?\s*50 kg/gi, "$1 carry 2 haltères de 25 kg").replace(/sandbag carry/gi, "carry 2 haltères de 25 kg");
+}
+const SB_NOTE = "Pas de sandbag : squats Zercher 50 kg (barre dans le creux des coudes, proche du bear hug) et carry avec 2 haltères de 25 kg. Si tu peux, prends un sandbag de 50 kg pour le bloc spécifique (avril-juin) : la prise et le chargement sur l'épaule ne s'imitent pas parfaitement.";
 function exoOK(n){ return !EXO_OFF.has(n); }
 function subEx(n, used){
   if(exoOK(n) && !used.has(n)) return {name:n};
@@ -826,7 +836,7 @@ const WODS = {
   split:  {title:"Metcon-X fractionné · allure course", chip:"~25'", lines:"2 tours de : 23 cal rameur · 15 DB G2OH · 15 DB bench · 15 sandbag squats · 15 m carry · 15 burpees over bench · 23 cal rameur<br>Récup 3' entre les 2 tours", note:"Même temps sur les 2 tours : c'est ton allure de course. Matériel prêt, transitions sans pause."},
   flow:   {title:"Flow technique (décharge)", chip:"15'", lines:"3 tours sans chrono : 10 cal rameur · 8 DB G2OH · 8 DB bench · 6 sandbag squats · 10 m carry · 6 burpees", note:"Mouvements propres, respiration nasale. Tu dois finir plus frais qu'au début."},
 };
-function wodBlock(code, label){ const W=WODS[code]; return {type:"text", c:"wod", label:label||`WOD · ${W.title}`, chip:W.chip, html:bullets(W.lines)+note(W.note), ph:"Ton temps ou tes tours + ressenti…"}; }
+function wodBlock(code, label){ const W=WODS[code]; return {type:"text", c:"wod", label:label||`WOD · ${W.title}`, chip:W.chip, html:bullets(sbTxt(W.lines))+note(W.note)+(noSB()?note(SB_NOTE):""), ph:"Ton temps ou tes tours + ressenti…"}; }
 // Course : le 3 km est la 1re partie de l'épreuve Endurance. core = séance de vitesse (comptée), sinon footing optionnel.
 const RUNS = {
   season:"Le 3 km de l'épreuve Endurance : cours-le à l'allure que tu prévois pour l'ATHX (RPE 8, pas un sprint) et note ton temps. Seulement si le genou va bien.",
@@ -1106,7 +1116,7 @@ function sessSIM(w, p){
              {txt:`Squat : 2 @ ${f(T.squat,85)} → 2 @ ${f(T.squat,90)} kg`, sub:`objectif : ${kg(T.goal.squat)} kg × 2`},
              {txt:`Soulevé : 3 @ ${f(T.deadlift,90)} → 1' → 3 @ ${f(T.deadlift,90)} kg`, sub:`objectif : ${kg(T.goal.dl)} kg × 3 sur les 2 fenêtres`}], ph:"Charges, timing réel, recharge des disques…"},
       {type:"text", c:"cardio", label:"Endurance · 24'", html:bullets("3 km de course à l'allure prévue, puis SkiErg jusqu'à 24'<br>~90 % : allure de course, sans le tout-pour-tout des 2 dernières minutes<br>Entre les épreuves, garde l'écart prévu par l'organisation (sinon ~30')"), ph:"Temps du 3 km, distance SkiErg…"},
-      {type:"text", c:"wod", label:"Metcon-X · cap 25'", html:bullets(WODS.chipper.lines.replace(/<br>/g," · ")+"<br>À ~90 % : allure de course, pas de sprint final. Teste ton découpage et tes transitions"), ph:"Temps, découpage, transitions…"},
+      {type:"text", c:"wod", label:"Metcon-X · cap 25'", html:bullets(sbTxt(WODS.chipper.lines).replace(/<br>/g," · ")+"<br>À ~90 % : allure de course, pas de sprint final. Teste ton découpage et tes transitions"+(noSB()?"<br>Trouve un sandbag de 50 kg pour cette répétition si tu peux : le jour J, c'est lui":"")), ph:"Temps, découpage, transitions…"},
       {type:"text", c:"prev", label:"Bilan", html:bullets("Note ce qui a coincé : matériel, recharge des disques, transitions, nutrition, échauffement trop long ou trop court<br>Petit-déj ~3 h avant, boisson glucidique entre les épreuves : exactement ce que tu feras le 26"), ph:"Ce que je change pour le jour J…"},
     ], {planTag:"Répétition générale"}),
   ];
@@ -1187,7 +1197,7 @@ function condsFor(w, p){
   } else if(season && we && we.type==="bye"){
     const W=WODS[BYE_WOD[w]||"chipper"];
     out.push(mkC(w,"presam","WOD",`WOD · ${W.title}`,"Week-end sans match · optionnel","var(--wod)",
-      `<div class="pmeta">Pas de match ce week-end → ce WOD si tu veux garder du rythme, sinon repos.<br><b>${W.title} · ${W.chip}</b></div>${bullets(W.lines)}${note(W.note)}`,
+      `<div class="pmeta">Pas de match ce week-end → ce WOD si tu veux garder du rythme, sinon repos.<br><b>${W.title} · ${W.chip}</b></div>${bullets(sbTxt(W.lines))}${note(W.note)}${noSB()?note(SB_NOTE):""}`,
       "Ton temps ou tes tours + ressenti…", {bonus:true, planLabel:"WOD ATHX", planTag:"Week-end · optionnel"}));
     out.push(mkC(w,"matchday","RUN","Course 3 km (épreuve Endurance)","Week-end sans match · optionnel","var(--cardio)", `<div class="pmeta">${RUNS.season}</div>`,
       "Ta course (temps, ressenti…)", {bonus:true, planLabel:"Course 3 km", planTag:"Week-end · optionnel"}));
@@ -1752,8 +1762,9 @@ function renderExo(){
     h+=`<details class="exogrp"><summary>${gr.g}<span>${n}/${names.length}</span></summary>`;
     names.forEach(nm=>{
       const inP=prog.has(nm), x=inP && !exoOK(nm) ? subEx(nm, new Set()) : null;
-      const info = inP ? (x ? (x.orig ? `remplacé par ${esc(x.name)}` : "aucune alternative cochée : gardé tel quel") : "dans le programme") : "";
-      h+=`<label class="exorow"><input type="checkbox" data-exo="${esc(nm)}" ${exoOK(nm)?"checked":""}><span>${esc(nm)}${info?`<small class="${x?"exosub":""}">${info}</small>`:""}</span><a class="vid" href="${vidLink(nm)}" target="_blank" rel="noopener">Vidéo ›</a></label>`;
+      let info = inP ? (x ? (x.orig ? `remplacé par ${esc(x.name)}` : "aucune alternative cochée : gardé tel quel") : "dans le programme") : "";
+      if(nm==="Sandbag ~50 kg") info = exoOK(nm) ? "Metcon-X et WOD" : "remplacé par squats Zercher + carry aux haltères";
+      h+=`<label class="exorow"><input type="checkbox" data-exo="${esc(nm)}" ${exoOK(nm)?"checked":""}><span>${esc(nm)}${info?`<small class="${x||(nm==="Sandbag ~50 kg"&&!exoOK(nm))?"exosub":""}">${info}</small>`:""}</span><a class="vid" href="${vidLink(nm)}" target="_blank" rel="noopener">Vidéo ›</a></label>`;
     });
     h+=`</details>`;
   });
