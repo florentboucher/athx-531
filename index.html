@@ -702,8 +702,8 @@ const ACC_S = { // bloc spécifique : moins d'accessoires, toute l'énergie sur 
   s3:[{label:"Haut du corps", c:"hyp", note:"superset", ex:[["Développé couché (bench press)","5"],["Rowing barre (Pendlay)","8"]]},
       {label:"Portés & cou", c:"prev", note:"superset", ex:[["Farmer carry lourd","30 m"], EX.neck]}],
 };
-const PREV_KS = {label:"Genou & épaule", c:"prev", note:"circuit · 2 tours · ton genou et ton épaule d'abord", fixed:true,
-  ex:[["Spanish squat isométrique — genou","2×30-45''"],["Rotation externe épaule (poulie)","2×15/côté"],["Tibialis raise — chevilles","2×15"]]};
+const PREV_KS = {label:"Épaule & chevilles", c:"prev", note:"superset · 2 tours · ton genou, tu le gères avec ta routine", fixed:true,
+  ex:[["Rotation externe épaule (poulie)","2×15/côté"],["Tibialis raise — chevilles","2×15"]]};
 
 function accTarget(reps, kind, p){
   const c=p.code, k=p.k;
@@ -754,11 +754,10 @@ const EXO_GROUPS = [
     ["Hip thrust une jambe", ["Pont fessier une jambe","Hip thrust"]],
     ["Nordic excentrique — ischios", ["Leg curl machine","Glissés ischios (slider ou serviette)","Pont ischios une jambe"]],
     ["Copenhague — adducteurs", ["Copenhague genou plié","Adducteurs machine","Squeeze ballon entre les genoux"]],
-    ["Spanish squat isométrique — genou", ["Chaise contre le mur (wall sit)","Leg extension isométrique"]],
     ["Tibialis raise — chevilles", ["Tibialis raise contre un mur","Marche sur les talons"]],
     ["Fentes arrière haltères"],["Fentes marchées haltères"],["Step-up haltères"],["Soulevé de terre roumain haltères"],["Good morning"],["Pont fessier barre au sol"],["Pont fessier une jambe"],
     ["Leg curl machine"],["Glissés ischios (slider ou serviette)"],["Pont ischios une jambe"],["Copenhague genou plié"],["Adducteurs machine"],["Squeeze ballon entre les genoux"],
-    ["Chaise contre le mur (wall sit)"],["Leg extension isométrique"],["Tibialis raise contre un mur"],["Marche sur les talons"]]},
+    ["Tibialis raise contre un mur"],["Marche sur les talons"]]},
   {g:"Gainage · cou · portés", items:[
     ["Roue abdominale", ["Rollout barre (disques)","Planche avec reach","Crunch poulie"]],
     ["Pallof press", ["Pallof press élastique","Gainage latéral"]],
@@ -769,8 +768,8 @@ const EXO_GROUPS = [
   {g:"Matériel ATHX", items:[["Sandbag ~50 kg"]]},
 ];
 const CATALOG = {}; EXO_GROUPS.forEach(gr=>gr.items.forEach(([n,alt])=>{ CATALOG[n]={g:gr.g, alt:alt||[]}; }));
-// Par défaut : le matériel de ta salle (réponses de nov. 2026) — pas d'anneaux, pas de sangle, pas de tib bar, pas de sandbag.
-const EXO_DEFAULT_OFF = ["Pompes aux anneaux lestées","Spanish squat isométrique — genou","Tibialis raise — chevilles","Sandbag ~50 kg"];
+// Par défaut : le matériel de ta salle (réponses de nov. 2026) — pas de tib bar, pas de sandbag.
+const EXO_DEFAULT_OFF = ["Tibialis raise — chevilles","Sandbag ~50 kg"];
 let EXO_OFF = new Set(loadJSON("athx_exo_off_v2", null) || [...new Set(loadJSON("athx_exo_off_v1", []).concat(EXO_DEFAULT_OFF))]);
 function saveExo(){ localStorage.setItem("athx_exo_off_v2", JSON.stringify([...EXO_OFF])); }
 // Sans sandbag : squats Zercher (barre dans le creux des coudes, proche du bear hug) et carry avec 2 haltères de 25 kg.
