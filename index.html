@@ -183,6 +183,18 @@
   .mealhead{font-size:14px; font-weight:600}
   .mealkcal{font-size:12.5px; color:var(--dim); margin-top:2px}
 
+  /* Mes exercices */
+  .exogrp{background:var(--elev); border:1px solid var(--line); border-radius:16px; margin-bottom:10px; overflow:hidden}
+  .exogrp>summary{list-style:none; cursor:pointer; padding:14px 16px; font-size:15px; font-weight:600; display:flex; justify-content:space-between; align-items:center}
+  .exogrp>summary::-webkit-details-marker{display:none}
+  .exogrp>summary span{font-size:13px; color:var(--dim); font-weight:500}
+  .exogrp>summary:after{content:'›'; color:var(--dim2); margin-left:8px; transition:transform .15s}
+  .exogrp[open]>summary:after{transform:rotate(90deg)}
+  .exorow{display:flex; align-items:center; gap:12px; padding:10px 16px; border-top:1px solid var(--line); cursor:pointer; font-size:14.5px}
+  .exorow input{width:22px; height:22px; accent-color:#34c759; flex:0 0 auto}
+  .exorow span{flex:1; line-height:1.3}
+  .exorow small{display:block; font-size:12px; color:var(--dim2); margin-top:2px}
+  .exorow small.exosub{color:var(--txt)}
   /* Séries (charge × reps) */
   .sets{margin-top:10px}
   .sethd,.setrow{display:grid; grid-template-columns:20px 1fr 1fr 26px; gap:8px; align-items:center}
@@ -291,6 +303,7 @@
     <button onclick="exportLog()">Exporter mon journal</button>
     <button onclick="toggleGoals()">🎯 Objectifs</button>
     <button onclick="toggleLegend()">Légende</button>
+    <button onclick="openExo()">Mes exercices</button>
   </div>
   <div id="legendBox" style="display:none">
     <div class="legend">
@@ -439,6 +452,9 @@
   <div class="seclabel">Métabolisme</div>
   <div id="metaBox"></div>
   <div class="formula">Katch-McArdle · Masse maigre = Poids × (1 − %MG) · BMR = 370 + 21,6 × masse maigre<br>Tes macros se règlent dans l'onglet <b>Nutrition</b>.</div>
+
+  <div class="seclabel" id="exoAnchor">Mes exercices</div>
+  <div id="exoBox"></div>
 </section>
 
 <!-- ===== NAV ===== -->
@@ -616,6 +632,23 @@ const VID_ALIAS = {
   "Farmer carry lourd":"Heavy Farmer Carry", "Spanish squat isométrique — genou":"spanish squat isometric",
   "Rotation externe épaule (poulie)":"cable external rotation shoulder", "Tibialis raise — chevilles":"tibialis raise",
 };
+Object.assign(VID_ALIAS, {
+  "Développé incliné barre":"incline bench press", "Développé couché prise serrée":"close grip bench press", "Pompes lestées":"weighted push ups",
+  "Pompes pieds surélevés":"feet elevated push ups", "Dips (poids du corps)":"bodyweight dips", "Pompes diamant":"diamond push ups",
+  "Tractions (poids du corps)":"pull ups", "Tirage vertical poulie":"lat pulldown", "Tirage vertical poulie prise serrée":"close grip lat pulldown",
+  "Rowing haltères sur banc incliné":"incline dumbbell row", "Rowing inversé (sous une barre)":"inverted row",
+  "Élévations latérales poulie":"cable lateral raise", "Face pull élastique":"band face pull", "Oiseau haltères":"dumbbell reverse fly",
+  "Rotation externe épaule (élastique)":"band external rotation", "Rotation externe haltère couché sur le côté":"side lying external rotation",
+  "Curl marteau":"hammer curl", "Curl barre":"barbell curl", "Curl pupitre (Larry Scott)":"preacher curl", "Extension triceps haltère au-dessus de la tête":"Overhead Dumbbell Triceps Extension",
+  "Fentes arrière haltères":"dumbbell reverse lunge", "Fentes marchées haltères":"dumbbell walking lunges", "Step-up haltères":"Weighted High Step Ups",
+  "Soulevé de terre roumain haltères":"dumbbell romanian deadlift", "Good morning":"barbell good morning", "Pont fessier barre au sol":"barbell glute bridge",
+  "Pont fessier une jambe":"single leg glute bridge", "Leg curl machine":"lying leg curl", "Glissés ischios (slider ou serviette)":"slider hamstring curl",
+  "Pont ischios une jambe":"single leg hamstring bridge", "Copenhague genou plié":"short lever copenhagen plank", "Adducteurs machine":"adductor machine",
+  "Squeeze ballon entre les genoux":"adductor squeeze ball", "Chaise contre le mur (wall sit)":"wall sit", "Leg extension isométrique":"isometric leg extension",
+  "Tibialis raise contre un mur":"wall tibialis raise", "Marche sur les talons":"heel walk", "Rollout barre (disques)":"barbell rollout", "Planche avec reach":"plank reach",
+  "Crunch poulie":"Cable Crunch", "Pallof press élastique":"band pallof press", "Planche latérale genoux":"side plank from knees",
+  "Cervicales à la main (isométrique)":"neck isometrics", "Farmer carry haltères":"dumbbell farmer carry", "Suitcase carry (un côté)":"suitcase carry",
+});
 function vidLink(name){ const k=VID_ALIAS[name]||name; return VIDEOS[k] || ("https://www.youtube.com/results?search_query="+encodeURIComponent(k+" technique")); }
 const JERK_VID = "https://www.youtube.com/results?search_query="+encodeURIComponent("split jerk technique");
 const CJ_VID = "https://www.youtube.com/results?search_query="+encodeURIComponent("clean and jerk technique");
@@ -682,8 +715,73 @@ function accTarget(reps, kind, p){
   if(c==="S") return `${[3,3,2][k]}×${reps} · 2 en réserve`;
   return `3×${reps} · 2 en réserve`;
 }
+// --- Mes exercices : ce que ta salle permet. Un exercice décoché est remplacé par sa 1re alternative cochée.
+// [nom, alternatives dans l'ordre de préférence]. Les noms sans alternative sont des remplaçants possibles.
+const EXO_GROUPS = [
+  {g:"Pectoraux · poussée", items:[
+    ["Développé couché (bench press)", ["Développé haltères","Développé incliné haltères","Pompes lestées"]],
+    ["Développé haltères", ["Développé couché (bench press)","Développé incliné haltères","Pompes lestées"]],
+    ["Développé incliné haltères", ["Développé incliné barre","Développé haltères","Pompes pieds surélevés"]],
+    ["Pompes aux anneaux lestées", ["Pompes lestées","Développé haltères","Pompes pieds surélevés"]],
+    ["Dips lestés", ["Dips (poids du corps)","Développé couché prise serrée","Pompes diamant"]],
+    ["Développé incliné barre"],["Développé couché prise serrée"],["Pompes lestées"],["Pompes pieds surélevés"],["Dips (poids du corps)"],["Pompes diamant"]]},
+  {g:"Dos · tirage", items:[
+    ["Tractions lestées", ["Tractions (poids du corps)","Tirage vertical poulie","Rowing inversé (sous une barre)"]],
+    ["Tractions supination lestées", ["Tractions lestées","Tractions (poids du corps)","Tirage vertical poulie prise serrée"]],
+    ["Rowing barre (Pendlay)", ["Rowing barre","Rowing un bras (3 appuis)","Rowing inversé (sous une barre)"]],
+    ["Rowing barre", ["Rowing barre (Pendlay)","Rowing un bras (3 appuis)","Rowing inversé (sous une barre)"]],
+    ["Rowing un bras (3 appuis)", ["Rowing barre","Rowing haltères sur banc incliné","Rowing inversé (sous une barre)"]],
+    ["Rowing poitrine appuyée (seal row)", ["Rowing haltères sur banc incliné","Rowing un bras (3 appuis)","Rowing barre (Pendlay)"]],
+    ["Tirage horizontal poulie prise serrée", ["Rowing un bras (3 appuis)","Rowing barre","Rowing inversé (sous une barre)"]],
+    ["Tractions (poids du corps)"],["Tirage vertical poulie"],["Tirage vertical poulie prise serrée"],["Rowing haltères sur banc incliné"],["Rowing inversé (sous une barre)"]]},
+  {g:"Épaules", items:[
+    ["Élévations latérales haltères", ["Élévations latérales poulie","Élévations latérales + frontales"]],
+    ["Élévations latérales + frontales", ["Élévations latérales haltères","Élévations latérales poulie"]],
+    ["Oiseau / Y-T-W-A — épaules", ["Face pull poulie — épaules","Face pull élastique","Oiseau haltères"]],
+    ["Face pull poulie — épaules", ["Face pull élastique","Oiseau / Y-T-W-A — épaules","Oiseau haltères"]],
+    ["Rotation externe épaule (poulie)", ["Rotation externe épaule (élastique)","Rotation externe haltère couché sur le côté"]],
+    ["Élévations latérales poulie"],["Face pull élastique"],["Oiseau haltères"],["Rotation externe épaule (élastique)"],["Rotation externe haltère couché sur le côté"]]},
+  {g:"Bras", items:[
+    ["Curl incliné haltères", ["Curl haltères","Curl marteau","Curl barre"]],
+    ["Curl haltères", ["Curl marteau","Curl barre","Curl incliné haltères"]],
+    ["Spider curl", ["Curl pupitre (Larry Scott)","Curl haltères","Curl barre"]],
+    ["Extension triceps poulie", ["Barre au front","Extension triceps haltère au-dessus de la tête","Pompes diamant"]],
+    ["Barre au front", ["Extension triceps poulie","Extension triceps haltère au-dessus de la tête","Pompes diamant"]],
+    ["Curl marteau"],["Curl barre"],["Curl pupitre (Larry Scott)"],["Extension triceps haltère au-dessus de la tête"]]},
+  {g:"Jambes · hanches", items:[
+    ["Fentes bulgares haltères", ["Fentes arrière haltères","Fentes marchées haltères","Step-up haltères"]],
+    ["Soulevé de terre roumain", ["Soulevé de terre roumain haltères","Good morning","Hip thrust"]],
+    ["Hip thrust", ["Pont fessier barre au sol","Hip thrust une jambe","Pont fessier une jambe"]],
+    ["Hip thrust une jambe", ["Pont fessier une jambe","Hip thrust"]],
+    ["Nordic excentrique — ischios", ["Leg curl machine","Glissés ischios (slider ou serviette)","Pont ischios une jambe"]],
+    ["Copenhague — adducteurs", ["Copenhague genou plié","Adducteurs machine","Squeeze ballon entre les genoux"]],
+    ["Spanish squat isométrique — genou", ["Chaise contre le mur (wall sit)","Leg extension isométrique"]],
+    ["Tibialis raise — chevilles", ["Tibialis raise contre un mur","Marche sur les talons"]],
+    ["Fentes arrière haltères"],["Fentes marchées haltères"],["Step-up haltères"],["Soulevé de terre roumain haltères"],["Good morning"],["Pont fessier barre au sol"],["Pont fessier une jambe"],
+    ["Leg curl machine"],["Glissés ischios (slider ou serviette)"],["Pont ischios une jambe"],["Copenhague genou plié"],["Adducteurs machine"],["Squeeze ballon entre les genoux"],
+    ["Chaise contre le mur (wall sit)"],["Leg extension isométrique"],["Tibialis raise contre un mur"],["Marche sur les talons"]]},
+  {g:"Gainage · cou · portés", items:[
+    ["Roue abdominale", ["Rollout barre (disques)","Planche avec reach","Crunch poulie"]],
+    ["Pallof press", ["Pallof press élastique","Gainage latéral"]],
+    ["Gainage latéral", ["Planche latérale genoux","Pallof press"]],
+    ["Renforcement cervical", ["Cervicales à la main (isométrique)"]],
+    ["Farmer carry lourd", ["Farmer carry haltères","Suitcase carry (un côté)"]],
+    ["Rollout barre (disques)"],["Planche avec reach"],["Crunch poulie"],["Pallof press élastique"],["Planche latérale genoux"],["Cervicales à la main (isométrique)"],["Farmer carry haltères"],["Suitcase carry (un côté)"]]},
+];
+const CATALOG = {}; EXO_GROUPS.forEach(gr=>gr.items.forEach(([n,alt])=>{ CATALOG[n]={g:gr.g, alt:alt||[]}; }));
+const EXO_DEFAULT_OFF = ["Pompes aux anneaux lestées"];
+let EXO_OFF = new Set(loadJSON("athx_exo_off_v1", EXO_DEFAULT_OFF));
+function saveExo(){ localStorage.setItem("athx_exo_off_v1", JSON.stringify([...EXO_OFF])); }
+function exoOK(n){ return !EXO_OFF.has(n); }
+function subEx(n, used){
+  if(exoOK(n) && !used.has(n)) return {name:n};
+  const alt=(CATALOG[n]&&CATALOG[n].alt||[]).find(a=>exoOK(a) && !used.has(a));
+  return alt ? {name:alt, orig:n} : {name:n};
+}
 function LIST(b, p){
-  return {type:"list", label:b.label, c:b.c, note:b.note, ex:b.ex.map(e=>[e[0], b.fixed ? e[1] : accTarget(e[1], b.c, p)])};
+  const used=new Set();
+  const ex=b.ex.map(e=>{ const x=subEx(e[0], used); used.add(x.name); return [x.name, b.fixed ? e[1] : accTarget(e[1], b.c, p), x.orig]; });
+  return {type:"list", label:b.label, c:b.c, note:b.note, ex};
 }
 function WARM(ph){ return {type:"warm", c:"warm", label:"Échauffement", chip:"~10 min", bul:WARMUP_BUL, ph:ph||"Optionnel : ressenti, douleurs à surveiller…", optional:true}; }
 
@@ -1199,7 +1297,8 @@ function saveNutri(){ localStorage.setItem(NS, JSON.stringify(NUTRI)); }
 const SS="athx_sets_v1", WS="athx_well_v1", BS2="athx_bench_v1";
 function loadJSON(k, d){ try{ return JSON.parse(localStorage.getItem(k)) || d; }catch(_){ return d; } }
 let SETS = loadJSON(SS, {}), WELL = loadJSON(WS, {}), BENCH = loadJSON(BS2, []);
-function saveSets(){ localStorage.setItem(SS, JSON.stringify(SETS)); }
+let SETN = loadJSON("athx_setnames_v1", {}); // nom de l'exercice au moment où tu l'as noté
+function saveSets(){ localStorage.setItem(SS, JSON.stringify(SETS)); localStorage.setItem("athx_setnames_v1", JSON.stringify(SETN)); }
 function saveWell(){ localStorage.setItem(WS, JSON.stringify(WELL)); }
 function saveBench(){ localStorage.setItem(BS2, JSON.stringify(BENCH)); }
 
@@ -1340,7 +1439,7 @@ function renderBlock(b){
     h+=ta(b.key, b.lift ? "Notes : ressenti, vitesse, technique…" : b.ph)+`</div>`+(b.after||"");
   } else if(b.type==="list"){
     b.ex.forEach((e,i)=>{
-      h+=`<div class="ex"><div class="exhead"><div class="exname">${e[0]}<div class="extarget">${e[1]}</div></div>
+      h+=`<div class="ex"><div class="exhead"><div class="exname">${e[0]}<div class="extarget">${e[1]}${e[2]?` · <span class="pnote">à la place de ${e[2]}</span>`:""}</div></div>
         <a class="vid" href="${vidLink(e[0])}" target="_blank" rel="noopener">Vidéo ›</a></div>${timedTarget(e[1]) ? ta(b.keys[i],"Ce que j'ai fait (temps, charge, sensations…)") : setsWidget(b.keys[i], e[0], rxFromTarget(e[0], e[1], week)) + ta(b.keys[i],"Notes : ressenti, variante…")}</div>`;
     });
   } else {
@@ -1638,8 +1737,37 @@ function renderRefs(){
     + `Objectifs : S2OH ${kg(G.s2oh)} · squat ${kg(G.squat)} ×2 · soulevé ${kg(G.dl)} ×3 (×2) · total ${kg(G.s2oh+G.squat+G.dl)} · TM prévus en juin : squat ${kg(TM("squat",NW))}, soulevé ${kg(TM("deadlift",NW))}<br>`
     + `Test raté (moins de 3 reps au TM) : retire 10 % du TM sur ce mouvement.`;
 }
+function exoInProgram(){
+  const set=new Set();
+  [ACC_V.A, ACC_V.B, ACC_C, ACC_F, ACC_S].forEach(t=>Object.values(t).forEach(bl=>bl.forEach(b=>b.ex.forEach(e=>set.add(e[0])))));
+  PREV_KS.ex.forEach(e=>set.add(e[0])); ["Tractions lestées","Dips lestés"].forEach(n=>set.add(n));
+  return set;
+}
+function renderExo(){
+  const box=document.getElementById("exoBox"); if(!box) return;
+  const prog=exoInProgram(), total=Object.keys(CATALOG).length, on=Object.keys(CATALOG).filter(exoOK).length;
+  let h=`<div class="legend" style="margin:0 0 10px">Coche ce que tu peux faire dans ta salle (${on}/${total} cochés). Un exercice <b>du programme</b> décoché est remplacé partout par sa 1re alternative cochée, avec les mêmes séries et reps. Les anneaux sont décochés d'office.</div>`;
+  EXO_GROUPS.forEach(gr=>{
+    const names=gr.items.map(x=>x[0]), n=names.filter(exoOK).length;
+    h+=`<details class="exogrp"><summary>${gr.g}<span>${n}/${names.length}</span></summary>`;
+    names.forEach(nm=>{
+      const inP=prog.has(nm), x=inP && !exoOK(nm) ? subEx(nm, new Set()) : null;
+      const info = inP ? (x ? (x.orig ? `remplacé par ${esc(x.name)}` : "aucune alternative cochée : gardé tel quel") : "dans le programme") : "";
+      h+=`<label class="exorow"><input type="checkbox" data-exo="${esc(nm)}" ${exoOK(nm)?"checked":""}><span>${esc(nm)}${info?`<small class="${x?"exosub":""}">${info}</small>`:""}</span><a class="vid" href="${vidLink(nm)}" target="_blank" rel="noopener">Vidéo ›</a></label>`;
+    });
+    h+=`</details>`;
+  });
+  const opened=[...box.querySelectorAll("details.exogrp")].map(d=>d.open);
+  box.innerHTML=h;
+  box.querySelectorAll("details.exogrp").forEach((d,i)=>{ if(opened[i]) d.open=true; });
+  box.querySelectorAll("input[data-exo]").forEach(cb=>cb.onchange=()=>{
+    if(cb.checked) EXO_OFF.delete(cb.dataset.exo); else EXO_OFF.add(cb.dataset.exo);
+    saveExo(); PLAN_CACHE={}; EXI=null; renderExo();
+  });
+}
+function openExo(){ switchTab("profil"); setTimeout(()=>{ const a=document.getElementById("exoAnchor"); if(a) a.scrollIntoView({block:"start"}); },30); }
 function renderProfile(){
-  renderRefs();
+  renderRefs(); renderExo();
   const m=computeMeta(), meta=document.getElementById("metaBox");
   if(m.tdee==null){
     meta.innerHTML=`<div class="results empty"><div style="font-size:15px">Renseigne ton poids et ton taux de masse grasse pour voir ton métabolisme.</div></div>`;
@@ -1777,7 +1905,7 @@ function exIndex(){
   if(EXI) return EXI; EXI={};
   for(let w=1; w<=NW; w++) weekPlan(w).sessions.forEach(s=>s.blocks.forEach(b=>{
     if(b.type==="main" && b.lift) EXI[b.key]={w, name:LIFT_LABEL[b.lift], lift:b.lift, grp:GRP_OF[b.lift]};
-    if(b.type==="list") b.ex.forEach((e,i)=>{ if(!timedTarget(e[1])) EXI[b.keys[i]]={w, name:e[0], grp:"acc"}; });
+    if(b.type==="list") b.ex.forEach((e,i)=>{ if(!timedTarget(e[1])) EXI[b.keys[i]]={w, name:SETN[b.keys[i]]||e[0], grp:"acc"}; });
   }));
   return EXI;
 }
@@ -1801,7 +1929,7 @@ function bindSets(root){
     const box=inp.closest(".sets"), key=box.dataset.key, i=+inp.closest(".setrow").dataset.i, arr=SETS[key]; if(!arr||!arr[i]) return;
     const v=numFr(inp.value);
     if(inp.classList.contains("skg")) arr[i][0]=isFinite(v)?v:null; else arr[i][1]=isFinite(v)?Math.max(0,Math.round(v)):0;
-    saveSets(); box.querySelector(".setsum").textContent=sumText(arr); updateWeekProgress();
+    SETN[key]=box.dataset.name; saveSets(); box.querySelector(".setsum").textContent=sumText(arr); updateWeekProgress();
   });
   root.addEventListener("click", e=>{
     const btn=e.target.closest && e.target.closest(".sadd,.sdel,.srx"); if(!btn) return;
@@ -1809,7 +1937,7 @@ function bindSets(root){
     if(btn.classList.contains("sadd")){ const l=arr[arr.length-1]; arr.push(l?[l[0],l[1]]:[null,0]); focus=arr.length-1; }
     else if(btn.classList.contains("sdel")) arr.splice(+btn.closest(".setrow").dataset.i,1);
     else arr=JSON.parse(box.dataset.rx).map(x=>[x[0],x[1]]);
-    if(arr.length) SETS[key]=arr; else delete SETS[key];
+    if(arr.length){ SETS[key]=arr; SETN[key]=box.dataset.name; } else { delete SETS[key]; delete SETN[key]; }
     saveSets();
     const tmp=document.createElement("div"); tmp.innerHTML=setsWidget(key, box.dataset.name, JSON.parse(box.dataset.rx));
     const nb=tmp.firstElementChild; box.replaceWith(nb);
