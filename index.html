@@ -1358,6 +1358,26 @@ const SS="athx_sets_v1", WS="athx_well_v1", BS2="athx_bench_v1";
 function loadJSON(k, d){ try{ return JSON.parse(localStorage.getItem(k)) || d; }catch(_){ return d; } }
 let SETS = loadJSON(SS, {}), WELL = loadJSON(WS, {}), BENCH = loadJSON(BS2, []);
 let SETN = loadJSON("athx_setnames_v1", {}); // nom de l'exercice au moment où tu l'as noté
+// Journal du coach : les séances que tu me racontes dans la conversation. Ajoutées une seule fois dans l'app,
+// sans écraser ce que tu as noté toi-même ; tu peux ensuite les corriger ou les supprimer.
+const COACH_LOG = {
+  // Semaine 2 · mardi 10 nov. · squat (semaine du 1 + jokers), séance raccourcie
+  "w2-s1-b1":    {sets:[[140,5],[160,3],[180,3],[190,1],[200,1]], note:"180×3 sur le 1+, puis jokers 190×1 et 200×1."},
+  "w2-s1-b2-e0": {note:"Pas fait (pas le temps)."},
+  "w2-s1-b2-e1": {note:"Pas fait (pas le temps)."},
+  "w2-s1-b3-e0": {sets:[[null,10],[null,10],[null,10],[null,10]], name:"Dips lestés"},
+  "w2-s1-b3-e1": {sets:[[null,6],[null,6],[null,6],[null,6]], name:"Tractions lestées"},
+};
+(function applyCoachLog(){
+  const done=new Set(loadJSON("athx_coachlog_done", [])); let ch=false;
+  Object.entries(COACH_LOG).forEach(([k,v])=>{
+    if(done.has(k)) return;
+    if(v.sets && !(SETS[k] && SETS[k].length)){ SETS[k]=v.sets.map(x=>[x[0],x[1]]); if(v.name) SETN[k]=v.name; }
+    if(v.note && !(LOG[k] && LOG[k].trim())) LOG[k]=v.note;
+    done.add(k); ch=true;
+  });
+  if(ch){ saveSets(); saveLog(); localStorage.setItem("athx_coachlog_done", JSON.stringify([...done])); }
+})();
 function saveSets(){ localStorage.setItem(SS, JSON.stringify(SETS)); localStorage.setItem("athx_setnames_v1", JSON.stringify(SETN)); }
 function saveWell(){ localStorage.setItem(WS, JSON.stringify(WELL)); }
 function saveBench(){ localStorage.setItem(BS2, JSON.stringify(BENCH)); }
