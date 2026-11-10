@@ -632,7 +632,7 @@ const VID_ALIAS = {
   "Hip thrust":"Hip Thrust", "Hip thrust une jambe":"Single Leg Hip Thrust", "Pallof press":"Banded Pallof Walk Out",
   "Roue abdominale":"AB Wheel", "Renforcement cervical":"neck strengthening rugby", "Gainage latéral":"side plank",
   "Fentes bulgares haltères":"2DB Bulgarian Split Squat", "Soulevé de terre roumain":"Barbell Romanian Deadlift",
-  "Farmer carry lourd":"Heavy Farmer Carry", "Spanish squat isométrique — genou":"spanish squat isometric",
+  "Farmer carry lourd":"Heavy Farmer Carry", "Soulevé de terre jambes tendues":"stiff leg deadlift", "Spanish squat isométrique — genou":"spanish squat isometric",
   "Rotation externe épaule (poulie)":"cable external rotation shoulder", "Tibialis raise — chevilles":"tibialis raise",
 };
 Object.assign(VID_ALIAS, {
@@ -864,8 +864,6 @@ const RUNS = {
 
 // --- Blocs « mouvement principal »
 const FSL = {pushpress:[5,5], squat:[5,5], deadlift:[3,5]};
-// En saison (rugby + match le week-end) : FSL plus court en bas du corps, dernier set à 2 reps en réserve.
-const FSL_SEASON = {pushpress:[5,5], squat:[3,5], deadlift:[3,5]};
 function main531(lift, w, p, fsl, opt){
   opt=opt||{};
   const tm=TM(lift,w), L=LIFTS[lift], W=WAVES[p.k], loads=W.p.map(x=>r25(tm*x/100)), fz = fsl===true ? FSL[lift] : fsl;
@@ -879,7 +877,9 @@ function main531(lift, w, p, fsl, opt){
   const e=tm/0.9, cible=Math.round(30*(e/loads[2]-1));
   b.label=`${L.name} · 5/3/1`;
   b.meta=[`TM ${kg(tm)} kg · ${W.p.join("/")} % du TM`, `<b>Montée en charge</b> : ${rampStr(tm,[[40,5],[50,5],[60,3]])}`];
-  b.rows=[{txt:loads.map((x,i)=>`${kg(x)} ×${W.r[i]}`).join(" · "), sub:`Dernier set + : max de reps propres, ${opt.season?"2 en réserve (rugby)":"1 en réserve"} · ${cible} reps = ton e1RM actuel (${kg(r25(e))} kg), au-delà = progrès`}];
+  b.rows=[{txt:loads.map((x,i)=>`${kg(x)} ×${W.r[i]}`).join(" · "), sub:`Dernier set + : max de reps propres, ${opt.reserve || (opt.season?"2 en réserve (rugby)":"1 en réserve")} · ${cible} reps = ton e1RM actuel (${kg(r25(e))} kg), au-delà = progrès`}];
+  if(opt.joker) b.rows.push({txt:`Joker (optionnel) : ${opt.joker.length>1?"singles":"1 single"} à ${opt.joker.map(x=>pct(tm,x)).join(" puis ")} kg`,
+    sub:`Seulement si le dernier set part vite (3 reps propres ou plus) · ${opt.joker.map(x=>x+" %").join(" puis ")} du TM · RPE 9 max, aucun raté`});
   if(fz){ const [fs,fr]=fz; b.rows.push({txt:`${fs} × ${fr} @ ${kg(loads[0])} kg`, sub:"FSL : charge de la 1re série · récup 1'30 · volume de qualité"}); }
   if(opt.after) b.after=note(opt.after);
   return b;
@@ -979,9 +979,9 @@ function sessI(w, p){
 }
 function sessV(w, p){
   const A = p.blk%2===1 ? ACC_V.A : ACC_V.B, dl=p.k===3;
-  const sub = dl ? "Décharge · 2 blocs allégés · ~45 min" : "5/3/1 + FSL · 2 blocs · ~1h";
+  const sub = dl ? "Décharge · 2 blocs allégés · ~45 min" : "5/3/1 + 2 blocs · ~1h";
   const out = LIFT_ORDER.map((lift,i)=>mkS(w, "s"+(i+1), i+1, TITLES[lift], sub, "var(--force)",
-    [WARM(), main531(lift,w,p,dl?false:FSL_SEASON[lift],{season:true}), ...A["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · 5/3/1"}));
+    [WARM(), main531(lift,w,p,false,{season:true}), ...A["s"+(i+1)].map(b=>LIST(b,p))], {planTag:"Muscu · 5/3/1"}));
   const jp=[60,65,70,55][p.k]+(p.blk>=3?5:0), js=[6,6,5,5][p.k];
   out.push(mkS(w, "s4", 4, "Séance 4 · Jerk + WOD ATHX", "Jerk technique + WOD court à RPE 6-7 · ~45 min · à sauter en premier si la semaine déborde", "var(--wod)", [
     WARM(),
@@ -1220,47 +1220,48 @@ function matchC(w, day){ const we=WEEKEND[w-1]; return [
   mkC(w,"matchday","MAT",`Match vs ${we.opp}`, we.home?"Rugby · domicile":"Rugby · extérieur","var(--rugby)", `<div class="pmeta">${we.date} · ${we.home?"à domicile":"à l'extérieur"}.</div>`, "Le match (résultat, ressenti, coups pris…)", {planLabel:`Match vs ${we.opp}`, planTag:"Rugby", day:"Dimanche"}),
 ]; }
 const CUSTOM = {
-  // Semaine 2 (9-15 nov.) : frais, retour au 5/3/1 (cycle 3, semaine des 5). Mardi midi 1h · mercredi férié 2h + footing ·
-  // jeudi midi 1h + cardio le soir · vendredi et samedi off · match dimanche contre Tours.
+  // Semaine 2 (9-15 nov.) : frais, déjà un cycle fait → semaine du 1 (75/85/95 %) sur les TM du nouveau cycle, jokers pour se tester lourd.
+  // Squat mardi midi (rugby le soir) · push press mercredi férié (2h) + footing · soulevé jeudi midi + cardio le soir · match dimanche contre Tours.
   2: (w, p)=>{
-    const P0=Object.assign({}, p, {k:0});
+    const P2=Object.assign({}, p, {k:2});
     const ex=(label, c, note, items)=>({type:"list", label, c, note, ex:items.map(x=>{ const y=subEx(x[0], new Set()); return [y.name, x[1], y.orig]; })});
     const sessions=[
-      mkS(w,"s1",1,"Séance 1 · Push press","Mardi midi · 1h · rien pour les jambes avant la mêlée du soir","var(--force)",[
+      mkS(w,"s1",1,"Séance 1 · Squat","Mardi midi · 1h · rugby ce soir","var(--force)",[
         WARM(),
-        main531("pushpress", w, P0, [5,5], {season:true}),
+        main531("squat", w, P2, false, {reserve:"1 à 2 en réserve (rugby ce soir)", joker:[100,105]}),
+        ex("Bas du corps · chaîne postérieure","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour · soulevé jeudi : reste à 2-3 reps de l'échec",[["Soulevé de terre jambes tendues","3×8 · 2-3 en réserve"],["Fentes arrière haltères","3×8/côté · 3 en réserve"]]),
+        ex("Haut du corps · tirage & dips","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Dips lestés","4×6-8 · 2 en réserve"],["Tractions lestées","4×6-8 · 2 en réserve"]]),
+      ],{day:"Mardi", planTag:"Muscu · mardi midi"}),
+      mkS(w,"s2",2,"Séance 2 · Jerk + push press (longue)","Mercredi matin (férié) · 2h · rugby léger le soir","var(--force)",[
+        WARM(),
+        jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(65)} kg`, sub:"65 % de ta réf. · échauffement spécifique avant le push press · dip court, réception verrouillée"}], jRamp(65)),
+        main531("pushpress", w, P2, false, {reserve:"1 à 2 en réserve", joker:[100,105]}),
         ex("Haut du corps · hypertrophie","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé couché (bench press)","3×8-10 · 2 en réserve"],["Rowing barre (Pendlay)","3×8-10 · 2 en réserve"]]),
         ex("Épaules & bras","hyp","circuit · enchaîne les 3, récup 1' en fin de tour",[["Élévations latérales haltères","3×12-15"],["Curl incliné haltères","3×10-12"],["Extension triceps poulie","3×10-12"]]),
-      ],{day:"Mardi", planTag:"Muscu · mardi midi"}),
-      mkS(w,"s2",2,"Séance 2 · Jerk + squat (longue)","Mercredi matin (férié) · 2h · rugby léger le soir, match dans 4 jours","var(--force)",[
-        WARM(),
-        jerkBlock("Jerk · technique", [{txt:`6 × 2 @ ${jr(70)} kg`, sub:"70 % de ta réf. · récup 1'30 · dip court, réception verrouillée"}], jRamp(70)),
-        main531("squat", w, P0, [3,5], {season:true, after:"Rugby ce soir et match dimanche : sur le dernier set, arrête-toi à 2 reps de l'échec, même si ça passe."}),
-        ex("Tirage & dips","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Tractions lestées","4×6-8 · 2 en réserve"],["Dips lestés","4×8-10 · 2 en réserve"]]),
-        ex("Prévention rugby","prev","circuit · adducteurs, ischios, épaules",[["Copenhague — adducteurs","3×20-30''/côté"],["Nordic excentrique — ischios","3×4-6"],["Oiseau / Y-T-W-A — épaules","3×12-15"]]),
+        ex("Prévention rugby","prev","circuit · pas de Nordic cette semaine : soulevé jeudi et match dimanche",[["Copenhague — adducteurs","3×20-30''/côté"],["Oiseau / Y-T-W-A — épaules","3×12-15"],["Renforcement cervical","3×15 · 4 directions"]]),
         engineBlock(["SkiErg 4 × 3' à allure régulière (RPE 6) · récup 1'","Poussée des hanches, bras qui finissent le long des cuisses","Le SkiErg fait le score de l'épreuve Endurance : on construit la base, sans forcer"], "~15 min", "Moteur ATHX · SkiErg"),
       ],{day:"Mercredi", planTag:"Muscu · mercredi matin"}),
       mkS(w,"s3",3,"Séance 3 · Soulevé de terre","Jeudi midi · 1h · match dans 3 jours","var(--force)",[
         WARM(),
-        main531("deadlift", w, P0, [3,5], {season:true, after:"Match dimanche : dernier set à 2 reps en réserve, 8 reps maximum."}),
+        main531("deadlift", w, P2, false, {reserve:"2 en réserve (match dimanche)", joker:[100], after:"Match dimanche : un seul joker, et seulement si le 1+ a vraiment filé."}),
         ex("Haut du corps · hypertrophie","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé haltères","3×10-12 · 2 en réserve"],["Rowing un bras (3 appuis)","3×10-12/côté · 2 en réserve"]]),
-        ex("Hanches, cou & gainage","prev","circuit · le cou te protège en mêlée et au plaquage",[["Hip thrust","3×10-12 · 2 en réserve"],["Renforcement cervical","3×15 · 4 directions"],["Roue abdominale","3×8-12"]]),
+        ex("Hanches & gainage","prev","circuit · hip thrust léger, les jambes ont déjà travaillé mardi",[["Hip thrust","3×10 · 3 en réserve"],["Roue abdominale","3×8-12"],["Gainage latéral","3×30''/côté"]]),
       ],{day:"Jeudi", planTag:"Muscu · jeudi midi"}),
       mkS(w,"s4",4,"Séance 4 · Cardio ATHX","Jeudi soir · ~40 min · RPE 6-7, match dimanche","var(--wod)",[
         WARM(),
-        wod4Block(P0),
+        wod4Block(Object.assign({}, p, {k:0})),
         engineBlock(["SkiErg 10' facile (zone 2) pour finir","Tu dois pouvoir parler : on fait monter le cardio, sans fatigue pour dimanche"], "10'", "Moteur ATHX · SkiErg"),
       ],{day:"Jeudi", planTag:"Cardio · jeudi soir"}),
     ];
     const conds=[
       mkC(w,"repos","J+1","Lendemain de match","Lundi · récup","var(--warm)", `<div class="pmeta">${COND.repos.desc}</div>`, "Ressenti, coups, sommeil…", {planLabel:"Lendemain de match", day:"Lundi"}),
       rugbyC(w,"rugby1","Rugby · mardi soir","Rugby · mardi soir","Mardi"),
-      mkC(w,"foot","RUN","Footing facile","Mercredi après-midi · optionnel","var(--cardio)", `<div class="pmeta">20 à 25' très facile (tu peux parler), au moins 3 h après la séance du matin. Jambes lourdes après le squat ? Remplace par 20' de marche inclinée.</div>`, "Durée, allure, ressenti…", {bonus:true, planLabel:"Footing facile", planTag:"Optionnel", day:"Mercredi"}),
+      mkC(w,"foot","RUN","Footing facile","Mercredi après-midi · optionnel","var(--cardio)", `<div class="pmeta">20 à 25' très facile (tu peux parler), au moins 3 h après la séance du matin. Pas envie ou jambes lourdes ? Remplace par 20' de marche inclinée.</div>`, "Durée, allure, ressenti…", {bonus:true, planLabel:"Footing facile", planTag:"Optionnel", day:"Mercredi"}),
       rugbyC(w,"rugby2","Rugby · mercredi soir","Rugby · mercredi soir (léger en course)","Mercredi"),
       ...matchC(w),
     ];
-    return {sessions, conds, title:"Semaine à la carte · retour au 5/3/1",
-      focus:"Tu es frais : on repart en 5/3/1 (nouveau cycle, semaine des 5, TM squat 187,5 · push press 125 · soulevé 225). Push press mardi midi (rien pour les jambes avant la mêlée), grosse séance mercredi matin (jerk, squat, tirage, prévention, SkiErg), soulevé jeudi midi, cardio ATHX léger jeudi soir. Vendredi et samedi : repos. Dernier set à 2 reps en réserve : match dimanche."};
+    return {sessions, conds, title:"Semaine à la carte · semaine du 1, on teste lourd",
+      focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle (squat 187,5 · push press 125 · soulevé 225). Si le 1+ part vite, singles « joker » à 100 puis 105 % du TM pour te tester, RPE 9 max et aucun raté. Pas de 5×5 derrière : après le 5/3/1, on passe aux accessoires. Squat mardi midi, push press mercredi (2h), soulevé jeudi midi, cardio jeudi soir, repos vendredi et samedi, match dimanche."};
   },
 };
 
@@ -1437,7 +1438,7 @@ function weekBrief(w, P){
     head=`${p.name} · cycle ${p.blk}/4`;
     title=`Semaine ${k+1}/4 · ${["semaine des 5","semaine des 3","semaine 5/3/1","décharge"][k]}`;
     focus=[
-      "Dernier set en max de reps, mais 2 en réserve : en saison, le rugby passe avant. FSL derrière pour le volume, accessoires à 3 séries.",
+      "Dernier set en max de reps, mais 2 en réserve : en saison, le rugby passe avant. Puis on passe aux accessoires (3 séries).",
       "Semaine des 3 : plus lourd, même règle des 2 reps en réserve. Accessoires à 4 séries.",
       "Semaine 5/3/1 : un single+ à 95 % du TM, propre et rapide. La plus lourde du cycle.",
       "Décharge : 40/50/60 %, accessoires allégés. C'est elle qui te fait progresser, ne la saute pas.",
@@ -1621,7 +1622,7 @@ function renderGoals(){
   const cur=week;
   document.getElementById("goalsBox").innerHTML=`<div class="goals">
     <div class="ghead">🎯 Jusqu'à l'ATHX Lisbonne — sam. 26 juin 2027</div>
-    <p><b>Le principe</b> : pendant la saison, le rugby passe en premier. La muscu suit des cycles 5/3/1 adaptés au rugby (dernier set à 2 reps en réserve, FSL modéré) et des accessoires pour le muscle et la robustesse. Chaque semaine est ajustée à tes créneaux. Les trêves servent à charger plus et à tester. Après le dernier match (11 avril), 11 semaines 100 % ATHX : force, spécifique, répétition générale, affûtage.</p>
+    <p><b>Le principe</b> : pendant la saison, le rugby passe en premier. La muscu suit des cycles 5/3/1 adaptés au rugby (dernier set à 2 reps en réserve) puis des accessoires pour le muscle et la robustesse. Chaque semaine est ajustée à tes créneaux. Les trêves servent à charger plus et à tester. Après le dernier match (11 avril), 11 semaines 100 % ATHX : force, spécifique, répétition générale, affûtage.</p>
     <table class="gtable"><tr><th>Semaines</th><th>Dates</th><th>Contenu</th></tr>
       ${rows.map(r=>`<tr${cur>=r[0]&&cur<=r[1]?' style="color:var(--hyp)"':''}><td>${r[0]===r[1]?r[0]:r[0]+"-"+r[1]}</td><td>${fmtDay(weekDate(r[0]))} → ${fmtDay(weekDate(r[1],6))}</td><td style="text-align:left;font-weight:500">${r[2]}</td></tr>`).join("")}
     </table>
