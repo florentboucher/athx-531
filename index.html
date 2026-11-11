@@ -632,7 +632,7 @@ const VID_ALIAS = {
   "Hip thrust":"Hip Thrust", "Hip thrust une jambe":"Single Leg Hip Thrust", "Pallof press":"Banded Pallof Walk Out",
   "Roue abdominale":"AB Wheel", "Renforcement cervical":"neck strengthening rugby", "Gainage latéral":"side plank",
   "Fentes bulgares haltères":"2DB Bulgarian Split Squat", "Soulevé de terre roumain":"Barbell Romanian Deadlift",
-  "Farmer carry lourd":"Heavy Farmer Carry", "Soulevé de terre jambes tendues":"stiff leg deadlift", "Spanish squat isométrique — genou":"spanish squat isometric",
+  "Farmer carry lourd":"Heavy Farmer Carry", "Soulevé de terre jambes tendues":"stiff leg deadlift", "Fentes à la barre":"Back Rack Lunges", "Spanish squat isométrique — genou":"spanish squat isometric",
   "Rotation externe épaule (poulie)":"cable external rotation shoulder", "Tibialis raise — chevilles":"tibialis raise",
 };
 Object.assign(VID_ALIAS, {
@@ -866,7 +866,7 @@ const RUNS = {
 const FSL = {pushpress:[5,5], squat:[5,5], deadlift:[3,5]};
 function main531(lift, w, p, fsl, opt){
   opt=opt||{};
-  const tm=TM(lift,w), L=LIFTS[lift], W=WAVES[p.k], loads=W.p.map(x=>r25(tm*x/100)), fz = fsl===true ? FSL[lift] : fsl;
+  const tm=opt.tm||TM(lift,w), L=LIFTS[lift]||{name:opt.name}, W=WAVES[p.k], loads=W.p.map(x=>r25(tm*x/100)), fz = fsl===true ? FSL[lift] : fsl;
   const b={type:"main", c:"force", lift, vid:vidLink(L.name), ph:"Séries de travail (surtout le dernier set +)"+(fsl?" puis FSL":"")+"…"};
   if(W.deload){
     b.label=`${L.name} · décharge`;
@@ -1232,20 +1232,20 @@ const CUSTOM = {
         ex("Bas du corps · chaîne postérieure","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour · soulevé jeudi : reste à 2-3 reps de l'échec",[["Soulevé de terre jambes tendues","3×8 · 2-3 en réserve"],["Fentes arrière haltères","3×8/côté · 3 en réserve"]]),
         ex("Haut du corps · tirage & dips","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Dips lestés","4×6-8 · 2 en réserve"],["Tractions lestées","4×6-8 · 2 en réserve"]]),
       ],{day:"Mardi", planTag:"Muscu · mardi midi"}),
-      mkS(w,"s2",2,"Séance 2 · Jerk + push press (longue)","Mercredi matin (férié) · 2h · rugby léger le soir","var(--force)",[
+      mkS(w,"s2",2,"Séance 2 · Bench + push press + jambes","Mercredi (férié) · ~1h30 · rugby léger le soir, soulevé demain","var(--force)",[
         WARM(),
-        jerkBlock("Jerk · technique", [{txt:`5 × 2 @ ${jr(65)} kg`, sub:"65 % de ta réf. · échauffement spécifique avant le push press · dip court, réception verrouillée"}], jRamp(65)),
-        main531("pushpress", w, P2, false, {reserve:"1 à 2 en réserve", joker:[100,105]}),
-        ex("Haut du corps · hypertrophie","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé couché (bench press)","3×8-10 · 2 en réserve"],["Rowing barre (Pendlay)","3×8-10 · 2 en réserve"]]),
-        ex("Épaules & bras","hyp","circuit · enchaîne les 3, récup 1' en fin de tour",[["Élévations latérales haltères","3×12-15"],["Curl incliné haltères","3×10-12"],["Extension triceps poulie","3×10-12"]]),
-        ex("Prévention rugby","prev","circuit · pas de Nordic cette semaine : soulevé jeudi et match dimanche",[["Copenhague — adducteurs","3×20-30''/côté"],["Oiseau / Y-T-W-A — épaules","3×12-15"],["Renforcement cervical","3×15 · 4 directions"]]),
-        engineBlock(["SkiErg 4 × 3' à allure régulière (RPE 6) · récup 1'","Poussée des hanches, bras qui finissent le long des cuisses","Le SkiErg fait le score de l'épreuve Endurance : on construit la base, sans forcer"], "~15 min", "Moteur ATHX · SkiErg"),
-      ],{day:"Mercredi", planTag:"Muscu · mercredi matin"}),
+        main531("bench", w, P2, false, {tm:150, name:"Bench Press", reserve:"1 à 2 en réserve", joker:[100,105],
+          after:"TM bench 150 (ton max à 170). Comme pour le squat : jokers seulement si le 1+ part vite, RPE 9 max, aucun raté. Pieds ancrés, omoplates serrées, barre qui touche le bas des pecs."}),
+        {type:"main", c:"force", lift:"pushpress", vid:vidLink("Push Press"), label:"Push Press · vitesse",
+         meta:[`TM 125 kg · après le bench, on reste léger et explosif`, `<b>Montée en charge</b> : ${rampStr(125,[[40,5],[55,3],[65,2]])}`],
+         rows:[{txt:`4 × 3 @ ${pct(125,75)} kg`, sub:"75 % du TM · récup 1'30 · dip court, la barre doit voler"}], ph:"Charges × reps, vitesse…"},
+        ex("Bas du corps · chaîne postérieure","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour · soulevé lourd demain : reste à 3 reps de l'échec",[["Soulevé de terre jambes tendues","3×8 · 3 en réserve (≈100-120 kg)"],["Fentes à la barre","3×8/côté · 3 en réserve (≈60-70 kg)"]]),
+      ],{day:"Mercredi", planTag:"Muscu · mercredi"}),
       mkS(w,"s3",3,"Séance 3 · Soulevé de terre","Jeudi midi · 1h · match dans 3 jours","var(--force)",[
         WARM(),
         main531("deadlift", w, P2, false, {reserve:"2 en réserve (match dimanche)", joker:[100], after:"Match dimanche : un seul joker, et seulement si le 1+ a vraiment filé."}),
         ex("Haut du corps · hypertrophie","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé haltères","3×10-12 · 2 en réserve"],["Rowing un bras (3 appuis)","3×10-12/côté · 2 en réserve"]]),
-        ex("Hanches & gainage","prev","circuit · hip thrust léger, les jambes ont déjà travaillé mardi",[["Hip thrust","3×10 · 3 en réserve"],["Roue abdominale","3×8-12"],["Gainage latéral","3×30''/côté"]]),
+        ex("Hanches & gainage","prev","circuit · hip thrust léger : jambes tendues et fentes faites hier",[["Hip thrust","3×10 · 3 en réserve"],["Roue abdominale","3×8-12"],["Gainage latéral","3×30''/côté"]]),
       ],{day:"Jeudi", planTag:"Muscu · jeudi midi"}),
       mkS(w,"s4",4,"Séance 4 · Cardio ATHX","Jeudi soir · ~40 min · RPE 6-7, match dimanche","var(--wod)",[
         WARM(),
@@ -1261,7 +1261,7 @@ const CUSTOM = {
       ...matchC(w),
     ];
     return {sessions, conds, title:"Semaine à la carte · semaine du 1, on teste lourd",
-      focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle (squat 187,5 · push press 125 · soulevé 225). Si le 1+ part vite, singles « joker » à 100 puis 105 % du TM pour te tester, RPE 9 max et aucun raté. Pas de 5×5 derrière : après le 5/3/1, on passe aux accessoires. Squat mardi midi, push press mercredi (2h), soulevé jeudi midi, cardio jeudi soir, repos vendredi et samedi, match dimanche."};
+      focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle, avec des singles « joker » à 100 puis 105 % du TM si le 1+ part vite (RPE 9 max, aucun raté). Pas de 5×5 derrière. Squat mardi (fait : 180×3 puis 200), bench + push press léger + jambes tendues et fentes mercredi, soulevé jeudi midi, cardio jeudi soir, repos vendredi et samedi, match dimanche."};
   },
 };
 
@@ -1983,8 +1983,8 @@ function rxFromTarget(name, target, w){
 }
 
 // Index des exercices : clé → semaine, nom, mouvement, groupe de tonnage.
-const LIFT_LABEL = {squat:"Squat", deadlift:"Soulevé de terre", pushpress:"Push press", jerk:"Jerk (S2OH)", cj:"Clean & jerk"};
-const GRP_OF = {squat:"squat", deadlift:"deadlift", pushpress:"ovh", jerk:"ovh", cj:"ovh"};
+const LIFT_LABEL = {squat:"Squat", deadlift:"Soulevé de terre", pushpress:"Push press", jerk:"Jerk (S2OH)", cj:"Clean & jerk", bench:"Bench press"};
+const GRP_OF = {squat:"squat", deadlift:"deadlift", pushpress:"ovh", jerk:"ovh", cj:"ovh", bench:"ovh"};
 let EXI=null;
 function exIndex(){
   if(EXI) return EXI; EXI={};
@@ -2302,7 +2302,7 @@ function renderForce(el){
   let cur=null; const now=calendarWeek(); for(let w=now; w>=now-3; w--){ if(A[w]&&A[w].e1[L]) cur=Math.max(cur||0, A[w].e1[L]); }
   const ge=goalE1(L);
   const goalTxt = L==="squat" ? `${kg(G.squat)} × 2` : L==="deadlift" ? `${kg(G.dl)} × 3 (×2)` : L==="jerk" ? `${kg(G.s2oh)}` : "";
-  let h=filt("lift",[["squat","Squat"],["deadlift","Soulevé"],["pushpress","Push press"],["jerk","Jerk"]],L) + filt("weeks",[[12,"12 semaines"],["all","Toute la saison"]],SUIVI.weeks);
+  let h=filt("lift",[["squat","Squat"],["deadlift","Soulevé"],["pushpress","Push press"],["jerk","Jerk"],["bench","Bench"]],L) + filt("weeks",[[12,"12 semaines"],["all","Toute la saison"]],SUIVI.weeks);
   h+=`<div class="tiles">`
     + tile("e1RM · 4 dernières semaines", cur?nfmt(Math.round(cur*2)/2):"—", cur?"kg":"", cur&&ge?`objectif : ${nfmt(Math.round(ge))} kg (${goalTxt})`:"")
     + tile("Record e1RM", best?nfmt(Math.round(best*2)/2):"—", best?"kg":"", bestW?`semaine ${bestW}`:"")
@@ -2349,7 +2349,7 @@ function renderVolume(el){
   chart(document.getElementById("chTon"), {type:"bar", stacked:true, x:xl, xFull:xf, series:[
     {name:"Squat", color:"var(--s1)", values:ws.map(w=>A[w]?A[w].ton.squat:0)},
     {name:"Soulevé", color:"var(--s2)", values:ws.map(w=>A[w]?A[w].ton.deadlift:0)},
-    {name:"Push press & jerk", color:"var(--s3)", values:ws.map(w=>A[w]?A[w].ton.ovh:0)},
+    {name:"Push press, jerk & bench", color:"var(--s3)", values:ws.map(w=>A[w]?A[w].ton.ovh:0)},
     {name:"Accessoires", color:"var(--s4)", values:ws.map(w=>A[w]?A[w].ton.acc:0)}],
     yFmt:tkg, yTick:v=>v>=1000?(v/1000).toLocaleString('fr-FR')+" t":String(v), label:"Tonnage par semaine", empty:"Note tes séries dans le programme : le tonnage se calcule tout seul."});
   chart(document.getElementById("chDone"), {type:"bar", x:xl, xFull:xf, series:[{name:"Fait", color:"var(--s1)", values:done}], yFmt:v=>v+" %", zero:true, refs:[{y:100, label:"100 %"}], label:"Régularité par semaine", empty:"Note tes séances dans le programme pour suivre ta régularité."});
