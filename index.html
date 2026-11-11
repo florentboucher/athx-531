@@ -1240,12 +1240,13 @@ const CUSTOM = {
          meta:[`TM 125 kg · après le bench, on reste léger et explosif`, `<b>Montée en charge</b> : ${rampStr(125,[[40,5],[55,3],[65,2]])}`],
          rows:[{txt:`4 × 3 @ ${pct(125,75)} kg`, sub:"75 % du TM · récup 1'30 · dip court, la barre doit voler"}], ph:"Charges × reps, vitesse…"},
         ex("Bas du corps · chaîne postérieure","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour · soulevé lourd demain : reste à 3 reps de l'échec",[["Soulevé de terre jambes tendues","3×8 · 3 en réserve (≈100-120 kg)"],["Fentes à la barre","3×8/côté · 3 en réserve (≈60-70 kg)"]]),
+        ex("Ajouté · tirage & dips","hyp","superset fait en fin de séance",[["Rowing barre","4×7"],["Dips (poids du corps)","4×8"]]),
       ],{day:"Mercredi", planTag:"Muscu · mercredi"}),
       mkS(w,"s3",3,"Séance 3 · Soulevé de terre","Jeudi midi · 1h · match dans 3 jours","var(--force)",[
         WARM(),
-        main531("deadlift", w, P2, false, {reserve:"2 en réserve (match dimanche)", joker:[100], after:"Match dimanche : un seul joker, et seulement si le 1+ a vraiment filé."}),
-        ex("Haut du corps · hypertrophie","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé haltères","3×10-12 · 2 en réserve"],["Rowing un bras (3 appuis)","3×10-12/côté · 2 en réserve"]]),
-        ex("Hanches & gainage","prev","circuit · hip thrust léger : jambes tendues et fentes faites hier",[["Hip thrust","3×10 · 3 en réserve"],["Roue abdominale","3×8-12"],["Gainage latéral","3×30''/côté"]]),
+        main531("deadlift", w, P2, false, {reserve:"3 reps maximum, 2-3 en réserve", after:"Dos déjà chargé hier (jambes tendues 4×6 à 100, rowing 4×7 à 100) et match dimanche : pas de joker, et 3 reps maximum sur le 1+. Si le dos est raide à l'échauffement, arrête-toi après 192,5×3."}),
+        ex("Épaules & cou","prev","circuit · léger : bench et rowing faits hier",[["Élévations latérales haltères","3×12-15"],["Oiseau / Y-T-W-A — épaules","3×12-15"],["Renforcement cervical","3×15 · 4 directions"]]),
+        ex("Adducteurs & gainage","prev","superset",[["Copenhague — adducteurs","3×20-30''/côté"],["Roue abdominale","3×8-12"]]),
       ],{day:"Jeudi", planTag:"Muscu · jeudi midi"}),
       mkS(w,"s4",4,"Séance 4 · Cardio ATHX","Jeudi soir · ~40 min · RPE 6-7, match dimanche","var(--wod)",[
         WARM(),
@@ -1261,7 +1262,7 @@ const CUSTOM = {
       ...matchC(w),
     ];
     return {sessions, conds, title:"Semaine à la carte · semaine du 1, on teste lourd",
-      focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle, avec des singles « joker » à 100 puis 105 % du TM si le 1+ part vite (RPE 9 max, aucun raté). Pas de 5×5 derrière. Squat mardi (fait : 180×3 puis 200), bench + push press léger + jambes tendues et fentes mercredi, soulevé jeudi midi, cardio jeudi soir, repos vendredi et samedi, match dimanche."};
+      focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle, avec des singles « joker » si le 1+ part vite (RPE 9 max, aucun raté). Pas de 5×5 derrière. Fait : squat mardi (180×3 puis 200), bench mercredi (142,5×4) + clean & push press jusqu'à 120 + jambes tendues, fentes, rowing. Reste : soulevé jeudi midi (dos chargé : sans joker), cardio jeudi soir, repos vendredi et samedi, match dimanche."};
   },
 };
 
@@ -1367,6 +1368,13 @@ const COACH_LOG = {
   "w2-s1-b2-e1": {note:"Pas fait (pas le temps)."},
   "w2-s1-b3-e0": {sets:[[null,10],[null,10],[null,10],[null,10]], name:"Dips lestés"},
   "w2-s1-b3-e1": {sets:[[null,6],[null,6],[null,6],[null,6]], name:"Tractions lestées"},
+  // Semaine 2 · mercredi 11 nov. · bench (semaine du 1), clean & push press, jambes, rowing + dips
+  "w2-s2-b1":    {sets:[[112.5,5],[127.5,3],[142.5,4]], note:"142,5×4 sur le 1+, pas de joker."},
+  "w2-s2-b2":    {sets:[[60,5],[80,3],[90,3],[100,3],[110,1],[120,1]], note:"Clean + push press depuis le sol à chaque série, arrêt à 120."},
+  "w2-s2-b3-e0": {sets:[[100,6],[100,6],[100,6],[100,6]], name:"Soulevé de terre jambes tendues"},
+  "w2-s2-b3-e1": {sets:[[60,12],[60,12],[60,12],[60,12]], name:"Fentes à la barre", note:"Fentes marchées, barre de 60 kg sur le haut du dos : 6 par jambe (12 reps notées)."},
+  "w2-s2-b4-e0": {sets:[[100,7],[100,7],[100,7],[100,7]], name:"Rowing barre"},
+  "w2-s2-b4-e1": {sets:[[null,8],[null,8],[null,8],[null,8]], name:"Dips (poids du corps)"},
 };
 (function applyCoachLog(){
   const done=new Set(loadJSON("athx_coachlog_done", [])); let ch=false;
