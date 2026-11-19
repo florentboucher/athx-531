@@ -1628,6 +1628,28 @@ const CUSTOM = {
     return {sessions, conds, title:"Semaine à la carte · semaine du 1, on teste lourd",
       focus:"Déjà un cycle dans les jambes : semaine du 1 (75/85/95 %) sur les TM du nouveau cycle, avec des singles « joker » si le 1+ part vite (RPE 9 max, aucun raté). Pas de 5×5 derrière. Fait : squat mardi (180×3 puis 200), bench mercredi (142,5×4) + clean & push press jusqu'à 120 + jambes tendues, fentes, rowing. Reste : soulevé jeudi midi (dos chargé : sans joker), cardio jeudi soir, repos vendredi et samedi, match dimanche."};
   },
+  // Semaine 3 (16-22 nov.) : pas de match ce week-end. Jeudi : bench lourd (5/3/1 semaine du 1 sur TM 155 + jokers pour tester le max).
+  3: (w, p)=>{
+    const P2=Object.assign({}, p, {k:2});
+    const ex=(label, c, note, items)=>({type:"list", label, c, note, ex:items.map(x=>{ const y=subEx(x[0], new Set()); return [y.name, x[1], y.orig]; })});
+    const bp=main531("bench", w, P2, false, {tm:155, name:"Bench Press",
+      after:"Pieds ancrés, omoplates serrées, barre qui touche le bas des pecs, courte pause sur la poitrine. Prends un pareur pour les jokers."});
+    bp.label="Bench Press · 5/3/1 + jokers";
+    bp.meta=[`TM 155 kg (+5 après 142,5 × 4 la semaine dernière) · 75/85/95 % du TM`, `<b>Montée en charge</b> : ${rampStr(155,[[40,5],[50,5],[60,3]])}`];
+    bp.rows=[
+      {txt:bp.rows[0].txt, sub:"Le 147,5 en single ou double rapide, pas de max de reps : on garde l'énergie pour les jokers · récup 2-3'"},
+      {txt:"157,5 → 165 → 170 kg", sub:"Jokers en singles, récup 3-4' · si 165 monte vite (RPE 8 max), tente 172,5 au lieu de 170 · si 165 est déjà à RPE 9, stop · aucun raté"},
+    ];
+    const sessions=[
+      mkS(w,"bench",1,"Séance 1 · Bench lourd","Jeudi · ~1h · test du max, sans te cramer","var(--force)",[
+        WARM(), bp,
+        ex("Haut du corps · dips & tractions lestés","hyp","superset · enchaîne les 2, récup 2' en fin de tour · départ conseillé : dips +20 kg, tractions +5 kg ; 8 reps faciles → +5 kg à la série suivante",[["Dips lestés","4×6-8 · 2 en réserve"],["Tractions lestées","4×6-8 · 2 en réserve"]]),
+        ex("Bras · triceps & biceps","hyp","superset · récup 1' · pump, 1-2 reps en réserve, pas d'échec",[["Extension triceps poulie","3×12-15"],["Curl haltères","3×10-12"]]),
+      ],{day:"Jeudi", planTag:"Muscu · jeudi"}),
+    ];
+    return {sessions, conds:condsFor(w,p), title:"Semaine à la carte · bench lourd jeudi",
+      focus:"Bench en 5/3/1 semaine du 1 sur un TM de 155 (+5), puis des singles « joker » pour aller chercher un gros max sans te cramer : 157,5 → 165 → 170 (172,5 si 165 vole). RPE 9 max, aucun raté. Pas de match ce week-end. Donne-moi tes autres créneaux de la semaine et je complète (squat, soulevé, cardio)."};
+  },
 };
 
 // Plan complet d'une semaine (mis en cache, recalculé si tu changes tes références dans Profil)
