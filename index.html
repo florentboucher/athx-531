@@ -1760,11 +1760,25 @@ function pMetcon(kind){
   return {type:"text", c:"wod", label:`Metcon-X · ${M.t}`, chip:M.chip, html:bullets(M.l.map(L).join("<br>"))+note(M.n)+std+(noSB()&&!/trans|flow/.test(kind)?note(`Pas de sandbag : squats Zercher et carry aux haltères. Pour Paris, entraîne-toi au moins 2 fois avec un vrai sandbag de ${kg(r.sb)} kg (prise au sol, bear hug ou épaule).`):""), ph:"Ton temps ou tes tours, ton découpage, ressenti…"};
 }
 // --- Endurance : 10 tours de 300 m chacun, puis SkiErg jusqu'à 24' ; score = vos 2 distances SkiErg additionnées.
-const PACE = ()=> IS_R ? "Allure 3 km = ton temps du test ÷ 10 par tour de 300 m (avant le test : ce que tu tiendrais sur 3 km à fond, RPE 8)" : "Allure 3 km visée ≈ 4'40/km, soit 1'24 par tour de 300 m (objectif 3 km en ~14')";
+const PACE = ()=> IS_R ? "Allure 3 km = ton temps du test ÷ 10 par tour de 300 m (avant le test : ce que tu tiendrais sur 3 km à fond, RPE 8)" : "Allure 3 km visée ≈ 4'40/km : 1'52 par tour de ta piste de 400 m, 1'24 par tour de 300 m à Paris (objectif 3 km en ~14'). La partie course peut se faire à la piste et le SkiErg en fin de séance à la salle";
 function pEndu(lines, chip, label){
   return {type:"text", c:"cardio", label:label||"Endurance ATHX · course + SkiErg", chip:chip||"~30 min", html:bullets(lines.map(eqTxt).join("<br>"))+note(`${PACE()}. ${exoOK("SkiErg") ? "SkiErg : damper 5-6, allure régulière, poignées ramenées en haut et relâchées doucement." : `Pas de SkiErg dans ta salle : ${eqTxt("SkiErg")} à la place. À Paris, l'épreuve se fait au SkiErg : essaie d'en trouver un 2 ou 3 fois avant (autre salle) pour caler ton allure.`} À Paris, le score = vos 2 distances SkiErg additionnées.`), ph:"Temps, allures, distance SkiErg, ressenti…"};
 }
-const ENDU_P = {
+// Florent : piste de 400 m près de chez lui → fractionné en tours de piste ; les enchaînés course → SkiErg à la salle (tapis 1 %).
+const ENDU_F = {
+  P1:[["Piste : 6 × 400 m (1 tour) à l'allure 3 km, 1'52 le tour · récup 1'30 en marchant","Puis 10' SkiErg en continu au seuil (tu peux dire 3-4 mots), à la salle"],
+      ["Piste : 4 × 800 m (2 tours) à l'allure 3 km, 3'44 les 2 tours · récup 1'30","Puis 3 × 3' SkiErg à l'allure de course · récup 1'"],
+      ["<b>Test Endurance</b> à la salle : 3 km sur tapis (pente 1 %) puis SkiErg jusqu'à 24' (chrono continu)","Course à RPE 8 (pas un sprint), transition rapide, SkiErg régulier puis tout ce qui reste sur les 2 dernières minutes","Envie d'un vrai chrono sur 3 km ? Refais-le un autre jour sur la piste : 7 tours et demi","Note le temps du 3 km et la distance SkiErg dans Suivi › Repères : ce sont tes allures pour la suite"]],
+  P2:[["Piste : 3 × 1200 m (3 tours) à l'allure 3 km visée · récup 2'","Puis 12' SkiErg au seuil, régulier"],
+      ["À la salle, 2 tours : 1,6 km sur tapis à l'allure de course → 5' SkiErg à l'allure visée · récup 3'"],
+      ["20' vélo en zone 2 (respiration par le nez)","Puis 6 × 1' SkiErg vif · récup 1'"]],
+  P3:[["À la salle, enchaîné : 2 km sur tapis à l'allure de course → 8' SkiErg à l'allure visée","Récup 4', puis 4 × 200 m vite (sur la piste : un demi-tour) · récup 1'"],
+      ["À la salle, enchaîné : 3 km sur tapis à l'allure de course → 6' SkiErg à l'allure visée (pas le max)","L'épreuve à ~85 % : vérifie ton allure et ta transition"],
+      null,
+      ["Piste : 5 × 800 m (2 tours) à l'allure de course · récup 1'30","Puis 5' SkiErg à l'allure de course"]],
+  PT:[["À la salle, 2 tours : 1 km sur tapis à l'allure de course → 3' SkiErg à l'allure de course · récup 3'"]],
+};
+const ENDU_R = {
   P1:[["Course : 5 × 600 m à l'allure 3 km · récup 1'30 en marchant","Puis 10' SkiErg en continu au seuil (tu peux dire 3-4 mots)"],
       ["Course : 4 × 800 m à l'allure 3 km · récup 1'30","Puis 3 × 3' SkiErg à l'allure de course · récup 1'"],
       ["<b>Test Endurance</b> : 3 km de course puis SkiErg jusqu'à 24' (chrono continu)","Course à RPE 8 (pas un sprint) : si tu peux, sur une boucle de 300 m (10 tours) en comptant tes tours, comme à Paris","Transition rapide, SkiErg régulier puis tout ce qui reste sur les 2 dernières minutes","Note le temps du 3 km et la distance SkiErg dans Suivi › Repères : ce sont tes allures pour la suite"]],
@@ -1777,6 +1791,7 @@ const ENDU_P = {
       ["4 × 1 km à l'allure de course · récup 1'30","Puis 5' SkiErg à l'allure de course"]],
   PT:[["2 tours : 1 km à l'allure de course → 3' SkiErg à l'allure de course · récup 3'"]],
 };
+const ENDU_P = IS_R ? ENDU_R : ENDU_F;
 // --- Bloc mixte (séance 3) : bench, G2OH, burpees, vélo, rameur, kettlebells
 function pMixed(c, k){
   const d=kg(RX().db);
