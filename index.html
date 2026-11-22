@@ -1693,11 +1693,22 @@ const CUSTOM = {
       mkS(w,"bench",1,"Séance 1 · Bench lourd","Jeudi · ~1h · test du max, sans te cramer","var(--force)",[
         WARM(), bp,
         ex("Haut du corps · dips & tractions lestés","hyp","superset · enchaîne les 2, récup 2' en fin de tour · départ conseillé : dips +20 kg, tractions +5 kg ; 8 reps faciles → +5 kg à la série suivante",[["Dips lestés","4×6-8 · 2 en réserve"],["Tractions lestées","4×6-8 · 2 en réserve"]]),
-        ex("Bras · triceps & biceps","hyp","superset · récup 1' · pump, 1-2 reps en réserve, pas d'échec",[["Extension triceps poulie","3×12-15"],["Curl haltères","3×10-12"]]),
+        ex("Fait à la place des bras · développé militaire & rowing","hyp","superset · enchaînés",[["Développé militaire","× 6 @ 70 kg"],["Rowing barre","× 6 @ 100 kg"]]),
       ],{day:"Jeudi", planTag:"Muscu · jeudi"}),
+      mkS(w,"squat",2,"Séance 2 · Squat ATHX","Dimanche soir · ~1h15 · pas de match ce week-end","var(--force)",[
+        WARM(),
+        {type:"main", c:"force", lift:"squat", vid:vidLink("Back Squat"), label:"Squat · double lourd, format ATHX",
+         meta:["TM 187,5 kg · dernier squat : 180 × 3 puis 200 × 1 (mardi 10 nov.)", "<b>Montée en charge</b> : barre ×10 · 75×5 · 95×5 · 115×3 · 135×2 · 150×1"],
+         rows:[{txt:"2 @ 160 → 2 @ 172,5 → 2 @ 182,5 kg", sub:"Doubles en montée, récup 3' · le dernier à RPE 8 (1 rep en réserve) : ton repère 2RM pour Paris · règle ATHX : tu peux souffler debout entre les 2 reps, barre sur le dos, puis attends le « OK » avant de reposer"},
+               {txt:"3 × 4 @ 150 kg", sub:"80 % du TM · volume, récup 2'"}],
+         after:note("Si 182,5 monte vite (RPE 7), tente 2 @ 190, sans aller à l'échec. Semaine prochaine : séance 1 (squat) au moins 48 h après ce soir."), ph:"Charges × reps, vitesse, ressenti…"},
+        ex("Muscu · bas du corps","hyp","superset · récup 1'30 en fin de tour",[["Hip thrust","3×8-10 · 2 en réserve"],["Fentes arrière haltères","3×8-10/côté · 2 en réserve"]]),
+        {type:"text", c:"wod", label:"Metcon · jambes ATHX", chip:"~12 min", html:bullets(sbTxt("3 tours à RPE 7 : 15 cal rameur · 12 sandbag squats 50 kg · 30 m sandbag carry 50 kg · 12 burpees over bench<br>Récup 1'30 entre les tours : même temps à chaque tour"))+(noSB()?note(SB_NOTE):""), ph:"Temps par tour, ressenti…"},
+        ex("Finish abdos","prev","enchaîne les 2 · 30'' entre les tours",[["Roue abdominale","3×8-12"],["Gainage latéral","3×30''/côté"]]),
+      ],{day:"Dimanche", planTag:"Muscu · dimanche soir"}),
     ];
     return {sessions, conds:condsFor(w,p), title:"Semaine à la carte · bench lourd jeudi",
-      focus:"Bench en 5/3/1 semaine du 1 sur un TM de 155 (+5), puis des singles « joker » pour aller chercher un gros max sans te cramer : 157,5 → 165 → 170 (172,5 si 165 vole). RPE 9 max, aucun raté. Pas de match ce week-end. Donne-moi tes autres créneaux de la semaine et je complète (squat, soulevé, cardio)."};
+      focus:"Fait jeudi : bench 120 × 5, 135 × 3, 150 × 1, 160 × 1 facile, 170 raté ; développé militaire 70 × 6 et rowing 100 × 6 enchaînés ; dips et tractions 3 séries au max. Dimanche soir : squat orienté ATHX (doubles en montée jusqu'à un 2RM à RPE 8), muscu bas du corps, metcon jambes. La prépa Paris démarre lundi."};
   },
 };
 
@@ -2083,6 +2094,12 @@ const COACH_LOG = {
   "w2-s2-b3-e1": {sets:[[60,12],[60,12],[60,12],[60,12]], name:"Fentes à la barre", note:"Fentes marchées, barre de 60 kg sur le haut du dos : 6 par jambe (12 reps notées)."},
   "w2-s2-b4-e0": {sets:[[100,7],[100,7],[100,7],[100,7]], name:"Rowing barre"},
   "w2-s2-b4-e1": {sets:[[null,8],[null,8],[null,8],[null,8]], name:"Dips (poids du corps)"},
+  // Semaine 3 · jeudi 19 nov. · bench lourd (TM 155), militaire + rowing, dips + tractions
+  "w3-bench-b1":    {sets:[[120,5],[135,3],[150,1],[160,1]], note:"160 × 1 facile, 170 raté."},
+  "w3-bench-b2-e0": {note:"3 séries au max de reps."},
+  "w3-bench-b2-e1": {note:"3 séries au max de reps."},
+  "w3-bench-b3-e0": {note:"70 kg × 6, enchaîné avec le rowing."},
+  "w3-bench-b3-e1": {note:"100 kg × 6, enchaîné avec le développé militaire."},
 };
 (function applyCoachLog(){
   if(IS_R) return;
@@ -2324,6 +2341,7 @@ function weekBrief(w, P){
   }
   const cons=[];
   if(prev && prev.type==="match") cons.push("Début de semaine = lendemain de match : repos.");
+  if(!IS_R && w===4) cons.push("Squat dimanche soir (22 nov.) : fais la séance 1 au moins 48 h après, et commence la semaine par la séance 2 ou 3.");
   if(p.code==="PC"){} else if(we && we.type==="match") cons.push(`<b>Match ${we.date}</b> vs ${we.opp} (${we.home?"domicile":"extérieur"}) → squat et soulevé au moins 48 h avant, rien de lourd la veille.` + (w===23?" Dernier match de la saison.":""));
   else if(w<=23 && we && we.type==="bye") cons.push(/^P/.test(p.code) ? "Pas de match ce week-end." : "Pas de match ce week-end : WOD et course en option.");
   if(!IS_R && w>=7 && w<=9) cons.push("Pas de rugby pendant la trêve : profites-en pour charger.");
