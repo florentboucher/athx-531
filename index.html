@@ -712,6 +712,14 @@
         <div class="fieldwrap"><input id="p_jerk" type="number" inputmode="decimal" placeholder="140"><span class="unit">kg</span></div>
       </div>
       <div class="row">
+        <label for="p_sn">Snatch · 1RM<span class="hint">Power snatch · objectif 100</span></label>
+        <div class="fieldwrap"><input id="p_sn" type="number" inputmode="decimal" placeholder="90"><span class="unit">kg</span></div>
+      </div>
+      <div class="row">
+        <label for="p_cj">Clean & jerk · 1RM<span class="hint">Power clean & jerk · objectif 140</span></label>
+        <div class="fieldwrap"><input id="p_cj" type="number" inputmode="decimal" placeholder="130"><span class="unit">kg</span></div>
+      </div>
+      <div class="row">
         <label for="p_adj_squat">Ajustement TM squat<span class="hint">+ ou − kg sur tout le programme</span></label>
         <div class="fieldwrap"><input id="p_adj_squat" type="number" step="2.5" placeholder="0"><span class="unit">kg</span></div>
       </div>
@@ -1762,7 +1770,7 @@ function pMetcon(kind){
   const share=f=>[`${f(P.row)} cal rameur`,`${f(P.g2)} DB G2OH ${d} kg, bras alternés`,`${f(P.be)} DB bench 2 × ${d} kg`,`${f(P.sq)} ${S.sq}`,`${f===hf?15:30} m ${S.car}`,`${f(P.bu)} burpees over bench`,`${f(P.row)} cal rameur`];
   const RELAY=`Par séries de 10 à 15 reps (8 à 12 cal) avec 20'' de pause entre les séries : c'est le temps des relais avec ${PARTNER}.`;
   const M={
-    emom:  {t:"EMOM 25' · les 5 postes", chip:"25'", l:[`Minute 1 : ${cal(15)} cal rameur`,`Minute 2 : 10 DB G2OH ${d} kg, bras alternés`,`Minute 3 : 10 DB bench 2 × ${d} kg`,`Minute 4 : 8 ${S.sq} + 10 m ${S.car}`,`Minute 5 : 10 burpees over bench`], n:"5 tours. Il doit te rester ~15'' à chaque minute ; sinon retire 2 reps à ce poste."},
+    emom:  {t:`EMOM ${IS_R?25:20}' · les 5 postes`, chip:`${IS_R?25:20}'`, l:[`Minute 1 : ${cal(15)} cal rameur`,`Minute 2 : 10 DB G2OH ${d} kg, bras alternés`,`Minute 3 : 10 DB bench 2 × ${d} kg`,`Minute 4 : 8 ${S.sq} + 10 m ${S.car}`,`Minute 5 : 10 burpees over bench`], n:`${IS_R?5:4} tours. Il doit te rester ~15'' à chaque minute ; sinon retire 2 reps à ce poste.`},
     amrap: {t:"AMRAP 20'", chip:"20'", l:[`${cal(15)} cal rameur · 10 DB G2OH ${d} kg · 10 DB bench 2 × ${d} kg`,`10 ${S.sq} · 10 m ${S.car} · 10 burpees over bench`], n:"Même temps à chaque tour dès le premier. Note tours + reps."},
     full:  {t:"Ta part du Metcon-X duo · repère", chip:"~15 min", l:share(x=>x), n:`${RELAY} Ton temps = ton repère (Suivi › Repères, Metcon-X).`},
     race:  {t:"Ta part du Metcon-X duo · allure de course", chip:"~15 min", l:share(x=>x), n:`${RELAY} À l'allure de course : vise ton repère − 1'. Pas de sprint avant le dernier rameur.`},
@@ -1935,12 +1943,15 @@ function hyp4(c,k){ const n=Math.min(3, nRounds(c,k));
     {type:"list", label:"Finisher · biceps & triceps", c:"hyp", note:"superset · récup 45'' · pump, jusqu'à 1 rep de l'échec", ex:mkEx([["Curl haltères",`${n}×12-15`],["Extension triceps poulie",`${n}×12-15`]])},
   ]; }
 function bonus4(w, c, k){
-  const easy=(c==="P2"&&k===2)||c==="PT", n=easy?2:3, jx=({P1:70,P2:75,P3:80,PT:70}[c]||70), jl=kg(r25(jerkRef()*jx/100));
+  const easy=(c==="P2"&&k===2)||c==="PT", n=easy?2:3;
+  const SN=profNum("p_sn")||90, CJ=profNum("p_cj")||130, q=(ref,x)=>kg(r25(ref*x/100));
+  const x = easy ? 70 : ({P1:75, P2:80, P3:85}[c]||75), jx = easy ? 70 : ({P1:75, P2:80, P3:85}[c]||75), jl=kg(r25(jerkRef()*jx/100));
+  const heavy = c==="P3" && !easy;
   const halt = w%2
-    ? [["Arraché (power snatch)",`${easy?4:6}×2 · ~50-60 kg, technique : barre proche, extension complète`],["Jerk depuis le rack",`${easy?3:5}×2 · ${jl} kg (${jx} % de ta réf. S2OH)`]]
-    : [["Clean & jerk",`${easy?4:6}×1 · ~80-90 kg, technique : chaque rep propre`],["Jerk depuis le rack",`${easy?3:4}×2 · ${jl} kg (${jx} % de ta réf. S2OH)`]];
+    ? [["Arraché (power snatch)",`${easy?"4×2":heavy?"5×1":"5×2"} · ${q(SN,x)} kg (${x} % de ton 1RM de ${kg(SN)})${heavy?` · puis 2 singles à ${q(SN,90)}-${q(SN,95)} kg si tout est propre`:""}`],["Jerk depuis le rack",`${easy?3:4}×2 · ${jl} kg (${jx} % de ta réf. S2OH)`]]
+    : [["Clean & jerk",`${easy?4:5}×1 · ${q(CJ,x)} kg (${x} % de ton 1RM de ${kg(CJ)})${heavy?` · puis 2 singles à ${q(CJ,90)}-${q(CJ,95)} kg si tout est propre`:""}`],["Jerk depuis le rack",`${easy?3:4}×2 · ${jl} kg (${jx} % de ta réf. S2OH)`]];
   return [
-    {type:"list", label:`Haltéro · technique (semaine ${w%2?"snatch":"clean & jerk"})`, c:"tech", note:"Une semaine sur deux : clean & jerk, puis snatch. Le jerk revient chaque semaine : c'est ton style au S2OH de Paris. Récup 1'30, rien à l'échec.", ex:mkEx(halt)},
+    {type:"list", label:`Haltéro (semaine ${w%2?"snatch":"clean & jerk"})`, c:"tech", note:`Une semaine sur deux : clean & jerk, puis snatch. Objectifs : snatch 100, clean & jerk 140. Le jerk revient chaque semaine : c'est ton style au S2OH de Paris. Récup 1'30 à 2', aucun raté.`, ex:mkEx(halt)},
     {type:"list", label:"Dips & cou · pilier", c:"hyp", note:"circuit · enchaîne les 3, récup 1'30", ex:mkEx([["Dips lestés",`${n}×8-10 · 2 en réserve`],["Shrug",`${n}×12 · lourd, 1'' en haut`],["Renforcement cervical",`${n}×15 · 4 directions`]])},
     {type:"list", label:"Finisher · épaules & bras", c:"hyp", note:"circuit · récup 45'' · pump, jusqu'à 1 rep de l'échec · séance bonus : garde ce qui te plaît selon ton temps", ex:mkEx([["Élévations latérales + frontales",`${n}×12 chacune`],["Curl haltères",`${n}×12-15`],["Extension triceps poulie",`${n}×12-15`]])},
   ];
@@ -1966,17 +1977,19 @@ function fBench(w, p){ const wave=waveOf(p), trv=p.code==="P2";
 const TREVE_ENG = [["10' vélo en zone 2","5 × (500 m SkiErg à l'allure de course + 250 m rameur) · récup 1'30","10' vélo en zone 2"],
   ["3 × 8' : 3' SkiErg au seuil → 3' rameur au seuil → 2' vélo · récup 2'"]];
 function sessParisF(w, p){
-  const c=p.code, k=p.k, test=c==="P1"&&k===2, light=(c==="P2"&&k===2)||c==="PT", dur=light?"~1h":"~1h15";
+  const c=p.code, k=p.k, test=c==="P1"&&k===2, light=(c==="P2"&&k===2)||c==="PT", big=c==="P2"&&!light;
+  // Durées estimées : mobilité 15' + 5/3/1 ~15' + partie travail (circuit de 3 tours ~18', 4 tours ~24').
+  const dur1 = light ? "~45 min" : big ? "~1h05" : "~55 min", dur3 = light ? "~50 min" : "~1h05", dur4 = light ? "~55 min" : "~1h10";
   const s3w = {P1:["emom","amrap","full"], P2:["split","heavy","flow"], P3:["parts","race",null,"half"], PT:["half"]}[c][c==="PT"?0:k];
   const ski = light ? null : {type:"text", c:"cardio", label:"SkiErg · allure de l'épreuve Endurance", chip:c==="P1"?"6'":c==="P2"?"8'":"10'",
     html:bullets(`${c==="P1"?6:c==="P2"?8:10}' en continu à l'allure visée de Paris, juste après le WOD (comme à Paris, le SkiErg arrive fatigué)<br>Damper 5-6, régulier : note ta moyenne au 500 m`), ph:"Distance, moyenne /500 m…"};
   const wod = pMetcon(s3w);
   const wn=WAVE_NAME[waveOf(p)];
   const out=[
-    mkS(w,"s1",1,"Séance 1 · Squat + circuit full body", `${dur} · squat 5/3/1, ${wn} · rugby le soir : cardio léger`, "var(--force)", [mob("bas"), f531("squat",w,p), circ1(c,k)], {planTag:"Squat + circuit"}),
-    mkS(w,"s2",2,"Séance 2 · Push press + circuit", `${dur} · push press 5/3/1 · jambes, tirage, rameur`, "var(--force)", [mob("haut"), f531("pushpress",w,p), circ2(c,k)], {planTag:"Push press + circuit"}),
-    mkS(w,"s3",3,"Séance 3 · Soulevé + WOD ATHX", `${dur} · soulevé 5/3/1 · jour sans rugby${test?" · ta part du Metcon-X chronométrée":""} · footing 30' dans la journée`, "var(--wod)", [mob("bas"), f531("deadlift",w,p), wod, ski].filter(Boolean), {planTag:"Soulevé + WOD"}),
-    mkS(w,"s4",4,"Séance 4 · Bench + haltéro (bonus)", `${dur} · bench 5/3/1, ${w%2?"snatch":"clean & jerk"} en technique, dips, cou, épaules, bras · garde ce qui te plaît`, "var(--force)",
+    mkS(w,"s1",1,"Séance 1 · Squat + circuit full body", `${dur1} · squat 5/3/1, ${wn} · rugby le soir : cardio léger`, "var(--force)", [mob("bas"), f531("squat",w,p), circ1(c,k)], {planTag:"Squat + circuit"}),
+    mkS(w,"s2",2,"Séance 2 · Push press + circuit", `${dur1} · push press 5/3/1 · jambes, tirage, rameur`, "var(--force)", [mob("haut"), f531("pushpress",w,p), circ2(c,k)], {planTag:"Push press + circuit"}),
+    mkS(w,"s3",3,"Séance 3 · Soulevé + WOD ATHX", `${dur3} · soulevé 5/3/1 · jour sans rugby${test?" · ta part du Metcon-X chronométrée":""} · footing 30' dans la journée`, "var(--wod)", [mob("bas"), f531("deadlift",w,p), wod, ski].filter(Boolean), {planTag:"Soulevé + WOD"}),
+    mkS(w,"s4",4,"Séance 4 · Bench + haltéro (bonus)", `${dur4} · bench 5/3/1, ${w%2?"snatch":"clean & jerk"}, jerk, dips, cou, épaules, bras · pressé : saute le finisher`, "var(--force)",
       [mob("haut"), fBench(w,p), ...bonus4(w,c,k)], {planTag:"Bench + haltéro"}),
   ];
   if(c==="P2" && k<2) out.push(mkS(w,"s5",5,"Séance 5 · Moteur (bonus)", "~45 min · trêve, si tu as l'énergie", "var(--cardio)", [WARM(), {type:"text", c:"cardio", label:"Moteur · ergos", chip:"~35 min", html:bullets(eqTxt(TREVE_ENG[k].join("<br>")))+note("SkiErg : damper 5-6 · rameur : damper 4-5. Seuil = effort que tu tiens 20' en parlant par bribes."), ph:"Distances, moyennes /500 m, ressenti…"}], {bonus:true, planTag:"Bonus · trêve"}));
@@ -2784,7 +2797,7 @@ function moveItemByKey(key,toDay,beforeKey){
 }
 
 // ---------- PROFIL ----------
-const PF=["p_weight","p_bf","p_act","p_jerk","p_adj_squat","p_adj_pushpress","p_adj_deadlift","p_goal_s2oh","p_goal_squat","p_goal_dl","r_max_squat","r_max_deadlift","r_max_s2oh"];
+const PF=["p_weight","p_bf","p_act","p_jerk","p_sn","p_cj","p_adj_squat","p_adj_pushpress","p_adj_deadlift","p_goal_s2oh","p_goal_squat","p_goal_dl","r_max_squat","r_max_deadlift","r_max_s2oh"];
 function numEl(id){ const el=document.getElementById(id); if(!el) return null; const v=parseFloat((el.value||"").toString().replace(",",".")); return isFinite(v)?v:null; }
 function computeMeta(){
   const w=numEl("p_weight"), bf=numEl("p_bf"), act=numEl("p_act")||1.375;
@@ -2864,7 +2877,7 @@ function renderProfile(){
 function bindProfile(){
   PF.forEach(id=>{
     const el=document.getElementById(id);
-    const h=()=>{ PROFILE[id]=el.value; saveProfile(); if(id.indexOf("p_adj_")===0||id.indexOf("p_goal_")===0||id==="p_jerk"||id.indexOf("r_")===0) PLAN_CACHE={}; renderProfile(); };
+    const h=()=>{ PROFILE[id]=el.value; saveProfile(); if(id.indexOf("p_adj_")===0||id.indexOf("p_goal_")===0||id==="p_jerk"||id==="p_sn"||id==="p_cj"||id.indexOf("r_")===0) PLAN_CACHE={}; renderProfile(); };
     el.addEventListener("input",h); el.addEventListener("change",h);
   });
 }
