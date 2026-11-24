@@ -1711,9 +1711,9 @@ const CUSTOM = {
       ex("Haut du corps","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé couché haltères","3×10 · 2 × 36 à 40 kg, 2 en réserve"],["Tractions lestées","3×6-8 · +5 à 10 kg, 2 en réserve"]]),
       {type:"text", c:"cardio", label:"Cardio · SkiErg", chip:"~20 min", html:bullets("4 × 4' à l'allure de course (RPE 7) · récup 1'30<br>Damper 5-6, régulier du début à la fin : note ta moyenne au 500 m, c'est ton allure de l'épreuve Endurance"), ph:"Moyenne /500 m, distance, ressenti…"},
     ],{day:"Mardi", planTag:"Muscu · mardi"});
-    const sessions=[today, base[1], base[2]];
-    return {sessions, conds:condsFor(w,p), title:"Prépa Paris · semaine 1/3 · squat en 5/3/1 mardi",
-      focus:"Mardi : squat en 5/3/1 (semaine des 5), jambes tendues + fentes, développé couché haltères + tractions, SkiErg. Ensuite la séance 2 (S2OH + Metcon-X) et la séance 3 (soulevé + moteur mixte), soulevé au plus tard jeudi : match dimanche à Nuiton."};
+    const sessions=[today, base[1], base[2], base[3]];
+    return {sessions, conds:condsFor(w,p), title:"Prépa Paris · semaine 1/3 · 4 séances, la même structure chaque semaine",
+      focus:"Fait mardi : squat 122,5 × 5, 140 × 5, 160 × 8 (e1RM ~203), puis 3 tours de jambes tendues 110 × 8, fentes 60 × 8/jambe, 6 tractions, 12 développés haltères à 22,5 (pas le temps pour le SkiErg). À partir de maintenant, 4 séances : squat + circuit, push press + circuit, soulevé + WOD ATHX, bench + hypertrophie, chacune après 15' de mobilité. Soulevé au plus tard jeudi : match dimanche à Nuiton."};
   },
 };
 
@@ -1913,10 +1913,53 @@ function f531(lift, w, p){
   return main531(lift, w, Object.assign({}, p, {k:wave}), false, {reserve: trv ? "1 en réserve (trêve, pas de rugby)" : "2 en réserve (rugby)",
     joker: wave===2 && lift!=="deadlift" ? [100,105] : null, after: notes[lift]||""});
 }
+// ---------- Florent · 4 séances fixes chaque semaine (depuis le 24 nov.) ----------
+// 15' de mobilité / prévention (bas ou haut du corps selon la séance) → un mouvement en 5/3/1 → la partie « travail ».
+// S1 squat + circuit full body léger (rugby le soir) · S2 push press + circuit (jambes, tirage, rameur) · S3 soulevé + WOD ATHX (jour sans rugby)
+// · S4 bench + hypertrophie + finisher bras. Optimiser le temps : ~1h15 par séance.
+const MOB_BAS = "2 tours, sans te presser :<br>Hanches 90/90 · 1'<br>Étirement du psoas (couch stretch) · 45''/côté<br>Cheville genou au mur · 10/côté<br>Copenhague (adducteurs) · 20''/côté<br>Pont fessier une jambe · 10/côté<br>Puis 2-3 séries à vide du mouvement du jour · ton genou : ta routine perso";
+const MOB_HAUT = "2 tours, sans te presser :<br>Rotation thoracique (open book) · 10/côté<br>Dislocations au bâton ou à l'élastique · 15<br>Rotations externes à l'élastique · 15/côté<br>Face pull à l'élastique · 15<br>Y-T-W allongé · 8 de chaque<br>Cou, 4 directions · 10<br>Puis 2-3 séries à vide du mouvement du jour";
+function mob(kind){ return {type:"warm", c:"prev", label:`Mobilité & prévention · ${kind==="bas"?"bas":"haut"} du corps`, chip:"15 min", bul:kind==="bas"?MOB_BAS:MOB_HAUT, ph:"Optionnel : zones raides, douleurs…", optional:true}; }
+function nRounds(c,k){ return (c==="P2"&&k===2)||c==="PT" ? 2 : c==="P2" ? 4 : 3; }
+function circ1(c,k){ const n=nRounds(c,k);
+  return {type:"list", label:"Circuit full body · rugby ce soir", c:"hyp", note:`${n} tours · enchaîne les 4, récup 1'30 en fin de tour · RPE 7 : le squat a chargé les quadriceps, ici chaîne postérieure, haut du corps et un peu de SkiErg, sans te vider avant le rugby`,
+    ex:mkEx([["Soulevé de terre jambes tendues",`${n}×8 · ~110 kg, 2 en réserve`],["Développé couché haltères",`${n}×10-12 · 2 × 25 kg, 2 en réserve`],["Tractions lestées",`${n}×6-8 · lest dès que tu passes 8`],["SkiErg",`${n} × 250 m · RPE 7`]])}; }
+function circ2(c,k){ const n=nRounds(c,k), cl=(c==="P2"&&k===2)||c==="PT" ? 10 : c==="P1" ? 12 : 15;
+  return {type:"list", label:"Circuit · jambes, tirage, rameur", c:"hyp", note:`${n} tours · enchaîne les 4, récup 1'30 en fin de tour · le push press a travaillé les épaules : ici 2 exercices de jambes, un tirage et du rameur`,
+    ex:mkEx([["Fentes à la barre",`${n}×8/côté · ~60 kg, 2 en réserve`],["Hip thrust",`${n}×10 · 2 en réserve`],["Rowing barre",`${n}×8-10 · ~90 kg, 2 en réserve`],["Rameur",`${n} × ${cl} cal · RPE 7`]])}; }
+function hyp4(c,k){ const n=Math.min(3, nRounds(c,k));
+  return [
+    {type:"list", label:"Hypertrophie · superset A", c:"hyp", note:"enchaîne les 2, récup 1'30", ex:mkEx([["Développé incliné haltères",`${n}×10-12 · 2 en réserve`],["Rowing haltères sur banc incliné",`${n}×10-12 · 2 en réserve`]])},
+    {type:"list", label:"Hypertrophie · superset B", c:"hyp", note:"enchaîne les 2, récup 1'30", ex:mkEx([["Dips lestés",`${n}×8-10 · 2 en réserve`],["Élévations latérales haltères",`${n}×12-15 · 1-2 en réserve`]])},
+    {type:"list", label:"Finisher · biceps & triceps", c:"hyp", note:"superset · récup 45'' · pump, jusqu'à 1 rep de l'échec", ex:mkEx([["Curl haltères",`${n}×12-15`],["Extension triceps poulie",`${n}×12-15`]])},
+  ]; }
+// Bench en 5/3/1 : TM 155 (160 × 1 facile le 19 nov.), +2,5 kg par cycle.
+function benchTM(p){ return 155 + ({P2:2.5, P3:5, PT:5, PC:5}[p.code]||0); }
+function fBench(w, p){ const wave=waveOf(p), trv=p.code==="P2";
+  return main531("bench", w, Object.assign({}, p, {k:wave}), false, {tm:benchTM(p), name:"Bench Press", reserve: trv ? "1 en réserve" : "1 à 2 en réserve",
+    joker: wave===2 ? [100,105] : null, after:"Pieds ancrés, omoplates serrées, barre qui touche le bas des pecs. Pareur pour les jokers."}); }
+const TREVE_ENG = [["10' vélo en zone 2","5 × (400 m sur tapis à 11,5 km/h + 250 m SkiErg) · récup 1'30","10' vélo en zone 2"],
+  ["3 × 8' : 2' sur tapis à 11,2 km/h → 3' SkiErg au seuil → 3' rameur au seuil · récup 2'"]];
+function sessParisF(w, p){
+  const c=p.code, k=p.k, test=c==="P1"&&k===2, light=(c==="P2"&&k===2)||c==="PT", dur=light?"~1h":"~1h15";
+  const s3w = {P1:["emom","E:P1:1","full"], P2:["split","E:P2:1","flow"], P3:["E:P3:0","race",null,"E:P3:3"], PT:["half"]}[c][c==="PT"?0:k];
+  const wod = s3w.indexOf("E:")===0 ? (a=>pEndu(ENDU_F[a[1]][+a[2]], "~30 min", "WOD ATHX · course + SkiErg"))(s3w.split(":")) : pMetcon(s3w);
+  const wn=WAVE_NAME[waveOf(p)];
+  const out=[
+    mkS(w,"s1",1,"Séance 1 · Squat + circuit full body", `${dur} · squat 5/3/1, ${wn} · rugby le soir : cardio léger`, "var(--force)", [mob("bas"), f531("squat",w,p), circ1(c,k)], {planTag:"Squat + circuit"}),
+    mkS(w,"s2",2,"Séance 2 · Push press + circuit", `${dur} · push press 5/3/1 · jambes, tirage, rameur`, "var(--force)", [mob("haut"), f531("pushpress",w,p), circ2(c,k)], {planTag:"Push press + circuit"}),
+    mkS(w,"s3",3,"Séance 3 · Soulevé + WOD ATHX", `${dur} · soulevé 5/3/1 · jour sans rugby${test?" · ta part du Metcon-X chronométrée":""}`, "var(--wod)", [mob("bas"), f531("deadlift",w,p), wod], {planTag:"Soulevé + WOD"}),
+    mkS(w,"s4",4,"Séance 4 · Bench + hypertrophie", `${dur} · bench 5/3/1 · ${test?"test Endurance":"hypertrophie et finisher bras"}`, "var(--force)",
+      test ? [mob("haut"), fBench(w,p), pEndu(ENDU_F.P1[2], "24'", "Test Endurance ATHX")] : [mob("haut"), fBench(w,p), ...hyp4(c,k)], {planTag:"Bench + hypertrophie"}),
+  ];
+  if(c==="P2" && k<2) out.push(mkS(w,"s5",5,"Séance 5 · Moteur (bonus)", "~45 min · trêve, si tu as l'énergie", "var(--cardio)", [WARM(), pEndu(TREVE_ENG[k], "~35 min", "Moteur · course + ergos")], {bonus:true, planTag:"Bonus · trêve"}));
+  return out;
+}
 function sessParis(w, p){
   const c=p.code, k=p.k;
   if(c==="P3" && k===2) return sessParisSim(w, p);
   if(c==="PC") return sessParisComp(w, p);
+  if(!IS_R) return sessParisF(w, p);
   const light=(c==="P2"&&k===2)||c==="PT", dur=c==="PT"?"~1h":"~1h30", test=c==="P1"&&k===2;
   const mA = c==="P1" ? ["emom","amrap","full"][k] : c==="P2" ? ["split","heavy","flow"][k] : c==="P3" ? ["parts","race",null,"half"][k] : "half";
   const out=[
@@ -2119,6 +2162,13 @@ const COACH_LOG = {
   "w3-bench-b2-e1": {note:"3 séries au max de reps."},
   "w3-bench-b3-e0": {note:"70 kg × 6, enchaîné avec le rowing."},
   "w3-bench-b3-e1": {note:"100 kg × 6, enchaîné avec le développé militaire."},
+  // Semaine 4 · mardi 24 nov. · squat 5/3/1 (semaine des 5) + circuit de 4 exercices × 3 tours
+  "w4-s1-b1":    {sets:[[122.5,5],[140,5],[160,8]], note:"160 × 8 sur le set +."},
+  "w4-s1-b2-e0": {sets:[[110,8],[110,8],[110,8]], name:"Soulevé de terre jambes tendues", note:"En circuit avec fentes, tractions et développé haltères."},
+  "w4-s1-b2-e1": {sets:[[60,16],[60,16],[60,16]], name:"Fentes à la barre", note:"Barre de 60 kg sur les épaules, 8 par jambe (16 reps notées)."},
+  "w4-s1-b3-e0": {sets:[[22.5,12],[22.5,12],[22.5,12]], name:"Développé couché haltères", note:"Haltères de 22,5 kg."},
+  "w4-s1-b3-e1": {sets:[[null,6],[null,6],[null,6]], name:"Tractions lestées", note:"Au poids du corps."},
+  "w4-s1-b4":    {note:"Pas fait (plus le temps)."},
 };
 (function applyCoachLog(){
   if(IS_R) return;
@@ -2295,26 +2345,26 @@ function weekBrief(w, P){
     head=`${p.name} · semaine à la carte`; title=P.custom.title; focus=P.custom.focus;
   } else if(p.code==="P1"){
     head=`${p.name} · bloc 1/3`; title=`Semaine ${k+1}/3 · ${["on installe","on monte","tests et repères"][k]}`;
-    focus=!IS_R ? [`Début de la prépa ATHX Paris (13 février, duo ${duo}). Force en 5/3/1, semaine des 5, sur squat, push press et soulevé (2 reps en réserve sur les sets +), puis muscu, puis cardio ou Metcon-X : c'est là que tu gagneras à Paris.`,
-      "Semaine des 3. Au Metcon-X, garde le même temps à chaque série : c'est l'allure qui compte.",
-      "Semaine 5/3/1 (jokers possibles si le 1+ part vite) et semaine des repères : test Endurance juste après le squat (à Paris aussi, l'Endurance arrive après la Force), ta part du Metcon-X chronométrée en séance 2. Note tout dans Suivi › Repères."][k] : [`Début de la prépa ATHX Paris (13 février, duo ${duo}). 3 séances de 1h30 : squat + Endurance, S2OH + Metcon-X, soulevé + moteur mixte. Charges modérées (2-3 reps en réserve) : on installe les formats.`,
+    focus=!IS_R ? [`Début de la prépa ATHX Paris (13 février, duo ${duo}). 4 séances, la même structure chaque semaine : 15' de mobilité, un mouvement en 5/3/1 (squat, push press, soulevé, bench), puis un circuit, un WOD ATHX ou de l'hypertrophie. Ici, semaine des 5 (2 reps en réserve sur les sets +).`,
+      "Semaine des 3. Le WOD de la séance 3 est orienté Endurance : course sur tapis + SkiErg.",
+      "Semaine 5/3/1 (jokers possibles si le 1+ part vite) et semaine des repères : ta part du Metcon-X chronométrée en séance 3, test Endurance après le bench en séance 4. Note tout dans Suivi › Repères."][k] : [`Début de la prépa ATHX Paris (13 février, duo ${duo}). 3 séances de 1h30 : squat + Endurance, S2OH + Metcon-X, soulevé + moteur mixte. Charges modérées (2-3 reps en réserve) : on installe les formats.`,
       "Même structure, un peu plus lourd. Au Metcon-X, garde le même temps à chaque tour : c'est l'allure qui compte.",
       "Semaine des repères : test Endurance (3 km + SkiErg) en séance 1, Metcon-X complet chronométré en séance 2, double lourd au squat et 2 triples au soulevé. Note tout dans Suivi › Repères : les allures de la suite en dépendent."][k];
   } else if(p.code==="P2"){
     head=`${p.name} · bloc 2/3`; title=`Semaine ${k+1}/3 · ${["volume","intensité","allégée (fêtes)"][k]}`;
     focus = IS_R ? ["Plus de volume sur les postes du Metcon-X et plus lourd en force (3 reps au squat et au soulevé).","Doubles au squat, format compétition au soulevé, Metcon-X lourd : la semaine la plus dure de la prépa.","Semaine allégée : moins de séries, rien de dur. Tu repars fraîche pour le bloc spécifique."][k]
-      : ["Trêve, sans rugby : nouveau cycle 5/3/1 (TM +5 kg, +2,5 kg au push press), 1 rep en réserve sur les sets +. 4 séances (et une 5e en bonus), plus de volume sur le Metcon-X.","Semaine des 3 et Metcon-X lourd : la semaine la plus dure de la prépa. Séance 5 en bonus si tu as l'énergie.","Décharge pendant les fêtes : 40/50/60 %, séances courtes. Le rugby reprend la semaine prochaine."][k] || ["Trêve, sans rugby : 4 séances (et une 5e en bonus). Plus de volume sur les postes du Metcon-X, ton point faible, et force à 3 reps.","Doubles au squat, format compétition au soulevé, Metcon-X lourd : la semaine la plus dure de la prépa. Séance 5 en bonus si tu as l'énergie.","Semaine allégée pendant les fêtes : 4 séances courtes, rien de dur. Le rugby reprend la semaine prochaine."][k];
+      : ["Trêve, sans rugby : nouveau cycle 5/3/1 (TM +5 kg, +2,5 kg au push press et au bench), 1 rep en réserve sur les sets +, circuits à 4 tours. Séance 5 en bonus.","Semaine des 3, circuits à 4 tours, WOD Endurance enchaîné : la semaine la plus dure de la prépa. Séance 5 en bonus si tu as l'énergie.","Décharge pendant les fêtes : 40/50/60 %, circuits à 2 tours, WOD technique. Le rugby reprend la semaine prochaine."][k] || ["Trêve, sans rugby : 4 séances (et une 5e en bonus). Plus de volume sur les postes du Metcon-X, ton point faible, et force à 3 reps.","Doubles au squat, format compétition au soulevé, Metcon-X lourd : la semaine la plus dure de la prépa. Séance 5 en bonus si tu as l'énergie.","Semaine allégée pendant les fêtes : 4 séances courtes, rien de dur. Le rugby reprend la semaine prochaine."][k];
   } else if(p.code==="P3"){
     head=`${p.name} · bloc 3/3`; title=`Semaine ${k+1}/4 · ${["allure de course","formats compétition","simulation complète","dernière grosse semaine"][k]}`;
-    focus=!IS_R && k!==2 ? ["Nouveau cycle 5/3/1, semaine des 5. Tout le reste à l'allure du jour J : Endurance enchaînée, ta part du Metcon-X en 3 morceaux.",
-      "Semaine des 3. Endurance à ~85 %, ta part du Metcon-X à l'allure de course.", "",
+    focus=!IS_R && k!==2 ? ["Nouveau cycle 5/3/1, semaine des 5. WOD de la séance 3 : course + SkiErg enchaînés à l'allure de Paris.",
+      "Semaine des 3. WOD de la séance 3 : ta part du Metcon-X à l'allure de course.", "",
       "Semaine 5/3/1 : tes derniers gros sets avant Paris. On fixe tes tentatives de Paris avec ces résultats."][k] : ["Tout se fait à l'allure du jour J : Endurance enchaînée, Metcon-X en 3 parties, triples au soulevé dans le format ATHX.",
       "Fenêtres chronométrées au S2OH et au squat comme à Paris, épreuve Endurance à ~85 %, Metcon-X complet à l'allure de course.",
       `Samedi : simulation des 3 épreuves dans l'ordre, à ~90 %, ${duo} si possible. Lundi-mardi rappel de force, mercredi moteur court, jeudi-vendredi repos.`,
       "Dernière semaine chargée, volumes réduits : on garde l'intensité, on accumule moins de fatigue."][k];
   } else if(p.code==="PT"){
     head=`${p.name}`; title="Volume réduit, intensité gardée";
-    focus=!IS_R ? "Décharge 5/3/1 (40/50/60 %), 3 séances d'environ 1h avec le cardio et le Metcon-X à l'allure de course. Dors beaucoup, mange normalement : la forme monte cette semaine." : "3 séances d'environ 1h, les charges restent hautes mais il y a moins de séries. Dors beaucoup, mange normalement : la forme monte cette semaine.";
+    focus=!IS_R ? "Décharge 5/3/1 (40/50/60 %), circuits à 2 tours, demi-part du Metcon-X à l'allure de course. Dors beaucoup, mange normalement : la forme monte cette semaine." : "3 séances d'environ 1h, les charges restent hautes mais il y a moins de séries. Dors beaucoup, mange normalement : la forme monte cette semaine.";
   } else if(p.code==="PC"){
     head=`${p.name} · samedi 13 février`; title="Semaine de compétition";
     focus=`Lundi rappel court, mercredi activation, repos jeudi et vendredi, ATHX Paris samedi ${duo}. Ton plan de tentatives est dans la carte « ATHX Paris ».`+(IS_R?"":" Tu ne joues pas le match du dimanche.");
@@ -2532,7 +2582,7 @@ function renderGoals(){
     const rows=PHASE_TABLE.filter(r=>/^P[123TC]$/.test(r[2])).map(r=>[r[0],r[1],{P1:IS_R?"Base : formats, technique, tests en 3e semaine":"Cycle 5/3/1 n°1, tests Endurance et Metcon-X en 3e semaine",P2:IS_R?"Volume : plus de Metcon-X, force à 3 puis 2 reps":"Trêve : cycle 5/3/1 n°2, 4-5 séances, volume Metcon-X, décharge aux fêtes",P3:IS_R?"Spécifique : allure de course, fenêtres chronométrées, simulation complète":"Cycle 5/3/1 n°3, allure de course, simulation complète le 23 janvier",PT:"Affûtage : volume réduit, intensité gardée",PC:"ATHX Paris · samedi 13 février"}[r[2]]]);
     const G=parisGoals(), w=IS_R?12:15;
     document.getElementById("goalsBox").innerHTML=`<div class="goals"><div class="ghead">Jusqu'à l'ATHX Paris — sam. 13 février 2027 (duo ${IS_R?"avec Florent":"avec Romane"})</div>
-      <p>3 séances de 1h30 par semaine : squat + Endurance, S2OH + Metcon-X, soulevé + moteur mixte. Le Metcon-X revient 2 fois par semaine : c'est là qu'il y a le plus à gagner.</p>
+      <p>${IS_R?"3 séances de 1h30 par semaine : squat + Endurance, S2OH + Metcon-X, soulevé + moteur mixte. Le Metcon-X revient 2 fois par semaine : c'est là qu'il y a le plus à gagner.":"4 séances par semaine, toujours la même structure : 15' de mobilité, un mouvement en 5/3/1, puis squat + circuit full body, push press + circuit, soulevé + WOD ATHX, bench + hypertrophie."}</p>
       <table class="gtable"><tr><th>Semaines</th><th>Dates</th><th>Contenu</th></tr>
       ${rows.map(r=>`<tr${week>=r[0]&&week<=r[1]?' style="color:var(--accent)"':''}><td>${r[0]===r[1]?r[0]:r[0]+"-"+r[1]}</td><td>${fmtDay(weekDate(r[0]))} → ${fmtDay(weekDate(r[1],6))}</td><td style="text-align:left;font-weight:500">${r[2]}</td></tr>`).join("")}</table>
       <table class="gtable"><tr><th>Mouvement</th><th>Réf.</th><th>Objectif Paris</th></tr>
