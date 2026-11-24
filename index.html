@@ -1711,6 +1711,22 @@ const CUSTOM = {
     return {sessions, conds:condsFor(w,p), title:"Semaine à la carte · bench lourd jeudi",
       focus:"Fait jeudi : bench 120 × 5, 135 × 3, 150 × 1, 160 × 1 facile, 170 raté ; développé militaire 70 × 6 et rowing 100 × 6 enchaînés ; dips et tractions 3 séries au max. Dimanche soir : squat orienté ATHX (doubles en montée jusqu'à un 2RM à RPE 8), muscu bas du corps, metcon jambes. La prépa Paris démarre lundi."};
   },
+  // Semaine 4 (23-29 nov.) · prépa Paris, bloc 1 · mardi : squat en 5/3/1 (semaine des 5) en full body, à la place de la séance 1 prévue.
+  4: (w, p)=>{
+    const base=sessParis(w,p);
+    const ex=(label, c, note, items)=>({type:"list", label, c, note, ex:items.map(x=>{ const y=subEx(x[0], new Set()); return [y.name, x[1], y.orig]; })});
+    const sq=main531("squat", w, Object.assign({}, p, {k:0}), false, {reserve:"2 en réserve (match dimanche)",
+      after:"Dernier squat dimanche soir : 48 h de récup, c'est bon. Si les jambes sont lourdes à l'échauffement, garde 5 reps pile sur le 160."});
+    const today=mkS(w,"s1",1,"Séance 1 · Squat 5/3/1 full body","Mardi · ~1h30 · semaine des 5","var(--force)",[
+      WARM(), sq,
+      ex("Bas du corps · chaîne postérieure","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Soulevé de terre jambes tendues","3×8 · ~100-110 kg, 2-3 en réserve"],["Fentes à la barre","3×8/côté · ~60 kg, 2-3 en réserve"]]),
+      ex("Haut du corps","hyp","superset · enchaîne les 2, récup 1'30 en fin de tour",[["Développé couché haltères","3×10 · 2 × 36 à 40 kg, 2 en réserve"],["Tractions lestées","3×6-8 · +5 à 10 kg, 2 en réserve"]]),
+      {type:"text", c:"cardio", label:"Cardio · SkiErg", chip:"~20 min", html:bullets("4 × 4' à l'allure de course (RPE 7) · récup 1'30<br>Damper 5-6, régulier du début à la fin : note ta moyenne au 500 m, c'est ton allure de l'épreuve Endurance"), ph:"Moyenne /500 m, distance, ressenti…"},
+    ],{day:"Mardi", planTag:"Muscu · mardi"});
+    const sessions=[today, base[1], base[2]];
+    return {sessions, conds:condsFor(w,p), title:"Prépa Paris · semaine 1/3 · squat en 5/3/1 mardi",
+      focus:"Mardi : squat en 5/3/1 (semaine des 5), jambes tendues + fentes, développé couché haltères + tractions, SkiErg. Ensuite la séance 2 (S2OH + Metcon-X) et la séance 3 (soulevé + moteur mixte), soulevé au plus tard jeudi : match dimanche à Nuiton."};
+  },
 };
 
 // ---------- PRÉPA ATHX PARIS · samedi 13 février 2027 · duo Florent + Romane, catégorie ATHX ----------
@@ -2342,7 +2358,6 @@ function weekBrief(w, P){
   }
   const cons=[];
   if(prev && prev.type==="match") cons.push("Début de semaine = lendemain de match : repos.");
-  if(!IS_R && w===4) cons.push("Squat dimanche soir (22 nov.) : fais la séance 1 au moins 48 h après, et commence la semaine par la séance 2 ou 3.");
   if(p.code==="PC"){} else if(we && we.type==="match") cons.push(`<b>Match ${we.date}</b> vs ${we.opp} (${we.home?"domicile":"extérieur"}) → squat et soulevé au moins 48 h avant, rien de lourd la veille.` + (w===23?" Dernier match de la saison.":""));
   else if(w<=23 && we && we.type==="bye") cons.push(/^P/.test(p.code) ? "Pas de match ce week-end." : "Pas de match ce week-end : WOD et course en option.");
   if(!IS_R && w>=7 && w<=9) cons.push("Pas de rugby pendant la trêve : profites-en pour charger.");
